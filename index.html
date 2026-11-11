@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans Devanagari", Arial, sans-serif; background: #f2f4f7; color: #111; }
+  #app { max-width: 520px; margin: 0 auto; padding: 12px; }
+  h1 { font-size: 21px; margin: 6px 0 12px; }
+  h2 { font-size: 16px; margin: 16px 0 4px; color: #333; }
+  .btn { display: block; width: 100%; padding: 18px 12px; margin: 10px 0; font-size: 23px; font-weight: bold;
+         border: 0; border-radius: 14px; color: #fff; background: #1f5fbf; text-align: center; cursor: pointer; }
+  .btn:active, .veh:active, .tile:active { transform: scale(0.97); opacity: 0.85; }
+  .btn .ico { display: block; font-size: 40px; line-height: 1.15; }
+  .btn small { display: block; font-size: 14px; font-weight: normal; margin-top: 2px; }
+  .green { background: #1c8a4a; } .red { background: #c0392b; } .orange { background: #d9780a; } .grey { background: #5d6b7a; }
+  .dark { background: #223; } .teal { background: #0d7f86; } .brown { background: #7a4a1e; }
+  .plain { background: #fff; color: #1f5fbf; border: 2px solid #1f5fbf; }
+  .slim { padding: 13px 10px; font-size: 18px; }
+  .last { outline: 5px solid #f4c20d; }
+  input[type=text], input[type=tel], input[type=password], input[type=date], select { width: 100%; font-size: 26px; padding: 12px; border: 2px solid #99a;
+         border-radius: 10px; text-align: center; letter-spacing: 1px; background: #fff; }
+  input.up { text-transform: uppercase; }
+  input[type=date], select, input.note { font-size: 18px; letter-spacing: 0; }
+  .box { background: #fff; border-radius: 14px; padding: 16px; margin: 10px 0; text-align: center; }
+  .huge { font-size: 44px; font-weight: bold; margin: 6px 0; line-height: 1.2; }
+  .plate { font-size: 30px; font-weight: bold; letter-spacing: 2px; font-family: Arial, sans-serif; }
+  .msg { padding: 12px; border-radius: 10px; margin: 10px 0; font-size: 17px; }
+  .err { background: #fde3e0; color: #8a1c10; } .info { background: #e3eefc; color: #123c7a; }
+  .veh { display: flex; justify-content: space-between; align-items: center; width: 100%; background: #fff; border: 2px solid #ccd;
+         border-radius: 10px; padding: 14px; margin: 8px 0; font-size: 22px; font-weight: bold; cursor: pointer; text-align: left; font-family: Arial, sans-serif; }
+  .veh span { font-size: 13px; font-weight: normal; color: #555; text-align: right; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 13px; color: #fff; background: #d9780a; }
+  .tag.h { background: #7a4a1e; } .tag.m { background: #0d7f86; } .tag.b { background: #1f5fbf; } .tag.g { background: #1c8a4a; } .tag.x { background: #5d6b7a; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; margin: 10px 0; }
+  td, th { padding: 9px 6px; border-bottom: 1px solid #e3e6ea; text-align: right; font-size: 16px; }
+  td:first-child, th:first-child { text-align: left; }
+  th.s { cursor: pointer; color: #1f5fbf; }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 15px; color: #555; }
+  .nav button { border: 0; background: #223; color: #fff; font-size: 17px; font-weight: bold; padding: 10px 16px; border-radius: 10px; }
+  .row2 { display: flex; gap: 8px; align-items: stretch; } .row2 > * { flex: 1; }
+  label.f { display: block; font-size: 14px; color: #555; margin: 8px 0 4px; text-align: left; }
+  .tiles { display: flex; gap: 8px; margin: 10px 0; }
+  .tile { flex: 1; background: #fff; border: 2px solid #ccd; border-radius: 14px; padding: 10px 4px; text-align: center; cursor: pointer; }
+  .tile .n { font-size: 34px; font-weight: bold; } .tile .l { font-size: 15px; color: #333; }
+  #sync { position: fixed; top: 6px; left: 50%; transform: translateX(-50%); z-index: 9; font-size: 13px; font-weight: bold;
+          padding: 4px 12px; border-radius: 12px; color: #fff; display: none; }
+  .thumb { max-width: 100%; max-height: 150px; border-radius: 8px; margin-top: 8px; }
+  .pulse { animation: pulse 1s infinite; } @keyframes pulse { 50% { opacity: 0.35; } }
+  .fullred { background: #c0392b; color: #fff; border-radius: 14px; padding: 20px; text-align: center; margin: 10px 0; }
+  .fullred .huge { color: #fff; }
+  .mic { flex: 0 0 64px !important; margin: 0; padding: 0; font-size: 28px; }
+  .mic.on { background: #c0392b; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi { background: #fff; border-radius: 12px; padding: 10px; text-align: center; } .kpi b { display: block; font-size: 24px; } .kpi span { font-size: 13px; color: #555; }
+  .chart { background: #fff; border-radius: 12px; padding: 8px; margin: 8px 0; }
+  .scroll { overflow-x: auto; }
+  .langsel { width: auto !important; font-size: 15px !important; padding: 6px 4px !important; border: 1px solid #99a !important; border-radius: 8px !important; }
+  a.btn { text-decoration: none; }
+  #micov { position: fixed; inset: 0; background: rgba(20, 24, 40, 0.95); z-index: 20; display: flex; flex-direction: column; align-items: center;
+           justify-content: center; padding: 24px; color: #fff; text-align: center; }
+  #micov .btn { max-width: 420px; }
+  .micbig { font-size: 96px; line-height: 1.1; } .miclbl { font-size: 34px; font-weight: bold; margin: 8px 0 16px; min-height: 40px; }
+  .micbar { width: 80%; max-width: 420px; height: 14px; background: #445; border-radius: 7px; overflow: hidden; margin-bottom: 18px; }
+  .micbar i { display: block; height: 100%; width: 0; background: #2ecc71; transition: width 0.1s; }
+  .navr { display: flex; gap: 8px; align-items: center; }
+  .nav .iconbtn { background: #fff; color: #333; border: 1px solid #ccd; font-size: 20px; padding: 6px 10px; }
+  .nav .iconbtn.out { color: #c0392b; font-size: 15px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div id="sync"></div>
+<div id="app"></div>
+<canvas id="cv" style="display:none"></canvas>
+<script>
+/* ================= LANGUAGES =================
+   Every text on screen comes from this table: [Marathi, Hindi, English].
+   A function is used where a number goes inside the sentence. */
+var W = {
+  appName: ['ग्लोब पार्किंग', 'ग्लोब पार्किंग', 'Globe Parking'],
+  home: ['🏠 मुख्य', '🏠 होम', '🏠 Home'],
+  back: ['← मागे', '← पीछे', '← Back'],
+  wait: ['थांबा...', 'रुकिए...', 'Please wait...'],
+  noNet: ['नेटवर्क नाही', 'नेटवर्क नहीं है', 'No network'],
+  netSlow: ['नेटवर्क हळू आहे', 'नेटवर्क धीमा है', 'Network is slow'],
+  notSaved: ['⚠ सेव्ह झाले नाही', '⚠ सेव नहीं हुआ', '⚠ Not saved'],
+  badgeFail: ['⚠ सेव्ह नाही', '⚠ सेव नहीं', '⚠ Not saved'],
+  retry: ['🔁 पुन्हा प्रयत्न', '🔁 फिर कोशिश करें', '🔁 Try again'],
+  failOk: ['ठीक — व्यवस्थापकाला सांगतो', 'ठीक — मैनेजर को बताऊँगा', 'OK — I will tell the manager'],
+  sNotSaved: ['सेव्ह झाले नाही', 'सेव नहीं हुआ', 'Not saved'],
+  correction: ['⚠ दुरुस्ती', '⚠ सुधार', '⚠ Correction'],
+  ok: ['ठीक', 'ठीक', 'OK'],
+  pin: ['🔑 पिन', '🔑 पिन', '🔑 PIN'],
+  login: ['आत जा', 'लॉगिन', 'Log in'],
+  starting: ['सुरू होत आहे...', 'शुरू हो रहा है...', 'Starting...'],
+  pendingResent: [function (n) { return 'मागील ' + n + ' नोंदी आता सेव्ह होत आहेत'; }, function (n) { return 'पिछली ' + n + ' एंट्री अब सेव हो रही हैं'; }, function (n) { return n + ' unsaved action(s) from last time are being saved now'; }],
+  voiceOn: ['आवाज सुरू', 'आवाज़ चालू', 'Voice on'],
+  logout: ['बाहेर पडा', 'लॉगआउट', 'Log out'],
+  tToday: ['आज आल्या', 'आज आईं', 'Today'],
+  tIn: ['आत आहेत', 'अंदर हैं', 'Inside'],
+  tPk: ['पार्किंग', 'पार्किंग', 'Parked'],
+  stale: [function (n) { return '🌙 रात्रभर थांबलेल्या: ' + n + ' — तपासा'; }, function (n) { return '🌙 रात भर रुकीं: ' + n + ' — जाँचें'; }, function (n) { return '🌙 Stayed overnight: ' + n + ' — check'; }],
+  photo: ['नंबर प्लेट फोटो', 'नंबर प्लेट फोटो', 'Number plate photo'],
+  find: ['🔍 गाडी शोधा', '🔍 गाड़ी खोजें', '🔍 Find vehicle'],
+  review: ['🔎 तपासणी', '🔎 जाँच', '🔎 Review'],
+  records: ['📒 नोंदी व रोख', '📒 रिकॉर्ड और कैश', '📒 Records & cash'],
+  pickList: ['यादीतून गाडी निवडा', 'सूची से गाड़ी चुनें', 'Pick the vehicle from the list'],
+  fullNo: ['पूर्ण नंबर लिहा (अक्षरांसाठी ABC)', 'पूरा नंबर लिखें (अक्षरों के लिए ABC)', 'Type the full number (ABC for letters)'],
+  parkedTag: ['🅿️ पार्किंग', '🅿️ पार्किंग', '🅿️ Parked'],
+  inTag: ['आत', 'अंदर', 'Inside'],
+  notInTag: ['आत नाही', 'अंदर नहीं', 'Not inside'],
+  insideTitle: ['🚛 आत आहेत', '🚛 अंदर हैं', '🚛 Inside'],
+  parkedTitle: ['🅿️ पार्किंग', '🅿️ पार्किंग', '🅿️ Parked'],
+  none: ['एकही गाडी नाही', 'कोई गाड़ी नहीं', 'No vehicles'],
+  staleTitle: ['🌙 रात्रभर थांबलेल्या', '🌙 रात भर रुकीं', '🌙 Stayed overnight'],
+  staleHelp: ['प्रत्येक गाडी शोधा. आहे तर ✔, नाही तर ✖ (ठेव जप्त).', 'हर गाड़ी ढूँढें। है तो ✔, नहीं तो ✖ (जमा ज़ब्त)।', 'Look for each vehicle. Here: ✔. Gone: ✖ (deposit kept).'],
+  seen: ['✔ इथेच आहे', '✔ यहीं है', '✔ Still here'],
+  gone: ['✖ गेली', '✖ चली गई', '✖ Gone'],
+  allChecked: ['सर्व तपासले ✔', 'सब जाँच हो गई ✔', 'All checked ✔'],
+  seenOvernight: ['✔ इथेच आहे (रात्रभर थांबली)', '✔ यहीं है (रात भर रुकी)', '✔ Still here (stayed overnight)'],
+
+  micNone: ['माइक सापडला नाही', 'माइक नहीं मिला', 'No microphone found'],
+  micBusy: ['माइक दुसऱ्या ॲपमध्ये वापरात आहे', 'माइक किसी दूसरे ऐप में चल रहा है', 'The microphone is being used by another app'],
+  heardNothing: ['ऐकू आले नाही. पुन्हा बोला.', 'सुनाई नहीं दिया। फिर बोलें।', 'Did not catch that. Speak again.'],
+  micNet: ['नेटवर्क नाही. नंबर लिहा.', 'नेटवर्क नहीं। नंबर लिखें।', 'No network. Type the number.'],
+  permTitle: ['🎤 माइकची परवानगी', '🎤 माइक की अनुमति', '🎤 Microphone permission'],
+  permChrome: ['Chrome मध्ये:', 'Chrome में:', 'In Chrome:'],
+  permChrome1: ['वरच्या पत्त्याच्या पट्टीत डावीकडील चिन्ह दाबा', 'ऊपर पता-पट्टी में बाईं ओर का निशान दबाएँ', 'Tap the icon at the left of the address bar'],
+  permChrome2: ['परवानग्या → मायक्रोफोन → परवानगी द्या', 'अनुमतियाँ → माइक्रोफ़ोन → अनुमति दें', 'Permissions → Microphone → Allow'],
+  permChrome3: ['ॲप बंद करून पुन्हा उघडा', 'ऐप बंद करके फिर खोलें', 'Close the app and open it again'],
+  permPhone: ['तरीही चालत नसेल तर फोनमध्ये:', 'फिर भी न चले तो फ़ोन में:', 'Still not working? On the phone:'],
+  permPhone1: ['सेटिंग्ज → ॲप्स → Chrome → परवानग्या → मायक्रोफोन → परवानगी द्या', 'सेटिंग्स → ऐप्स → Chrome → अनुमतियाँ → माइक्रोफ़ोन → अनुमति दें', 'Settings → Apps → Chrome → Permissions → Microphone → Allow'],
+
+  speakNow: ['बोला', 'बोलिए', 'Speak now'],
+  micStop: ['⏹ थांबा', '⏹ रोकें', '⏹ Stop'],
+  writing: ['लिहित आहे...', 'लिख रहा है...', 'Writing...'],
+  newLinkTitle: ['🎤 आवाजासाठी नवीन लिंक', '🎤 आवाज़ के लिए नया लिंक', '🎤 New link for voice'],
+  newLinkHelp: ['या जुन्या लिंकवर माइक चालत नाही. नवीन लिंक उघडा आणि ती होम स्क्रीनवर जोडा.', 'इस पुराने लिंक पर माइक नहीं चलता। नया लिंक खोलें और उसे होम स्क्रीन पर जोड़ें।', 'The microphone does not work on this old link. Open the new link and add it to the home screen.'],
+  openNewLink: ['🔗 नवीन लिंक उघडा', '🔗 नया लिंक खोलें', '🔗 Open the new link'],
+  askOwner: ['नवीन लिंक अजून तयार नाही. मालकाला सांगा.', 'नया लिंक अभी तैयार नहीं। मालिक को बताएँ।', 'The new link is not ready yet. Tell the owner.'],
+  permRetry: ['🔁 पुन्हा प्रयत्न', '🔁 फिर कोशिश करें', '🔁 Try again'],
+  exemptHome: ['➕ सूट यादी', '➕ छूट सूची', '➕ Exempt list'],
+  noApi: ['ॲपचा पत्ता भरलेला नाही (API_URL).', 'ऐप का पता नहीं भरा (API_URL)।', 'The app address (API_URL) is not filled in.'],
+  e_LOCKED: ['खूप चुकीचे पिन. 15 मिनिटे थांबा.', 'बहुत ग़लत पिन। 15 मिनट रुकें।', 'Too many wrong PINs. Wait 15 minutes.'],
+  reading: ['नंबर वाचत आहे...', 'नंबर पढ़ रहा है...', 'Reading the number...'],
+  cancel: ['✖ रद्द', '✖ रद्द', '✖ Cancel'],
+  tooLong: ['वेळ लागला', 'बहुत समय लगा', 'Took too long'],
+  readFail: ['नंबर वाचता आला नाही. नंबर लिहा किंवा बोला.', 'नंबर पढ़ा नहीं गया। नंबर लिखें या बोलें।', 'Could not read the number. Type or speak it.'],
+  sReadFail: ['नंबर वाचता आला नाही', 'नंबर पढ़ा नहीं गया', 'Could not read the number'],
+  r_NOKEY: ['API key नाही', 'API key नहीं है', 'API key missing'],
+  r_LIMIT: ['आजची मोफत मर्यादा संपली', 'आज की मुफ़्त सीमा ख़त्म', 'Free daily limit reached'],
+  r_HTTP: ['त्रुटी', 'त्रुटि', 'Error'],
+
+  undoBtn: [function (w, t) { return '↩️ ' + w + ' मागे घ्या · ' + t; }, function (w, t) { return '↩️ ' + w + ' वापस लें · ' + t; }, function (w, t) { return '↩️ Undo ' + w + ' · ' + t; }],
+  u_EXIT: ['बाहेर नोंद', 'एग्ज़िट', 'exit'],
+  u_DELETE: ['काढलेली नोंद', 'हटाई गई एंट्री', 'deleted entry'],
+  u_LEFT: ['"गेली" नोंद', '"चली गई" एंट्री', '"gone" mark'],
+  inside: ['आत आहे', 'अंदर है', 'Inside'],
+  rIn: ['⬇️ आत', '⬇️ अंदर', '⬇️ In'],
+  rPs: ['🅿️ सुरू', '🅿️ शुरू', '🅿️ Start'],
+  rPe: ['🅿️ बंद', '🅿️ बंद', '🅿️ End'],
+  rOut: ['⬆️ बाहेर', '⬆️ बाहर', '⬆️ Out'],
+  rPt: ['🅿️ वेळ', '🅿️ समय', '🅿️ Parked'],
+  todayP: [' (आज)', ' (आज)', ' (today)'],
+  rCt: ['⏱ आत वेळ', '⏱ अंदर समय', '⏱ In complex'],
+  rSlip: ['🧾 पावती · ठेव', '🧾 पर्ची · जमा', '🧾 Slip · deposit'],
+  rBank: ['मागील दिवसांचे शुल्क', 'पिछले दिनों का शुल्क', 'Earlier days fee'],
+  rSerial: ['🔢 क्रमांक', '🔢 क्रमांक', '🔢 Serial'],
+  rFeeNow: ['₹ आत्ता शुल्क', '₹ अभी शुल्क', '₹ Fee now'],
+  bPstart: ['पार्किंग सुरू', 'पार्किंग शुरू', 'Start parking'],
+  bPend: ['पार्किंग बंद', 'पार्किंग बंद', 'End parking'],
+  bExit: ['बाहेर', 'बाहर', 'Exit'],
+  cancelEntry: ['🗑 चुकीची नोंद काढा (ठेव परत)', '🗑 गलत एंट्री हटाएँ (जमा वापस)', '🗑 Delete wrong entry (deposit back)'],
+  setcat: [function (c) { return 'आकार बदला → ' + c; }, function (c) { return 'साइज़ बदलें → ' + c; }, function (c) { return 'Change size → ' + c; }],
+  left: ['🔁 न सांगता गेली होती (जुनी ठेव जप्त)', '🔁 बिना बताए चली गई थी (पुराना जमा ज़ब्त)', '🔁 Had left without exit (old deposit kept)'],
+  entryHead: ['⬇️ आत — आकार निवडा', '⬇️ अंदर — साइज़ चुनें', '⬇️ Entry — pick the size'],
+  addEx: ['➕ सूट यादीत जोडा', '➕ छूट सूची में जोड़ें', '➕ Add to exempt list'],
+  fix: ['⚙️ दुरुस्ती', '⚙️ सुधार', '⚙️ Corrections'],
+  history: ['📒 इतिहास', '📒 इतिहास', '📒 History'],
+  noHist: ['जुनी नोंद नाही', 'पुराना रिकॉर्ड नहीं', 'No earlier visits'],
+  newVeh: ['नवीन गाडी', 'नई गाड़ी', 'New vehicle'],
+  visits: [function (n, f) { return n + ' वेळा · एकूण ₹' + f; }, function (n, f) { return n + ' बार · कुल ₹' + f; }, function (n, f) { return n + ' visits · total ₹' + f; }],
+  allVisits: ['सर्व नोंदी', 'सभी रिकॉर्ड', 'All visits'],
+  nextVeh: ['पुढची गाडी', 'अगली गाड़ी', 'Next vehicle'],
+  openAgain: ['हीच गाडी पुन्हा उघडा', 'यही गाड़ी फिर खोलें', 'Open this vehicle again'],
+  noPerm: ['परवानगी नाही', 'अनुमति नहीं', 'Not allowed'],
+  already: ['आधीच आत आहे', 'पहले से अंदर है', 'Already inside'],
+  gettingSlip: ['पावती नंबर घेत आहे...', 'पर्ची नंबर ला रहा है...', 'Getting a slip number...'],
+  noNetRetry: ['नेटवर्क नाही. पुन्हा प्रयत्न करा.', 'नेटवर्क नहीं। फिर कोशिश करें।', 'No network. Try again.'],
+  undoing: ['मागे घेत आहे...', 'वापस ले रहा है...', 'Undoing...'],
+  takeAgain: [function (n) { return '🤲 ₹' + n + ' पुन्हा घ्या'; }, function (n) { return '🤲 ₹' + n + ' फिर से लें'; }, function (n) { return '🤲 Take ₹' + n + ' again'; }],
+  sTakeAgain: [function (n) { return n + ' रुपये पुन्हा घ्या'; }, function (n) { return n + ' रुपये फिर से लें'; }, function (n) { return 'Take ' + n + ' rupees again'; }],
+  takeBack: [function (n) { return '🤲 ₹' + n + ' परत घ्या'; }, function (n) { return '🤲 ₹' + n + ' वापस लें'; }, function (n) { return '🤲 Take back ₹' + n; }],
+  sTakeBack: [function (n) { return n + ' रुपये परत घ्या'; }, function (n) { return n + ' रुपये वापस लें'; }, function (n) { return 'Take back ' + n + ' rupees'; }],
+  giveBack: [function (n) { return '↩️ ₹' + n + ' परत द्या'; }, function (n) { return '↩️ ₹' + n + ' वापस दें'; }, function (n) { return '↩️ Give back ₹' + n; }],
+  sGiveBack: [function (n) { return n + ' रुपये परत द्या'; }, function (n) { return n + ' रुपये वापस दें'; }, function (n) { return 'Give back ' + n + ' rupees'; }],
+  sOk: ['ठीक आहे', 'ठीक है', 'Done'],
+  backInside: ['गाडी पुन्हा आत आहे', 'गाड़ी फिर अंदर है', 'Vehicle is inside again'],
+  notInside: ['गाडी आत नाही', 'गाड़ी अंदर नहीं है', 'Vehicle is not inside'],
+  sPstart: ['पार्किंग सुरू', 'पार्किंग शुरू', 'Parking started'],
+  sPend: ['पार्किंग बंद', 'पार्किंग बंद', 'Parking ended'],
+  deleted: ['नोंद काढली', 'एंट्री हटाई', 'Entry deleted'],
+  takeSlipBack: ['पावती परत घ्या', 'पर्ची वापस लें', 'Take the slip back'],
+  sizeChanged: [function (c) { return 'आकार बदलला → ' + c; }, function (c) { return 'साइज़ बदला → ' + c; }, function (c) { return 'Size changed → ' + c; }],
+  leftDone: [function (n) { return 'जुनी नोंद बंद. जुनी ठेव ₹' + n + ' परत नाही. आता नवीन नोंद करा.'; }, function (n) { return 'पुरानी एंट्री बंद। पुराना जमा ₹' + n + ' वापस नहीं। अब नई एंट्री करें।'; }, function (n) { return 'Old visit closed. Old deposit ₹' + n + ' is kept. Now make the new entry.'; }],
+  calc: ['हिशोब होत आहे...', 'हिसाब हो रहा है...', 'Calculating...'],
+  alreadyOut: ['ही गाडी आधीच बाहेर गेली आहे', 'यह गाड़ी पहले ही निकल चुकी है', 'This vehicle has already left'],
+  take: [function (n) { return '🤲 ₹' + n + ' घ्या'; }, function (n) { return '🤲 ₹' + n + ' लें'; }, function (n) { return '🤲 Take ₹' + n; }],
+  sTake: [function (n) { return n + ' रुपये घ्या'; }, function (n) { return n + ' रुपये लें'; }, function (n) { return 'Take ' + n + ' rupees'; }],
+  writeSlip: ['✍️ पावतीवर लिहा', '✍️ पर्ची पर लिखें', '✍️ Write on the slip'],
+  slipNo: ['🧾 नंबर', '🧾 नंबर', '🧾 Number'],
+  depRow: ['₹ ठेव', '₹ जमा', '₹ Deposit'],
+  timeRow: ['⏱ वेळ', '⏱ समय', '⏱ Time'],
+  paid: ['पैसे मिळाले', 'पैसे मिल गए', 'Payment received'],
+  notPaid: ['✖ पैसे मिळाले नाहीत', '✖ पैसे नहीं मिले', '✖ Not paid'],
+  sEntrySlip: ['नोंद झाली, पावती द्या', 'एंट्री हो गई, पर्ची दें', 'Entry done, give the slip'],
+  noMoney: ['पैसे नाहीत', 'पैसे नहीं', 'No payment'],
+  sNoMoney: ['पैसे घ्यायचे नाहीत', 'पैसे नहीं लेने हैं', 'No payment needed'],
+  corrDep: [function (n, m) { return 'या गाडीची ठेव <b>₹' + n + '</b> आहे, ₹' + m + ' नाही'; }, function (n, m) { return 'इस गाड़ी का जमा <b>₹' + n + '</b> है, ₹' + m + ' नहीं'; }, function (n, m) { return 'Deposit for this vehicle is <b>₹' + n + '</b>, not ₹' + m; }],
+  corrSlip: ['पावतीवर हा नवीन नंबर लिहा', 'पर्ची पर यह नया नंबर लिखें', 'Write this new number on the slip'],
+  noSlipNoRef: ['🧾✖ परत नाही', '🧾✖ वापस नहीं', '🧾✖ No refund'],
+  noSlipSub: [function (n) { return 'पावती नाही · ठेव ₹' + n + ' जप्त'; }, function (n) { return 'पर्ची नहीं · जमा ₹' + n + ' ज़ब्त'; }, function (n) { return 'No slip · deposit ₹' + n + ' kept'; }],
+  sNoSlip: ['पावती नाही, पैसे परत नाहीत', 'पर्ची नहीं, पैसे वापस नहीं', 'No slip, no refund'],
+  collectMore: [function (n) { return '🤲 ₹' + n + ' आणखी घ्या'; }, function (n) { return '🤲 ₹' + n + ' और लें'; }, function (n) { return '🤲 Collect ₹' + n + ' more'; }],
+  collectMoreSub: [function (f, d) { return 'शुल्क ₹' + f + ' · ठेव ₹' + d + ' · पावती परत घ्या'; }, function (f, d) { return 'शुल्क ₹' + f + ' · जमा ₹' + d + ' · पर्ची वापस लें'; }, function (f, d) { return 'Fee ₹' + f + ' · deposit ₹' + d + ' · take the slip back'; }],
+  sCollectMore: [function (n) { return n + ' रुपये आणखी घ्या'; }, function (n) { return n + ' रुपये और लें'; }, function (n) { return 'Collect ' + n + ' more rupees'; }],
+  collectSub: ['ठेव घेतली नव्हती', 'जमा नहीं लिया था', 'No deposit was taken'],
+  noRefund: ['🚫 परत नाही', '🚫 वापस नहीं', '🚫 No refund'],
+  noRefundSub: [function (n) { return 'ठेव ₹' + n + ' = शुल्क · पावती परत घ्या'; }, function (n) { return 'जमा ₹' + n + ' = शुल्क · पर्ची वापस लें'; }, function (n) { return 'Deposit ₹' + n + ' = fee · take the slip back'; }],
+  sNoRefund: ['पैसे परत नाहीत', 'पैसे वापस नहीं', 'No refund'],
+  nothing: ['🚫₹ पैसे नाहीत', '🚫₹ पैसे नहीं', '🚫₹ Nothing to pay'],
+  sNothing: ['काही घ्यायचे नाही', 'कुछ नहीं लेना', 'Nothing to pay'],
+  fee: ['शुल्क', 'शुल्क', 'Fee'],
+  vehLeft: ['गाडी गेली', 'गाड़ी चली गई', 'Vehicle left'],
+  noSlipBtn: ['🧾✖ पावती नाही (ठेव जप्त)', '🧾✖ पर्ची नहीं (जमा ज़ब्त)', '🧾✖ No slip (deposit kept)'],
+  slipFound: ['🧾 पावती मिळाली', '🧾 पर्ची मिल गई', '🧾 Slip found'],
+  wrongVeh: ['← चुकीची गाडी', '← गलत गाड़ी', '← Wrong vehicle'],
+  mistake: ['चूक झाली? ही गाडी उघडा', 'गलती हुई? यह गाड़ी खोलें', 'Mistake? Open this vehicle'],
+  corrFee: [function (a, b) { return 'सेव्ह झालेले शुल्क <b>₹' + a + '</b>, स्क्रीनवर ₹' + b + ' होते. व्यवस्थापकाला सांगा.'; }, function (a, b) { return 'सेव हुआ शुल्क <b>₹' + a + '</b>, स्क्रीन पर ₹' + b + ' था। मैनेजर को बताएँ।'; }, function (a, b) { return 'Saved fee is <b>₹' + a + '</b>, the screen showed ₹' + b + '. Tell the manager.'; }],
+
+  revSizes: ['आजच्या नोंदी (आकारानुसार)', 'आज की एंट्री (साइज़ के अनुसार)', 'Today\'s entries by size'],
+  staff: ['कर्मचारी', 'कर्मचारी', 'Staff'],
+  revTodo: ['तपासायचे', 'जाँचना है', 'To check'],
+  nothingTodo: ['काही नाही ✔', 'कुछ नहीं ✔', 'Nothing to check ✔'],
+  reviewed: ['✔ तपासले', '✔ जाँच लिया', '✔ Reviewed'],
+  openVeh: ['गाडी उघडा', 'गाड़ी खोलें', 'Open vehicle'],
+  revDone: ['तपासून झालेले', 'जाँच हो चुकी', 'Already reviewed'],
+
+  exTitle: ['➕ सूट यादी', '➕ छूट सूची', '➕ Exempt list'],
+  exHelp: ['या गाड्यांना ठेव व शुल्क नाही', 'इन गाड़ियों से जमा और शुल्क नहीं', 'These vehicles pay no deposit and no fee'],
+  vehNo: ['गाडी नंबर', 'गाड़ी नंबर', 'Vehicle number'],
+  exNote: ['टीप (कोणाची गाडी)', 'टिप्पणी (किसकी गाड़ी)', 'Note (whose vehicle)'],
+  add: ['जोडा', 'जोड़ें', 'Add'],
+  fullNoShort: ['पूर्ण गाडी नंबर लिहा', 'पूरा गाड़ी नंबर लिखें', 'Type the full vehicle number'],
+  added: [function (p) { return p + ' जोडली ✔'; }, function (p) { return p + ' जोड़ दी ✔'; }, function (p) { return p + ' added ✔'; }],
+
+  cash: ['💰 आजची रोख', '💰 आज का कैश', '💰 Today\'s cash'],
+  pToday: ['आज', 'आज', 'Today'],
+  pYest: ['काल', 'कल', 'Yesterday'],
+  pWeek: ['हा आठवडा', 'इस हफ़्ते', 'This week'],
+  pMonth: ['हा महिना', 'इस महीने', 'This month'],
+  pLast: ['मागील महिना', 'पिछला महीना', 'Last month'],
+  pYear: ['हे वर्ष', 'इस साल', 'This year'],
+  p30: ['30 दिवस', '30 दिन', '30 days'],
+  from: ['पासून', 'से', 'From'],
+  to: ['पर्यंत', 'तक', 'To'],
+  search: ['🔍 शोधा', '🔍 खोजें', '🔍 Search'],
+  analytics: ['📊 विश्लेषण', '📊 विश्लेषण', '📊 Analytics'],
+  outTag: ['बाहेर गेली', 'बाहर गई', 'Left'],
+  vehicles: ['गाड्या', 'गाड़ियाँ', 'Vehicles'],
+  feesRef: [function (f, r) { return 'शुल्क <b>₹' + f + '</b> · परत दिले <b>₹' + r + '</b>'; }, function (f, r) { return 'शुल्क <b>₹' + f + '</b> · वापस दिए <b>₹' + r + '</b>'; }, function (f, r) { return 'Fees <b>₹' + f + '</b> · refunds <b>₹' + r + '</b>'; }],
+  latestN: [function (n) { return 'खाली शेवटच्या ' + n + ' दाखवल्या'; }, function (n) { return 'नीचे आख़िरी ' + n + ' दिखाईं'; }, function (n) { return 'Latest ' + n + ' shown below'; }],
+  noRec: ['नोंद नाही', 'रिकॉर्ड नहीं', 'No records'],
+  typeRow: ['प्रकार', 'प्रकार', 'Type'],
+  slipRow: ['🧾 पावती', '🧾 पर्ची', '🧾 Slip'],
+  depositRow: ['ठेव', 'जमा', 'Deposit'],
+  refRow: ['परत / घेतले', 'वापस / लिए', 'Refund / collected'],
+  sumLine: [function (e, i, p) { return 'आज आल्या <b>' + e + '</b> · आत <b>' + i + '</b> · पार्किंग <b>' + p + '</b>'; }, function (e, i, p) { return 'आज आईं <b>' + e + '</b> · अंदर <b>' + i + '</b> · पार्किंग <b>' + p + '</b>'; }, function (e, i, p) { return 'Today <b>' + e + '</b> · inside <b>' + i + '</b> · parked <b>' + p + '</b>'; }],
+  feesToday: [function (n) { return 'आजचे शुल्क <b>₹' + n + '</b>'; }, function (n) { return 'आज का शुल्क <b>₹' + n + '</b>'; }, function (n) { return 'Fees today <b>₹' + n + '</b>'; }],
+  totals: [function (a, b) { return 'एकूण गाड्या <b>' + a + '</b> · पावती नंबर शिल्लक <b>' + b + '</b>'; }, function (a, b) { return 'कुल गाड़ियाँ <b>' + a + '</b> · पर्ची नंबर बाक़ी <b>' + b + '</b>'; }, function (a, b) { return 'Total vehicles <b>' + a + '</b> · slip numbers left <b>' + b + '</b>'; }],
+  cashInHand: ['हातात रोख', 'हाथ में कैश', 'Cash in hand'],
+  cashCalc: [function (d, r, c) { return 'ठेव ₹' + d + ' − परत ₹' + r + ' + जास्त घेतले ₹' + c; }, function (d, r, c) { return 'जमा ₹' + d + ' − वापस ₹' + r + ' + ज़्यादा लिए ₹' + c; }, function (d, r, c) { return 'Deposits ₹' + d + ' − refunds ₹' + r + ' + collected ₹' + c; }],
+  noTx: ['आज अजून व्यवहार नाही', 'आज अभी कोई लेन-देन नहीं', 'No transactions yet today'],
+
+  loadingData: ['माहिती आणत आहे...', 'डेटा ला रहा है...', 'Loading data...'],
+  capped: ['फक्त शेवटच्या 8000 नोंदी', 'सिर्फ़ आख़िरी 8000 रिकॉर्ड', 'Only the latest 8000 records'],
+  filters: ['फिल्टर', 'फ़िल्टर', 'Filters'],
+  allSizes: ['सर्व आकार', 'सभी साइज़', 'All sizes'],
+  allStatus: ['सर्व स्थिती', 'सभी स्थिति', 'All statuses'],
+  stIn: ['आत आहेत', 'अंदर हैं', 'Inside'],
+  stOut: ['बाहेर गेल्या', 'बाहर गईं', 'Exited'],
+  stPk: ['पार्क केल्या', 'पार्क कीं', 'Parked'],
+  stLeft: ['न सांगता गेल्या', 'बिना बताए गईं', 'Left without exit'],
+  stDel: ['नोंद काढली', 'एंट्री हटाई', 'Deleted'],
+  stEx: ['सूट', 'छूट', 'Exempt'],
+  allStaff: ['सर्व कर्मचारी', 'सभी कर्मचारी', 'All staff'],
+  summaryH: ['सारांश', 'सारांश', 'Summary'],
+  kFees: ['शुल्क', 'शुल्क', 'Fees'],
+  kRef: ['परत दिले', 'वापस दिए', 'Refunds'],
+  kPk: ['पार्क केल्या', 'पार्क कीं', 'Parked'],
+  kAvg: ['सरासरी पार्किंग', 'औसत पार्किंग', 'Average parking'],
+  kFpp: ['प्रति पार्किंग शुल्क', 'प्रति पार्किंग शुल्क', 'Fee per parking'],
+  kLeft: ['न सांगता गेल्या (ठेव जप्त)', 'बिना बताए गईं (जमा ज़ब्त)', 'Left without exit (deposit kept)'],
+  kHm: ['जड / मध्यम', 'भारी / मध्यम', 'Heavy / medium'],
+  kIn: ['अजून आत', 'अभी अंदर', 'Still inside'],
+  kDel: ['नोंद काढली · दुरुस्त्या', 'एंट्री हटाई · सुधार', 'Deleted · corrections'],
+  chFeeDay: ['दिवसानुसार शुल्क ₹', 'दिन के अनुसार शुल्क ₹', 'Fees by day ₹'],
+  chFeeMon: ['महिन्यानुसार शुल्क ₹', 'महीने के अनुसार शुल्क ₹', 'Fees by month ₹'],
+  chVehDay: ['दिवसानुसार गाड्या', 'दिन के अनुसार गाड़ियाँ', 'Vehicles by day'],
+  chVehMon: ['महिन्यानुसार गाड्या', 'महीने के अनुसार गाड़ियाँ', 'Vehicles by month'],
+  chHour: ['तासानुसार प्रवेश', 'घंटे के अनुसार एंट्री', 'Entries by hour'],
+  max: ['कमाल', 'अधिकतम', 'max'],
+  topVeh: ['जास्त शुल्क देणाऱ्या गाड्या', 'सबसे ज़्यादा शुल्क देने वाली गाड़ियाँ', 'Top paying vehicles'],
+  times: ['वेळा', 'बार', 'Visits'],
+  allRows: ['सर्व नोंदी', 'सभी रिकॉर्ड', 'All records'],
+  colVeh: ['गाडी', 'गाड़ी', 'Vehicle'],
+  colSize: ['आकार', 'साइज़', 'Size'],
+  colIn: ['आत', 'अंदर', 'In'],
+  colOut: ['बाहेर', 'बाहर', 'Out'],
+  colPk: ['🅿️ मि', '🅿️ मि', '🅿️ min'],
+  colBy: ['कोणी', 'किसने', 'By'],
+  name: ['नाव', 'नाम', 'Name'],
+  csv: ['⬇️ CSV डाउनलोड', '⬇️ CSV डाउनलोड', '⬇️ Download CSV'],
+  dlFail: ['डाउनलोड झाले नाही', 'डाउनलोड नहीं हुआ', 'Download failed'],
+  min: ['मि', 'मि', 'min'],
+  hr: ['ता', 'घं', 'h'],
+
+  c_MEDIUM: ['मध्यम', 'मध्यम', 'Medium'],
+  c_HEAVY: ['जड', 'भारी', 'Heavy'],
+  ty_DEPOSIT: ['ठेव', 'जमा', 'Deposit'],
+  ty_TENANT: ['सूट', 'छूट', 'Exempt'],
+  ty_PASS: ['पास', 'पास', 'Pass'],
+  ty_NOENTRY: ['गेट नोंद नाही', 'गेट एंट्री नहीं', 'No gate entry'],
+  ro_SUPERUSER: ['मालक', 'मालिक', 'Owner'],
+  ro_MANAGEMENT: ['व्यवस्थापक', 'मैनेजर', 'Manager'],
+  ro_AGENT: ['एजंट', 'एजेंट', 'Agent'],
+  ro_GUARD: ['गार्ड', 'गार्ड', 'Guard'],
+  ro_SYSTEM: ['सिस्टम', 'सिस्टम', 'System'],
+  n_LEFT: ['न सांगता गेली', 'बिना बताए चली गई', 'Left without exit'],
+  n_DELETED: ['नोंद काढली', 'एंट्री हटाई', 'Entry deleted'],
+  n_NOSLIP: ['पावती नाही', 'पर्ची नहीं', 'No slip'],
+  a_ENTRY_DELETED: ['नोंद काढली', 'एंट्री हटाई', 'Entry deleted'],
+  a_UNDONE_EXIT: ['बाहेर मागे घेतले', 'एग्ज़िट वापस लिया', 'Exit undone'],
+  a_UNDONE_ENTRY_DELETED: ['काढलेली नोंद परत आणली', 'हटाई एंट्री वापस लाई', 'Deleted entry restored'],
+  a_UNDONE_LEFT_WITHOUT_EXIT: ['गेलेली गाडी परत आत', 'गई हुई गाड़ी फिर अंदर', '"Gone" mark undone'],
+  a_EXIT_UNDONE: ['बाहेर मागे घेतले', 'एग्ज़िट वापस लिया', 'Exit undone'],
+  a_EXIT_WITHOUT_SLIP: ['पावतीशिवाय बाहेर', 'बिना पर्ची बाहर', 'Exit without slip'],
+  a_SIZE_CHANGED: ['आकार बदलला', 'साइज़ बदला', 'Size changed'],
+  a_SIZE_LOWER_THAN_LAST_VISIT: ['मागील वेळी जड, आता मध्यम', 'पिछली बार भारी, अब मध्यम', 'Heavy last time, medium now'],
+  a_CLOSED_LEFT_WITHOUT_EXIT: ['न सांगता गेली', 'बिना बताए चली गई', 'Left without exit'],
+
+  e_ROLE: ['परवानगी नाही', 'अनुमति नहीं', 'Not allowed'],
+  e_PIN: ['चुकीचा पिन', 'गलत पिन', 'Wrong PIN'],
+  e_SETUP: ['शीट तयार नाही. upgrade चालवा.', 'शीट तैयार नहीं। upgrade चलाएँ।', 'Sheet not set up. Run upgrade.'],
+  e_NOSLIPS: ['पावती नंबर संपले. मालकाला सांगा.', 'पर्ची नंबर ख़त्म। मालिक को बताएँ।', 'Slip numbers finished. Tell the owner.'],
+  e_SHORT: ['गाडी नंबर अपूर्ण', 'गाड़ी नंबर अधूरा', 'Vehicle number incomplete'],
+  e_ALREADY: ['आधीच आत आहे', 'पहले से अंदर है', 'Already inside'],
+  e_NOENTRY: ['नोंद नाही. आधी ठेव घेऊन आत नोंद करा.', 'एंट्री नहीं है। पहले जमा लेकर एंट्री करें।', 'No entry. Take the deposit and make the entry first.'],
+  e_NOTPARKED: ['पार्किंगमध्ये नाही', 'पार्किंग में नहीं', 'Not parked'],
+  e_NOTINSIDE: ['आत नाही', 'अंदर नहीं', 'Not inside'],
+  e_LATE: ['वेळ निघून गेली. आता हे करता येणार नाही.', 'समय निकल गया। अब यह नहीं हो सकता।', 'Too late. This can no longer be done.'],
+  e_NOUNDO: ['मागे घेता येणार नाही', 'वापस नहीं ले सकते', 'Cannot be undone'],
+  e_NONE: ['नेटवर्क नाही', 'नेटवर्क नहीं है', 'No network']
+};
+var LANGS = ['mr', 'hi', 'en'];
+var LANG_NAME = { mr: 'मराठी', hi: 'हिंदी', en: 'English' };
+var SPEECH = { mr: 'mr-IN', hi: 'hi-IN', en: 'en-IN' };
+function t(k) {
+  var row = W[k], i = Math.max(0, LANGS.indexOf(S.lang));
+  if (!row) return k;
+  var v = row[i];
+  return typeof v === 'function' ? v.apply(null, Array.prototype.slice.call(arguments, 1)) : v;
+}
+function tk(prefix, key) { var k = prefix + String(key || '').replace(/[^A-Z0-9]+/g, '_'); return W[k] ? t(k) : esc(key); }
+
+/* ======================================================================
+   GLOBE PARKING - phone screens - version 9 (Marathi / Hindi / English)
+   The app loads the vehicles inside, prices and known vehicles ONCE, keeps
+   them on the phone, shows every screen instantly, and saves to the Google
+   Sheet in the background.
+   ====================================================================== */
+
+/* When this page is served from GitHub Pages (or any web page), it needs the Apps Script
+   "Web app URL". Put it in a file called config.js next to this page:
+       var API_URL = 'https://script.google.com/macros/s/..../exec';
+   (or paste it between the quotes below). Inside Apps Script it is not needed. */
+var API_URL = 'PASTE_WEB_APP_URL_HERE';
+
+var S = { pin: '', user: null, D: null, open: [], off: 0, syncAt: 0, q: [], qBusy: false, fails: [], screen: '', slips: [], dayStart: 0, reviewCount: 0, editMin: 10,
+          vinfo: {}, mut: 0, today: 0, thumb: '', thumbPlate: '', voice: true, kb: 'numeric', logs: [], logOpt: null, lastLogs: null, last: null, an: null, lang: 'mr' };
+
+/* Vehicle pictures are drawn here (not emoji) so they look the same on every phone. */
+function svgIcon(cat, h) {
+  var w = Math.round(h * 1.6), body = cat === 'HEAVY'
+    ? '<rect x="1" y="5" width="41" height="21" rx="1.5" fill="#fff"/><path d="M44 11h9l8 8v7H44z" fill="#fff"/><path d="M47 13h5l5 5.5H47z" fill="#000" opacity=".35"/>' +
+      '<circle cx="9" cy="30" r="5.5" fill="#222" stroke="#fff" stroke-width="2"/><circle cx="21" cy="30" r="5.5" fill="#222" stroke="#fff" stroke-width="2"/>' +
+      '<circle cx="35" cy="30" r="5.5" fill="#222" stroke="#fff" stroke-width="2"/><circle cx="52" cy="30" r="5.5" fill="#222" stroke="#fff" stroke-width="2"/>'
+    : '<path d="M2 17h27V8h16l8 8 9 2v8H2z" fill="#fff"/><path d="M32 10.5h12l5.5 6H32z" fill="#000" opacity=".35"/><path d="M2 17h27v2H2z" fill="#000" opacity=".18"/>' +
+      '<circle cx="15" cy="29" r="6" fill="#222" stroke="#fff" stroke-width="2"/><circle cx="48" cy="29" r="6" fill="#222" stroke="#fff" stroke-width="2"/>';
+  return '<svg viewBox="0 0 64 37" width="' + w + '" height="' + h + '" style="vertical-align:middle">' + body + '</svg>';
+}
+/* Power symbol drawn as a picture: the text symbol is missing on many phones. */
+var POWER = '<svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:-3px"><path d="M12 3v8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
+  '<path d="M6.6 6.6a7.6 7.6 0 1 0 10.8 0" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>';
+var CATS = { MEDIUM: ['teal', 'm'], HEAVY: ['brown', 'h'] };
+function catName(c) { return t(c === 'HEAVY' ? 'c_HEAVY' : 'c_MEDIUM'); }
+function can(what) {   // who may do what
+  var r = S.user ? S.user.role : '';
+  if (what === 'gate') return true;                                     // entry and exit: everyone
+  if (what === 'park') return r !== 'GUARD';                            // parking start and end: not the guard
+  if (what === 'records') return r !== 'GUARD';                         // agent: this month + last month only
+  if (what === 'mgmt') return r === 'MANAGEMENT' || r === 'SUPERUSER';  // review, exempt list
+  if (what === 'su') return r === 'SUPERUSER';
+  return false;
+}
+
+/* ================= small helpers ================= */
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+function show(html, name) {
+  S.screen = name || '';
+  stopMic(true);
+  var nav = '';
+  if (S.user && name !== 'home' && name !== 'login') {
+    nav = '<div class="nav"><button data-t="home" onclick="home()">' + t('home') + '</button><span>' + esc(S.user.name) + '</span></div>';
+  }
+  $('app').innerHTML = nav + html; window.scrollTo(0, 0);
+}
+function inAppsScript() { return !!(window.google && google.script && google.script.run); }
+function call(fn) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  if (inAppsScript()) {
+    return new Promise(function (res, rej) {
+      var r = google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(new Error(e && e.message ? e.message : String(e))); });
+      r[fn].apply(r, args);
+    });
+  }
+  if (!/^https:\/\//.test(API_URL)) return Promise.reject(new Error('[SETUP] ' + t('noApi')));
+  // text/plain avoids an extra "may I?" request from the browser; Apps Script answers with JSON
+  return fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+    .then(function (r) { return r.json(); })
+    .then(function (x) { if (!x || !x.ok) throw new Error((x && x.error) || 'error'); return x.result; });
+}
+/* Server errors look like "[CODE] text". The code is shown in the chosen language. */
+function errCode(m) { var x = /\[([A-Z]+)\]/.exec(m || ''); return x ? x[1] : ''; }
+function errText(e) {
+  var m = (e && e.message) || String(e || ''), c = errCode(m);
+  if (c === 'SETUP' && /API_URL/.test(m)) return t('noApi');
+  if (c && W['e_' + c]) return t('e_' + c);
+  var x = /\[[A-Z]+\]\s*(.*)$/.exec(m);
+  return x ? x[1] : (m || t('noNet'));
+}
+function readerErr(code) {
+  if (!code) return '';
+  var c = String(code).split(' ')[0];
+  return W['r_' + c] ? t('r_' + c) + (c === 'HTTP' ? ' ' + String(code).split(' ')[1] : '') : esc(code);
+}
+function busy(txt) { show('<div class="box"><div class="huge pulse">⏳</div>' + esc(txt || t('wait')) + '</div>', 'busy'); }
+function fail(e, back) {
+  show('<div class="msg err">' + esc(errText(e)) + '</div><button class="btn grey" data-t="back" onclick="' + (back || 'home()') + '">' + t('back') + '</button>', 'error');
+}
+function note(txt, cls) {
+  var old = $('amsg'); if (old) old.remove();
+  var d = document.createElement('div'); d.id = 'amsg'; d.className = 'msg ' + (cls || 'err'); d.innerHTML = txt;
+  var app = $('app'); app.insertBefore(d, app.firstChild); window.scrollTo(0, 0);
+}
+function alertMsg(txt) { note(esc(txt), 'err'); }
+function now() { return Date.now() + S.off; }           // server clock
+function dur(m) { m = Math.max(0, m || 0); return m < 60 ? m + ' ' + t('min') : Math.floor(m / 60) + ' ' + t('hr') + ' ' + (m % 60) + ' ' + t('min'); }
+function p2(n) { return (n < 10 ? '0' : '') + n; }
+function hhmm(ms) { if (!ms) return '—'; var d = new Date(ms); return p2(d.getHours()) + ':' + p2(d.getMinutes()); }
+function fmt(ms) { if (!ms) return '—'; var d = new Date(ms); return d.getDate() + '/' + (d.getMonth() + 1) + ' · ' + hhmm(ms); }
+function norm(p) { return String(p || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function ymd(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+function catTag(c) { var k = CATS[c] ? c : 'MEDIUM'; return '<b class="tag ' + CATS[k][1] + '">' + svgIcon(k, 13) + ' ' + catName(k) + '</b>'; }
+function buzz(pattern) { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }
+/* Speaks a short instruction in the chosen language, so staff do not have to read the screen. */
+function say(txt) {
+  try {
+    if (!S.voice || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(txt);
+    u.lang = SPEECH[S.lang] || 'mr-IN'; u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+/* Review notes from the server use MEDIUM / HEAVY; show them in the chosen language. */
+function localNote(s) { return esc(s).replace(/\bMEDIUM\b/g, t('c_MEDIUM')).replace(/\bHEAVY\b/g, t('c_HEAVY')); }
+
+/* ================= language ================= */
+function langSelect() {
+  return '<select class="langsel" data-t="lang" onchange="setLang(this.value)">' + LANGS.map(function (l) {
+    return '<option value="' + l + '"' + (S.lang === l ? ' selected' : '') + '>' + LANG_NAME[l] + '</option>';
+  }).join('') + '</select>';
+}
+function setLang(l) {
+  S.lang = l;
+  try { localStorage.setItem('gp_lang', l); } catch (e) {}
+  document.documentElement.lang = l;
+  if (S.user) home(); else loginScreen();
+}
+
+/* ================= data kept on the phone ================= */
+function findOpen(plate) { for (var i = 0; i < S.open.length; i++) if (S.open[i].plate === plate) return S.open[i]; return null; }
+function dropOpen(plate) { S.open = S.open.filter(function (o) { return o.plate !== plate; }); }
+/* Same fee rule as the server (Rates tab): fee for the minutes parked in one parking day. */
+function feeLocal(minutes, cat, type) {
+  if (type === 'TENANT' || type === 'PASS') return 0;
+  if (minutes <= 0) return 0;
+  var r = S.D.rates, list = r[cat] && r[cat].length ? r[cat] : (r.MEDIUM || []);
+  if (!list.length) return 0;
+  for (var i = 0; i < list.length; i++) if (list[i].upto === null || minutes <= list[i].upto) return list[i].fee;
+  return list[list.length - 1].fee;
+}
+function feeNow(o, at) { return (o.banked || 0) + feeLocal(runMin(o, at), o.cat, o.type); }
+/* A vehicle that stayed overnight and has not been checked today. */
+function isStale(o) { return S.dayStart && o.entry < S.dayStart && !(o.seen && o.seen >= S.dayStart); }
+/* Minutes parked (in the current parking day) up to the moment "at" (server clock). */
+function runMin(o, at) {
+  var m = o.pmin || 0;
+  if (o.status === 'PARKED' && o.pstart) m += Math.max(0, Math.ceil(((at || now()) - o.pstart) / 60000));
+  return m;
+}
+function applySync(sync) {
+  if (!sync) return;
+  S.off = sync.now - Date.now();
+  if (S.q.length > 0) return;          // do not overwrite changes that are still being saved
+  S.open = sync.open; S.syncAt = Date.now();
+  if (typeof sync.today === 'number') S.today = sync.today;
+  if (sync.dayStart) S.dayStart = sync.dayStart;
+  if (typeof sync.reviewCount === 'number') S.reviewCount = sync.reviewCount;
+  if (sync.exempt) { var ex = {}; sync.exempt.forEach(function (e) { ex[e[0]] = { type: e[1], note: e[2] }; }); S.D.exempt = ex; }
+  if (S.screen === 'home') { var q = $('hq'); if (q && !q.value && !REC && document.activeElement !== q) home(); else homeCounts(); }
+}
+function syncNow() { call('apiSync', S.pin).then(applySync).catch(function () {}); }
+
+/* ================= saving in the background ================= */
+/* Every action is put in a queue that is also stored on the phone. Actions are sent one at a
+   time, in order. If the app is closed before one is saved, it is sent when the app opens again. */
+function qStore() {
+  try { localStorage.setItem('gp_q', JSON.stringify(S.q.map(function (j) { return { label: j.label, fn: j.fn, args: j.args, replay: true }; }))); } catch (e) {}
+}
+function qLoad() {
+  try { S.q = JSON.parse(localStorage.getItem('gp_q') || '[]') || []; } catch (e) { S.q = []; }
+  S.q.forEach(function (j) { j.tries = 0; });
+}
+function slipStore() { try { localStorage.setItem('gp_slips', JSON.stringify(S.slips)); } catch (e) {} }
+function badge() {
+  var b = $('sync');
+  if (!S.user) { b.style.display = 'none'; return; }
+  b.style.display = 'block';
+  if (S.fails.length) { b.textContent = t('badgeFail'); b.style.background = '#c0392b'; b.className = ''; }
+  else if (S.q.length > 0) { b.textContent = '⏳ ' + S.q.length; b.style.background = '#d9780a'; b.className = 'pulse'; }
+  else { b.textContent = '✓'; b.style.background = '#1c8a4a'; b.className = ''; setTimeout(function () { if (!S.q.length && !S.fails.length) b.style.display = 'none'; }, 1500); }
+}
+function bg(label, fn, args, onOk) {
+  S.q.push({ label: label, fn: fn, args: args, onOk: onOk, tries: 0 });
+  qStore(); badge(); pump();
+}
+function pump() {
+  if (S.qBusy || !S.q.length) return;
+  S.qBusy = true;
+  var j = S.q[0];
+  j.tries++;
+  var slow = new Promise(function (res, rej) { setTimeout(function () { rej(new Error(t('netSlow'))); }, 30000); });
+  var next = function () { S.q.shift(); qStore(); S.qBusy = false; badge(); pump(); };
+  Promise.race([call.apply(null, [j.fn, S.pin].concat(j.args)), slow]).then(function (r) {
+    S.q.shift(); qStore(); S.qBusy = false;
+    if (r && r.sync) applySync(r.sync);
+    badge();
+    if (j.onOk) j.onOk(r);
+    pump();
+  }).catch(function (e) {
+    var m = (e && e.message) || '', code = errCode(m);
+    // On a second try (or after the app was reopened) "already done" means the first try did reach the server.
+    if ((j.tries > 1 || j.replay) && (code === 'ALREADY' || code === 'NOTPARKED' || code === 'NOTINSIDE')) { next(); syncNow(); return; }
+    if (!code && j.tries < 3) { S.qBusy = false; setTimeout(pump, 2500); return; }      // no code = network problem: try again
+    S.fails.push({ label: j.label, msg: errText(e), fn: j.fn, args: j.args, onOk: j.onOk });
+    next(); failScreen(); syncNow();
+  });
+}
+function waitIdle() {
+  return new Promise(function (res) {
+    var n = 0;
+    (function chk() { if (S.q.length === 0 || n++ > 50) res(); else setTimeout(chk, 300); })();
+  });
+}
+function failScreen() {
+  var f = S.fails[0];
+  if (!f) return home();
+  buzz([300, 120, 300, 120, 300]); say(t('sNotSaved'));
+  show('<div class="fullred"><div class="huge">' + t('notSaved') + '</div><b>' + esc(f.label) + '</b><br><br>' + esc(f.msg) + '</div>' +
+    '<button class="btn" data-t="retry" onclick="failRetry()">' + t('retry') + '</button>' +
+    '<button class="btn grey slim" data-t="failok" onclick="failDrop()">' + t('failOk') + '</button>', 'fail');
+}
+function failRetry() { var f = S.fails.shift(); badge(); home(); if (f) bg(f.label, f.fn, f.args, f.onOk); }
+function failDrop() { S.fails.shift(); badge(); if (S.fails.length) failScreen(); else home(); }
+function correction(html) {
+  buzz([300, 120, 300]);
+  show('<div class="fullred" style="background:#d9780a"><div class="huge">' + t('correction') + '</div>' + html + '</div>' +
+    '<button class="btn" onclick="home()">' + t('ok') + '</button>', 'fail');
+}
+
+/* ================= login + first load ================= */
+function loginScreen(msg) {
+  S.user = null; badge();
+  show('<div class="nav"><h1 style="margin:0">' + t('appName') + '</h1><span class="navr">' + langSelect() + '</span></div>' + (msg ? '<div class="msg err">' + esc(msg) + '</div>' : '') +
+    '<div class="box">' + t('pin') + '<br><br><input id="pin" type="password" inputmode="numeric" autocomplete="off"></div>' +
+    '<button class="btn" data-t="login" onclick="boot($(\'pin\').value.trim())">' + t('login') + '</button>', 'login');
+}
+function boot(pin) {
+  show('<div class="box"><div class="huge pulse">🚛</div>' + t('starting') + '</div>', 'login');
+  call('apiBoot', pin).then(function (b) {
+    S.pin = pin; S.user = b.user;
+    var kn = {};
+    b.known.forEach(function (k) { kn[k[0]] = k[1]; });
+    S.D = { deposits: b.deposits, rates: b.rates, exempt: {}, known: kn };
+    S.editMin = b.editMinutes || 10;
+    S.appLink = b.appLink || '';
+    S.fails = []; S.vinfo = {}; S.q = [];
+    applySync(b.sync);
+    qLoad();                                   // actions that were not saved before the app was closed
+    try { S.slips = JSON.parse(localStorage.getItem('gp_slips') || '[]') || []; } catch (e) { S.slips = []; }
+    try { localStorage.setItem('gp_pin', pin); } catch (e) {}
+    home();
+    if (S.q.length) { note(esc(t('pendingResent', S.q.length)), 'info'); badge(); pump(); }
+    topUpSlips();
+  }).catch(function (e) { loginScreen(errText(e)); });
+}
+/* Keeps about 10 unused slip numbers on the phone, so one can be shown before the entry is saved. */
+function topUpSlips() {
+  if (S.slips.length >= 6) return Promise.resolve();
+  return call('apiSlips', S.pin, 10 - S.slips.length).then(function (list) { S.slips = S.slips.concat(list); slipStore(); }).catch(function () {});
+}
+function logout() {
+  try { localStorage.removeItem('gp_pin'); } catch (e) {}
+  S.pin = ''; loginScreen();
+}
+function toggleVoice() {
+  S.voice = !S.voice;
+  try { localStorage.setItem('gp_voice', S.voice ? '1' : '0'); } catch (e) {}
+  home(); if (S.voice) say(t('voiceOn'));
+}
+
+/* ================= HOME ================= */
+function home() {
+  var stale = S.open.filter(isStale).length;
+  var h = '<div class="nav"><span>' + esc(S.user.name) + '</span><span class="navr">' + langSelect() +
+    '<button class="iconbtn" data-t="voice" onclick="toggleVoice()">' + (S.voice ? '🔊' : '🔇') + '</button>' +
+    '<button class="iconbtn out" data-t="logout" onclick="logout()">' + POWER + ' ' + t('logout') + '</button></span></div>';
+  h += '<div class="tiles"><div class="tile" data-t="t-today" onclick="todayTile()"><div class="n" id="cTd" style="color:#1c8a4a">0</div><div class="l">' + t('tToday') + '</div></div>' +
+    '<div class="tile" data-t="t-in" onclick="insideList(\'\')"><div class="n" id="cIn">0</div><div class="l">' + t('tIn') + '</div></div>' +
+    '<div class="tile" data-t="t-pk" onclick="insideList(\'PARKED\')"><div class="n" id="cPk" style="color:#d9780a">0</div><div class="l">' + t('tPk') + '</div></div></div>';
+  if (stale) h += '<button class="btn orange slim" data-t="stale" onclick="staleList()">' + t('stale', stale) + '</button>';
+  h += '<label class="btn dark" data-t="photo" style="padding:24px 12px"><span class="ico">📷</span>' + t('photo') +
+    '<input type="file" accept="image/*" capture="environment" style="display:none" onchange="onPhoto(this)"></label>';
+  h += '<div class="box"><div class="row2"><div style="flex:4"><input id="hq" class="up" type="text" inputmode="' + S.kb + '" autocomplete="off" autocapitalize="characters" ' +
+    'placeholder="' + (S.kb === 'numeric' ? '1234' : 'MH04AB1234') + '" oninput="plateTyped(this);homeSuggest()"></div>' +
+    '<button class="btn dark mic" data-t="mic" onclick="mic(\'hq\',\'plate\',this)">🎤</button>' +
+    '<button class="btn grey mic" style="font-size:18px" onclick="toggleKb()">' + (S.kb === 'numeric' ? 'ABC' : '123') + '</button></div>' +
+    '<div id="hsug"></div><button class="btn slim" data-t="show" onclick="homeGo()">' + t('find') + '</button></div>';
+  if (can('mgmt')) h += '<button class="btn ' + (S.reviewCount ? 'red' : 'plain') + ' slim" data-t="review" onclick="reviewScreen()">' + t('review') + (S.reviewCount ? ' — ' + S.reviewCount : '') + '</button>';
+  if (can('records')) h += '<button class="btn plain slim" data-t="records" onclick="logsHome()">' + t('records') + '</button>';
+  if (can('mgmt')) h += '<button class="btn plain slim" data-t="exempt" onclick="exemptScreen()">' + t('exemptHome') + '</button>';
+  show(h, 'home');
+  homeCounts();
+  if (Date.now() - S.syncAt > 30000) syncNow();
+}
+function homeCounts() {
+  var a = $('cIn'), b = $('cPk'), c = $('cTd');
+  if (!a || !b) return;
+  if (c) c.textContent = S.today;
+  a.textContent = S.open.length;
+  b.textContent = S.open.filter(function (o) { return o.status === 'PARKED'; }).length;
+}
+function todayTile() { if (can('records')) period('today'); }
+function toggleKb() { var v = $('hq').value; S.kb = S.kb === 'numeric' ? 'text' : 'numeric'; home(); $('hq').value = v; $('hq').focus(); homeSuggest(); }
+/* Vehicles matching what was typed: those inside first, then those seen before. */
+function candidates(q) {
+  var out = [], seen = {};
+  if (q.length < 3) return out;
+  S.open.forEach(function (o) { if (o.plate.indexOf(q) >= 0) { out.push(o.plate); seen[o.plate] = 1; } });
+  Object.keys(S.D.known).forEach(function (p) { if (!seen[p] && p.indexOf(q) >= 0) out.push(p); });
+  return out;
+}
+function plateBtn(p) {
+  var o = findOpen(p), c = o ? o.cat : S.D.known[p];
+  var st = o ? (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inTag') + '</b>') : '<b class="tag x">' + t('notInTag') + '</b>';
+  return '<button class="veh" onclick="vehicleCard(\'' + p + '\')">' + esc(p) + '<span>' + (c ? catTag(c) + ' ' : '') + st +
+    (o ? '<br>' + dur(Math.round((now() - o.entry) / 60000)) : '') + '</span></button>';
+}
+function homeSuggest() {
+  var q = norm($('hq').value), box = $('hsug');
+  if (box) box.innerHTML = candidates(q).slice(0, 8).map(plateBtn).join('');
+}
+function homeGo() {
+  var q = norm($('hq').value), c = candidates(q);
+  if (q.length >= 6) return vehicleCard(q);
+  if (c.length === 1) return vehicleCard(c[0]);
+  alertMsg(c.length ? t('pickList') : t('fullNo'));
+}
+function insideList(only) {
+  var list = S.open.filter(function (o) { return !only || o.status === only; });
+  list.sort(function (a, b) { return a.entry - b.entry; });
+  show('<h1>' + (only ? t('parkedTitle') : t('insideTitle')) + ' — ' + list.length + '</h1>' +
+    '<input id="iq" type="text" inputmode="numeric" placeholder="1234" oninput="insideFilter(\'' + only + '\')">' +
+    '<div id="ilist">' + (list.length ? list.map(function (o) { return plateBtn(o.plate); }).join('') : '<div class="msg info">' + t('none') + '</div>') + '</div>' +
+    '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'inside');
+  syncNow();
+}
+function insideFilter(only) {
+  var q = norm($('iq').value);
+  var list = S.open.filter(function (o) { return (!only || o.status === only) && o.plate.indexOf(q) >= 0; });
+  $('ilist').innerHTML = list.map(function (o) { return plateBtn(o.plate); }).join('');
+}
+/* Morning check: vehicles that stayed overnight. Staff look for each one in the complex. */
+function staleList() {
+  var list = S.open.filter(isStale);
+  show('<h1>' + t('staleTitle') + ' — ' + list.length + '</h1><div class="msg info">' + t('staleHelp') + '</div>' +
+    (list.length ? list.map(function (o) {
+      return '<div class="box" style="text-align:left"><span class="plate" style="font-size:24px">' + esc(o.plate) + '</span> ' + catTag(o.cat) +
+        (o.status === 'PARKED' ? ' <b class="tag">🅿️</b>' : '') + '<br><small>⬇️ ' + fmt(o.entry) + '</small>' +
+        '<div class="row2"><button class="btn green slim" data-t="seen" onclick="markSeen(\'' + o.plate + '\')">' + t('seen') + '</button>' +
+        '<button class="btn red slim" data-t="gone" onclick="markGone(\'' + o.plate + '\')">' + t('gone') + '</button></div></div>';
+    }).join('') : '<div class="msg info">' + t('allChecked') + '</div>') +
+    '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'stale');
+}
+function markSeen(plate) {
+  var o = findOpen(plate);
+  if (o) o.seen = now();
+  S.mut++;
+  bg('✔ ' + plate, 'apiSeen', [plate]);
+  staleList();
+}
+function markGone(plate) {
+  S.mut++; dropOpen(plate); delete S.vinfo[plate];
+  bg('✖ ' + plate, 'apiCloseLeft', [plate, now()]);
+  staleList();
+}
+
+/* ================= speak instead of typing =================
+   One tap on 🎤: recording starts, stops by itself about one second after the person stops
+   talking (or tap ⏹), and the words are written into the box. The recording is trimmed to
+   the speech and sent at 16 kHz, so a plate is about 60-100 KB.
+   Google's own frame (the old Apps Script link) never allows the microphone; there the
+   button sends staff to the new link instead. */
+var REC = null;
+function micAllowed() {
+  try {
+    var p = document.permissionsPolicy || document.featurePolicy;
+    if (p && p.allowsFeature) return p.allowsFeature('microphone');
+  } catch (e) {}
+  return true;
+}
+function mic(targetId, mode, btn) {
+  if (REC) { stopMic(false); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !micAllowed() || inAppsScript()) return newLinkScreen();
+  micOverlay('wait');
+  navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then(function (stream) {
+    var AC = window.AudioContext || window.webkitAudioContext, ctx = new AC();
+    var src = ctx.createMediaStreamSource(stream), proc = ctx.createScriptProcessor(2048, 1, 1);
+    var r = { stream: stream, ctx: ctx, proc: proc, src: src, chunks: [], loud: [], target: targetId, mode: mode, btn: btn, screen: S.screen,
+      started: Date.now(), floor: 0, n: 0, firstSpeech: -1, lastSpeech: -1 };
+    var maxMs = mode === 'plate' ? 10000 : 20000;
+    proc.onaudioprocess = function (e) {
+      if (REC !== r) return;
+      var d = new Float32Array(e.inputBuffer.getChannelData(0)), sum = 0;
+      for (var i = 0; i < d.length; i++) sum += d[i] * d[i];
+      var rms = Math.sqrt(sum / d.length), ms = Date.now() - r.started;
+      if (ms < 300) { r.floor = Math.max(r.floor, rms); }                 // background noise level
+      var speech = rms > Math.max(0.015, r.floor * 2.5);
+      r.chunks.push(d); r.loud.push(speech);
+      if (speech) { if (r.firstSpeech < 0) r.firstSpeech = r.chunks.length - 1; r.lastSpeech = r.chunks.length - 1; }
+      micLevel(Math.min(1, rms * 8));
+      var quietMs = r.lastSpeech >= 0 ? (r.chunks.length - 1 - r.lastSpeech) * d.length / ctx.sampleRate * 1000 : 0;
+      if ((r.lastSpeech >= 0 && quietMs > 1100) || ms > maxMs || (r.firstSpeech < 0 && ms > 6000)) stopMic(false);
+    };
+    src.connect(proc); proc.connect(ctx.destination);
+    REC = r;
+    micOverlay('listen');
+    buzz(40);
+  }).catch(function (e) {
+    micOverlay('');
+    var n = e && e.name;
+    if (n === 'NotFoundError' || n === 'OverconstrainedError') return alertMsg(t('micNone'));
+    if (n === 'NotReadableError' || n === 'AbortError') return alertMsg(t('micBusy'));
+    permHelp();
+  });
+}
+/* Full-screen "speak now" panel, so nobody has to read anything to know the app is listening. */
+function micOverlay(state) {
+  var o = $('micov');
+  if (!state) { if (o) o.remove(); return; }
+  if (!o) { o = document.createElement('div'); o.id = 'micov'; document.body.appendChild(o); }
+  if (state === 'listen') {
+    o.innerHTML = '<div class="micbig pulse">🎤</div><div class="miclbl">' + t('speakNow') + '</div><div class="micbar"><i id="miclv"></i></div>' +
+      '<button class="btn red" data-t="micstop" onclick="stopMic(false)">' + t('micStop') + '</button>' +
+      '<button class="btn grey slim" data-t="miccancel" onclick="stopMic(true)">' + t('cancel') + '</button>';
+  } else {
+    o.innerHTML = '<div class="micbig pulse">' + (state === 'wait' ? '🎤' : '⏳') + '</div><div class="miclbl">' + (state === 'wait' ? '' : t('writing')) + '</div>';
+  }
+}
+function micLevel(v) { var l = $('miclv'); if (l) l.style.width = Math.round(v * 100) + '%'; }
+/* Old link (inside Google's frame): send staff to the new page where the microphone works. */
+function newLinkScreen() {
+  var link = S.appLink;
+  show('<h1>' + t('newLinkTitle') + '</h1><div class="msg info">' + (link ? t('newLinkHelp') : t('askOwner')) + '</div>' +
+    (link ? '<a class="btn green" data-t="newlink" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('openNewLink') + '</a>' : '') +
+    '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'newlink');
+}
+/* Step-by-step guide when the microphone was refused. */
+function permHelp() {
+  show('<h1>' + t('permTitle') + '</h1><div class="box" style="text-align:left"><b>' + t('permChrome') + '</b><ol>' +
+    '<li>' + t('permChrome1') + '</li><li>' + t('permChrome2') + '</li><li>' + t('permChrome3') + '</li></ol>' +
+    '<b>' + t('permPhone') + '</b><ol><li>' + t('permPhone1') + '</li></ol></div>' +
+    '<button class="btn dark slim" data-t="permretry" onclick="home()">' + t('permRetry') + '</button>', 'perm');
+}
+function stopMic(discard) {
+  var r = REC;
+  if (!r) { if (discard) micOverlay(''); return; }
+  REC = null;
+  try { r.proc.disconnect(); r.src.disconnect(); r.stream.getTracks().forEach(function (x) { x.stop(); }); } catch (e) {}
+  var rate = r.ctx.sampleRate;
+  try { r.ctx.close(); } catch (e) {}
+  if (discard) { micOverlay(''); return; }
+  if (r.firstSpeech < 0) { micOverlay(''); buzz([200, 100, 200]); say(t('heardNothing')); alertMsg(t('heardNothing')); return; }
+  // keep only the speech, with a little margin
+  var pad = Math.ceil(0.35 * rate / 2048), a = Math.max(0, r.firstSpeech - pad), b = Math.min(r.chunks.length, r.lastSpeech + pad + 1);
+  var b64 = wavBase64(r.chunks.slice(a, b), rate);
+  micOverlay('busy'); buzz(40);
+  call('apiDictate', S.pin, b64, 'audio/wav', r.mode).then(function (x) {
+    micOverlay('');
+    if (S.screen !== r.screen) return;
+    var el = $(r.target);
+    if (!el) return;
+    var txt = (x && x.text) || '';
+    if (r.mode === 'plate') txt = spokenPlate(txt);
+    if (!txt) { buzz([200, 100, 200]); say(t('heardNothing')); alertMsg(((x && x.error) ? readerErr(x.error) + '. ' : '') + t('heardNothing')); return; }
+    el.value = r.mode === 'plate' ? txt : (el.value ? el.value + ' ' : '') + txt;
+    buzz(60);
+    if (r.target === 'hq') return dictatedHome(txt);
+    if (el.oninput) el.oninput();
+  }).catch(function () { micOverlay(''); alertMsg(t('micNet')); });
+}
+/* On the main screen a spoken plate opens the vehicle straight away when it is clear which one. */
+function dictatedHome(txt) {
+  var full = plateFrom(txt), c = candidates(norm(txt));
+  if (full && full.length >= 6) return vehicleCard(full);
+  if (c.length === 1) return vehicleCard(c[0]);
+  homeSuggest();
+}
+function wavBase64(chunks, rate) {
+  var n = 0, i, j;
+  chunks.forEach(function (c) { n += c.length; });
+  var all = new Float32Array(n), off = 0;
+  chunks.forEach(function (c) { all.set(c, off); off += c.length; });
+  var ratio = Math.max(1, rate / 16000), outN = Math.floor(n / ratio), out = new Int16Array(outN);
+  for (i = 0; i < outN; i++) {                       // average each group of samples down to 16 kHz
+    var a = Math.floor(i * ratio), b = Math.min(n, Math.floor((i + 1) * ratio)), sum = 0;
+    for (j = a; j < b; j++) sum += all[j];
+    var v = b > a ? sum / (b - a) : 0;
+    out[i] = Math.max(-32768, Math.min(32767, Math.round(v * 32767)));
+  }
+  var buf = new ArrayBuffer(44 + outN * 2), dv = new DataView(buf);
+  var w = function (o, s) { for (var k = 0; k < s.length; k++) dv.setUint8(o + k, s.charCodeAt(k)); };
+  w(0, 'RIFF'); dv.setUint32(4, 36 + outN * 2, true); w(8, 'WAVE'); w(12, 'fmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+  dv.setUint32(24, 16000, true); dv.setUint32(28, 32000, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); w(36, 'data'); dv.setUint32(40, outN * 2, true);
+  for (i = 0; i < outN; i++) dv.setInt16(44 + i * 2, out[i], true);
+  var bytes = new Uint8Array(buf), bin = '';
+  for (i = 0; i < bytes.length; i += 8192) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+  return btoa(bin);
+}
+
+/* Spoken plate from keyboard voice typing -> MH04AB1234.
+   Handles Marathi / Hindi letter names ("एम एच"), number words ("शून्य चार", "zero four"),
+   Devanagari digits and "double". Runs only when the box contains such words. */
+var SPOKEN = {
+  'ए': 'A', 'बी': 'B', 'सी': 'C', 'डी': 'D', 'ई': 'E', 'इ': 'E', 'एफ': 'F', 'जी': 'G', 'एच': 'H', 'आय': 'I', 'आई': 'I', 'जे': 'J', 'के': 'K', 'एल': 'L',
+  'एम': 'M', 'एन': 'N', 'ओ': 'O', 'पी': 'P', 'क्यू': 'Q', 'आर': 'R', 'एस': 'S', 'टी': 'T', 'यू': 'U', 'व्ही': 'V', 'वी': 'V', 'डब्ल्यू': 'W', 'डबल्यू': 'W',
+  'एक्स': 'X', 'वाय': 'Y', 'झेड': 'Z', 'जेड': 'Z', 'ज़ेड': 'Z',
+  'शून्य': '0', 'झिरो': '0', 'जीरो': '0', 'ज़ीरो': '0', 'एक': '1', 'दोन': '2', 'दो': '2', 'तीन': '3', 'चार': '4', 'पाच': '5', 'पांच': '5', 'पाँच': '5',
+  'सहा': '6', 'छह': '6', 'छः': '6', 'छे': '6', 'सात': '7', 'आठ': '8', 'नऊ': '9', 'नौ': '9',
+  'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4', 'for': '4', 'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'
+};
+var SPOKEN_KEYS = Object.keys(SPOKEN).sort(function (a, b) { return b.length - a.length; });
+function spokenPlate(text) {
+  var out = '', dbl = false;
+  String(text).toLowerCase().replace(/[०-९]/g, function (c) { return String(c.charCodeAt(0) - 0x966); })
+    .split(/[\s,.\-]+/).forEach(function (tok) {
+      if (!tok) return;
+      if (tok === 'double' || tok === 'डबल') { dbl = true; return; }
+      var piece = '';
+      if (SPOKEN[tok]) piece = SPOKEN[tok];
+      else if (/^[a-z0-9]+$/.test(tok)) piece = tok.toUpperCase();
+      else {                                           // Devanagari words written together, e.g. "एमएच"
+        var i = 0;
+        while (i < tok.length) {
+          var hit = '';
+          for (var k = 0; k < SPOKEN_KEYS.length; k++) if (tok.substr(i, SPOKEN_KEYS[k].length) === SPOKEN_KEYS[k]) { hit = SPOKEN_KEYS[k]; break; }
+          if (hit) { piece += SPOKEN[hit]; i += hit.length; } else i++;
+        }
+      }
+      if (dbl && piece) { piece = piece.charAt(0) + piece; dbl = false; }
+      out += piece;
+    });
+  return out;
+}
+function plateTyped(el) {
+  var v = el.value;
+  if (/[\u0900-\u097F]/.test(v) || /\b(zero|one|two|three|four|five|six|seven|eight|nine|double)\b/i.test(v)) el.value = spokenPlate(v);
+}
+
+/* ================= photo + cloud plate reader ================= */
+function onPhoto(input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var img = new Image();
+  img.onload = function () {
+    var cv = $('cv'), k = Math.min(1, 1600 / Math.max(img.width, img.height));
+    cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    URL.revokeObjectURL(img.src);
+    // small copy (about 30-60 KB) that is sent to the reader
+    var k2 = Math.min(1, 800 / Math.max(cv.width, cv.height)), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(cv.width * k2)); c.height = Math.max(1, Math.round(cv.height * k2));
+    c.getContext('2d').drawImage(cv, 0, 0, c.width, c.height);
+    S.thumb = c.toDataURL('image/jpeg', 0.55); S.thumbPlate = '';
+    show('<div class="box"><img class="thumb" src="' + S.thumb + '"><div class="huge pulse">🔍</div>' + t('reading') + '</div>' +
+      '<button class="btn grey slim" onclick="home()">' + t('cancel') + '</button>', 'reading');
+    var timeout = new Promise(function (res) { setTimeout(function () { res({ text: '', error: '', slow: true }); }, 25000); });
+    Promise.race([call('apiReadPlate', S.pin, S.thumb.split(',')[1]), timeout]).then(function (r) {
+      if (S.screen !== 'reading') return;                 // user cancelled
+      var p = plateFrom((r && r.text) || '');
+      if (p) { S.thumbPlate = p; vehicleCard(p); }
+      else { readFailed(r && r.slow ? t('tooLong') : readerErr(r && r.error)); }
+    }).catch(function () { if (S.screen === 'reading') readFailed(t('noNet')); });
+  };
+  img.onerror = function () { readFailed(''); };
+  img.src = URL.createObjectURL(f);
+}
+function readFailed(msg) {
+  buzz([200, 100, 200]); say(t('sReadFail'));
+  home(); alertMsg((msg ? msg + '. ' : '') + t('readFail'));
+  var q = $('hq'); if (q) q.focus();
+}
+
+var STATES = ['MH','GJ','RJ','DL','UP','MP','KA','TN','AP','TS','TG','KL','HR','PB','WB','BR','OD','OR','CG','JH','UK','UA','HP','JK','AS','GA','NL','DN','DD','CH','AR','MN','ML','MZ','SK','TR','PY','LA','AN','LD'];
+var D2L = { '0': 'O', '1': 'I', '2': 'Z', '5': 'S', '8': 'B', '6': 'G', '4': 'A', '7': 'T' };
+var L2D = { 'O': '0', 'Q': '0', 'D': '0', 'U': '0', 'I': '1', 'L': '1', 'Z': '2', 'S': '5', 'B': '8', 'G': '6', 'T': '7', 'A': '4' };
+var PATS = ['LLDDLLDDDD', 'LLDDLDDDD', 'LLDDLLLDDDD', 'LLDLLDDDD', 'LLDDDDDD'];
+function coerce(w, pat) {
+  var out = '';
+  for (var i = 0; i < pat.length; i++) {
+    var c = w.charAt(i);
+    if (pat.charAt(i) === 'L') {
+      if (/[A-Z]/.test(c)) out += c; else if (D2L[c]) out += D2L[c]; else return null;
+    } else {
+      if (/[0-9]/.test(c)) out += c; else if (L2D[c]) out += L2D[c]; else return null;
+    }
+  }
+  return out;
+}
+function guessPlate(text) {
+  var s = norm(text), fallback = '';
+  for (var p = 0; p < PATS.length; p++) {
+    var pat = PATS[p];
+    for (var i = 0; i + pat.length <= s.length; i++) {
+      var c = coerce(s.substr(i, pat.length), pat);
+      if (!c) continue;
+      if (STATES.indexOf(c.substr(0, 2)) >= 0) return c;
+      if (!fallback) fallback = c;
+    }
+  }
+  return fallback;
+}
+/* Best plate from the reader's answer. Accepts unusual formats too (for example BH-series plates). */
+function plateFrom(text) {
+  var n = norm(text);
+  if (!n || n === 'NONE') return '';
+  if (/^[0-9]{2}BH[0-9]{4}[A-Z]{1,2}$/.test(n)) return n;
+  if (n.length >= 6 && n.length <= 11 && STATES.indexOf(n.substr(0, 2)) >= 0 && /[0-9]{3,4}$/.test(n)) return n;
+  var g = guessPlate(text);
+  if (g) return g;
+  return (n.length >= 6 && n.length <= 11 && /[0-9]/.test(n)) ? n : '';
+}
+
+/* ================= VEHICLE CARD ================= */
+/* Shown instantly from what the phone already knows; the server answer (history,
+   latest status) arrives a moment later and the card refreshes itself. */
+function vehicleCard(plate) {
+  plate = norm(plate);
+  renderCard(plate);
+  fetchVehicle(plate).then(function () { if (S.screen === 'card:' + plate) renderCard(plate, true); }).catch(function () {});
+}
+function fetchVehicle(plate) {
+  var mut = S.mut;
+  return call('apiVehicle', S.pin, plate).then(function (v) {
+    S.off = v.now - Date.now();
+    // only trust this answer if nothing was changed on this phone while it was on its way
+    var ok = S.q.length === 0 && S.mut === mut;
+    if (ok) { dropOpen(plate); if (v.open) S.open.push(v.open); }
+    S.vinfo[plate] = { v: v, at: Date.now(), ok: ok };
+    return v;
+  });
+}
+function isFresh(plate) { var i = S.vinfo[plate]; return !!(i && i.ok && S.q.length === 0 && Date.now() - i.at < 120000); }
+function renderCard(plate, keepScroll, notice) {
+  var y = window.scrollY, o = findOpen(plate), info = S.vinfo[plate], v = info && info.v, ex = S.D.exempt[plate], role = S.user.role, fix = '';
+  var h = (notice ? '<div class="msg info">' + notice + '</div>' : '') + '<div class="box"><div class="plate">' + esc(plate) + '</div>' +
+    (S.thumbPlate === plate && S.thumb ? '<img class="thumb" src="' + S.thumb + '"><br>' : '');
+  if (ex) h += '<b class="tag g">' + tk('ty_', ex.type) + '</b> ' + esc(ex.note) + '<br>';
+  if (o) {
+    var m = runMin(o), fee = feeNow(o), other = o.cat === 'HEAVY' ? 'MEDIUM' : 'HEAVY';
+    h += catTag(o.cat) + ' ' + (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inside') + '</b>') + '</div>';
+    if (isStale(o)) h += '<button class="btn green slim" data-t="seen" onclick="markSeenCard(\'' + plate + '\')">' + t('seenOvernight') + '</button>';
+    h += '<table><tr><td>' + t('rIn') + '</td><td>' + fmt(o.entry) + '</td></tr>' +
+      '<tr><td>' + t('rPs') + '</td><td>' + fmt(o.pstart) + '</td></tr>' +
+      '<tr><td>' + t('rPt') + (o.banked ? t('todayP') : '') + '</td><td><b>' + dur(m) + '</b></td></tr>' +
+      '<tr><td>' + t('rCt') + '</td><td><b>' + dur(Math.ceil((now() - o.entry) / 60000)) + '</b></td></tr>' +
+      '<tr><td>' + t('rSlip') + '</td><td>' + (o.slip === '' || o.slip == null ? '—' : esc(o.slip)) + ' · ₹' + o.deposit + '</td></tr>' +
+      (o.banked ? '<tr><td>' + t('rBank') + '</td><td>₹' + o.banked + '</td></tr>' : '') +
+      (v && v.open && v.open.serial != null ? '<tr><td>' + t('rSerial') + '</td><td>#' + esc(v.open.serial) + '</td></tr>' : '') +
+      '<tr><td>' + t('rFeeNow') + '</td><td><b>₹' + fee + '</b></td></tr></table>';
+    if (can('park')) {
+      if (o.status === 'PARKED') h += '<button class="btn grey" data-t="pend" onclick="act(\'pend\',\'' + plate + '\')"><span class="ico">🅿️✖</span>' + t('bPend') + '</button>';
+      else h += '<button class="btn orange" data-t="pstart" onclick="act(\'pstart\',\'' + plate + '\')"><span class="ico">🅿️</span>' + t('bPstart') + '</button>';
+    }
+    h += '<button class="btn red" data-t="exit" onclick="act(\'exit\',\'' + plate + '\')"><span class="ico">⬆️</span>' + t('bExit') + '</button>';
+    if (o.status === 'INSIDE' && !o.pstart && !o.pmin && now() - o.entry < S.editMin * 60000)
+      fix += '<button class="btn plain slim" data-t="cancel" onclick="act(\'cancel\',\'' + plate + '\')">' + t('cancelEntry') + '</button>';
+    if (can('park')) fix += '<button class="btn plain slim" data-t="setcat" onclick="act(\'setcat\',\'' + plate + '\',\'' + other + '\')">' + svgIcon(other, 18).replace(/#fff/g, '#1f5fbf') +
+      ' ' + t('setcat', catName(other)) + '</button>';
+    fix += '<button class="btn plain slim" data-t="left" onclick="act(\'left\',\'' + plate + '\')">' + t('left') + '</button>';
+  } else {
+    var lastCat = S.D.known[plate] || (v && v.lastCat) || '';
+    h += '<b class="tag x">' + t('notInTag') + '</b></div><h2>' + t('entryHead') + '</h2><div class="row2">' + ['MEDIUM', 'HEAVY'].map(function (c) {
+      return '<button class="btn ' + CATS[c][0] + (lastCat === c ? ' last' : '') + '" data-t="entry-' + c + '" onclick="act(\'entry\',\'' + plate + '\',\'' + c + '\')">' +
+        '<span class="ico">' + svgIcon(c, 46) + '</span>' + catName(c) + '<small>₹' + (ex ? 0 : S.D.deposits[c]) + '</small></button>';
+    }).join('') + '</div>';
+    if (v && v.undo) h += '<button class="btn plain slim" data-t="undo" onclick="act(\'undo\',\'' + plate + '\')">' + t('undoBtn', t('u_' + v.undo.what), hhmm(v.undo.at)) + '</button>';
+  }
+  if (can('mgmt') && !ex) fix += '<button class="btn plain slim" data-t="addex" onclick="exemptScreen(\'' + plate + '\')">' + t('addEx') + '</button>';
+  if (fix) h += '<button class="btn plain slim" data-t="fix" id="fixbtn">' + t('fix') + '</button><div id="fixbox" style="display:none">' + fix + '</div>';
+  if (role !== 'GUARD') {
+    h += '<h2>' + t('history') + '</h2>';
+    if (!v) h += '<div class="msg info pulse">...</div>';
+    else if (!v.history.length) h += '<div class="msg info">' + (v.visits ? t('noHist') : t('newVeh')) + '</div>';
+    else {
+      h += '<div class="msg info">' + t('visits', v.visits, v.totalFees) + '</div><table><tr><th>' + t('rIn') + '</th><th>🅿️</th><th>₹</th></tr>';
+      v.history.forEach(function (x) { h += '<tr><td>' + fmt(x.entry) + (x.note ? '<br><small>' + noteName(x.note) + '</small>' : '') + '</td><td>' + dur(x.pmin) + '</td><td>' + (x.fee == null ? '—' : '₹' + x.fee) + '</td></tr>'; });
+      h += '</table><button class="btn plain slim" onclick="logsRun({mode:\'all\',q:\'' + plate + '\'})">' + t('allVisits') + '</button>';
+    }
+  }
+  h += '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>';
+  show(h, 'card:' + plate);
+  if ($('fixbtn')) $('fixbtn').onclick = function () { $('fixbox').style.display = 'block'; this.style.display = 'none'; };
+  if (keepScroll) window.scrollTo(0, y);
+}
+function noteName(n) {
+  n = String(n || '');
+  if (n.indexOf('LEFT') === 0) return t('n_LEFT');
+  if (n.indexOf('ENTRY DELETED') === 0) return t('n_DELETED');
+  if (n.indexOf('NO SLIP') === 0) return t('n_NOSLIP');
+  return esc(n);
+}
+function markSeenCard(plate) { var o = findOpen(plate); if (o) o.seen = now(); S.mut++; bg('✔ ' + plate, 'apiSeen', [plate]); renderCard(plate); }
+
+/* ================= ACTIONS (screen changes at once, saving happens behind) ================= */
+function doneScreen(plate, body, speak, extra) {
+  buzz(60); if (speak) say(speak);
+  S.last = plate;
+  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + body + '</div>' + (extra || '') +
+    '<button class="btn dark" id="okbtn" data-t="ok"><span class="ico">✔</span>' + t('nextVeh') + '</button>' +
+    '<button class="btn plain slim" id="again" data-t="again">' + t('openAgain') + '</button>', 'done');
+  $('okbtn').onclick = home;
+  $('again').onclick = function () { vehicleCard(plate); };
+}
+function act(kind, plate, cat) {
+  var o = findOpen(plate), tm = now();
+  if ((kind === 'pstart' || kind === 'pend' || kind === 'setcat') && !can('park')) { alertMsg(t('noPerm')); return; }
+
+  if (kind === 'entry') {
+    if (o) { alertMsg(t('already')); return; }
+    if (S.D.exempt[plate]) return doEntry(plate, cat, '', tm);            // exempt: no payment step
+    if (S.slips.length) return payScreen(plate, cat);
+    busy(t('gettingSlip'));
+    return topUpSlips().then(function () {
+      if (S.slips.length) payScreen(plate, cat); else fail(new Error(t('noNetRetry')), "vehicleCard('" + plate + "')");
+    });
+  }
+  if (kind === 'undo') {
+    S.mut++; delete S.vinfo[plate];
+    busy(t('undoing'));
+    return waitIdle().then(function () { return call('apiUndo', S.pin, plate); }).then(function (r) {
+      applySync(r.sync);
+      var money = '', speak = t('sOk');
+      if (r.what === 'ENTRY DELETED') { if (r.deposit > 0) { money = '<div class="huge" style="color:#d9780a">' + t('takeAgain', r.deposit) + '</div>'; speak = t('sTakeAgain', r.deposit); } }
+      else if (r.refund > 0) { money = '<div class="huge" style="color:#c0392b">' + t('takeBack', r.refund) + '</div>'; speak = t('sTakeBack', r.refund); }
+      else if (r.refund < 0) { money = '<div class="huge" style="color:#1c8a4a">' + t('giveBack', -r.refund) + '</div>'; speak = t('sGiveBack', -r.refund); }
+      doneScreen(plate, '<div class="huge" style="color:#1f5fbf">↩️ ✔</div>' + t('backInside') + money, speak);
+    }).catch(function (e) { fail(e, "vehicleCard('" + plate + "')"); });
+  }
+  if (!o) { alertMsg(t('notInside')); return; }
+  S.mut++;
+  if (kind === 'pstart') {
+    o.status = 'PARKED'; o.pstart = tm; o.pend = null; o.seen = tm; delete S.vinfo[plate];
+    savePhoto(plate, 'PARKSTART');
+    doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#d9780a">🅿️ ✔</div>' + t('sPstart') + ' · ' + hhmm(tm), t('sPstart'));
+    return bg('🅿️ ' + plate, 'apiPark', [plate, 'start', tm]);
+  }
+  if (kind === 'pend') {
+    o.pmin = runMin(o, tm); o.status = 'INSIDE'; o.pend = tm; o.seen = tm; delete S.vinfo[plate];
+    savePhoto(plate, 'PARKEND');
+    doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#5d6b7a">🅿️✖ ✔</div>' + t('sPend') + ' · <b>' + dur(o.pmin) + '</b>', t('sPend'));
+    return bg('🅿️✖ ' + plate, 'apiPark', [plate, 'end', tm]);
+  }
+  if (kind === 'cancel') {
+    var dep = o.deposit;
+    dropOpen(plate); delete S.vinfo[plate]; S.today = Math.max(0, S.today - 1);
+    doneScreen(plate, '<div class="huge" style="color:#1c8a4a">🗑 ✔</div>' + t('deleted') +
+      (dep > 0 ? '<div class="huge" style="color:#1c8a4a">' + t('giveBack', dep) + '</div>' + t('takeSlipBack') : ''), dep > 0 ? t('sGiveBack', dep) : t('deleted'));
+    return bg('🗑 ' + plate, 'apiCancelEntry', [plate]);
+  }
+  if (kind === 'setcat') {
+    o.cat = cat; S.D.known[plate] = cat; delete S.vinfo[plate];
+    bg('⚙️ ' + plate, 'apiSetCat', [plate, cat]);
+    return renderCard(plate, false, t('sizeChanged', catName(cat)));
+  }
+  if (kind === 'left') {
+    var kept = o.deposit;
+    dropOpen(plate); delete S.vinfo[plate];
+    bg('✖ ' + plate, 'apiCloseLeft', [plate, tm]);
+    return renderCard(plate, false, t('leftDone', kept));
+  }
+  if (kind === 'exit') {
+    // Money is involved, so the numbers must come from the server's latest record.
+    if (isFresh(plate)) return exitPreview(plate);
+    busy(t('calc'));
+    waitIdle().then(function () { return fetchVehicle(plate); }).then(function (v) {
+      if (v.open) exitPreview(plate); else { renderCard(plate); alertMsg(t('alreadyOut')); }
+    }).catch(function (e) { fail(e, "vehicleCard('" + plate + "')"); });
+  }
+}
+/* Step before the entry is made: take the money first. */
+function payScreen(plate, cat) {
+  var dep = S.D.deposits[cat], slip = S.slips[0], tm = now();
+  S.pay = { plate: plate, cat: cat, slip: slip, t: tm };
+  buzz(60); say(t('sTake', dep));
+  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(cat) +
+    '<div class="huge" style="color:#d9780a">' + t('take', dep) + '</div></div>' +
+    '<div class="box">' + t('writeSlip') + '<table>' +
+    '<tr><td>' + t('slipNo') + '</td><td><b style="font-size:32px;letter-spacing:3px">' + slip + '</b></td></tr>' +
+    '<tr><td>' + t('depRow') + '</td><td><b style="font-size:26px">₹' + dep + '</b></td></tr>' +
+    '<tr><td>' + t('timeRow') + '</td><td><b style="font-size:26px">' + hhmm(tm) + '</b></td></tr></table></div>' +
+    '<button class="btn green" id="paid" data-t="paid"><span class="ico">✔ ₹</span>' + t('paid') + '</button>' +
+    '<button class="btn grey slim" id="notpaid" data-t="notpaid">' + t('notPaid') + '</button>', 'pay');
+  $('paid').onclick = function () { var p = S.pay; S.pay = null; if (!p) return; S.slips.shift(); slipStore(); doEntry(p.plate, p.cat, p.slip, p.t); };
+  $('notpaid').onclick = function () { S.pay = null; renderCard(plate); };
+}
+function doEntry(plate, cat, slip, tm) {
+  var ex = S.D.exempt[plate], type = ex ? ex.type : 'DEPOSIT', dep = type === 'DEPOSIT' ? S.D.deposits[cat] : 0;
+  S.mut++; S.today++;
+  S.open.push({ row: null, plate: plate, status: 'INSIDE', cat: cat, type: type, slip: slip, deposit: dep, entry: tm, entryBy: S.user.name, pstart: null, pend: null, pmin: 0, banked: 0, seen: null });
+  S.D.known[plate] = cat; delete S.vinfo[plate];
+  savePhoto(plate, 'ENTRY');
+  var park = can('park') ? '<button class="btn orange" data-t="pstart" onclick="act(\'pstart\',\'' + plate + '\')"><span class="ico">🅿️</span>' + t('bPstart') + '</button>' : '';
+  if (dep > 0) doneScreen(plate, catTag(cat) + '<div class="huge" style="color:#1c8a4a">⬇️ ✔</div>🧾 <b>' + slip + '</b> · ₹' + dep + ' · ' + hhmm(tm), t('sEntrySlip'), park);
+  else doneScreen(plate, catTag(cat) + '<div class="huge" style="color:#1c8a4a">⬇️ ✔</div><b>' + t('noMoney') + '</b> · ' + tk('ty_', type) + (ex && ex.note ? ' — ' + esc(ex.note) : ''), t('sNoMoney'), park);
+  bg('⬇️ ' + plate, 'apiEntry', [plate, cat, slip, tm], function (r) {
+    if (r.newSlips && r.newSlips.length) { S.slips = S.slips.concat(r.newSlips); slipStore(); }
+    if (r.deposit !== dep) correction('<div class="plate">' + esc(plate) + '</div>' + t('corrDep', r.deposit, dep));
+    else if (dep > 0 && String(r.slip) !== String(slip)) correction('<div class="plate">' + esc(plate) + '</div>' + t('corrSlip') + '<div class="huge">' + esc(r.slip) + '</div>');
+  });
+}
+
+/* ================= EXIT ================= */
+function timesTable(x) {
+  return '<table>' +
+    '<tr><td>' + t('rIn') + '</td><td>' + fmt(x.entry) + '</td></tr>' +
+    '<tr><td>' + t('rPs') + '</td><td>' + fmt(x.pstart) + '</td></tr>' +
+    '<tr><td>' + t('rPe') + '</td><td>' + (x.pstart ? fmt(x.pend) : '—') + '</td></tr>' +
+    '<tr><td>' + t('rOut') + '</td><td>' + fmt(x.exit) + '</td></tr>' +
+    '<tr><td>' + t('rPt') + (x.banked ? t('todayP') : '') + '</td><td><b>' + dur(x.minutes) + '</b></td></tr>' +
+    (x.banked ? '<tr><td>' + t('rBank') + '</td><td>₹' + x.banked + '</td></tr>' : '') +
+    '<tr><td>' + t('rCt') + '</td><td><b>' + dur(x.complexMinutes) + '</b></td></tr>' +
+    '</table>';
+}
+/* Returns [big coloured instruction, small explanation, sentence to speak]. */
+function money(x) {
+  if (x.noSlip && x.refund === 0 && x.deposit > 0) return ['<div class="huge" style="color:#d9780a">' + t('noSlipNoRef') + '</div>', t('noSlipSub', x.deposit), t('sNoSlip')];
+  if (x.refund > 0) return ['<div class="huge" style="color:#1c8a4a">' + t('giveBack', x.refund) + '</div>', t('takeSlipBack'), t('sGiveBack', x.refund)];
+  if (x.refund < 0 && x.deposit > 0) return ['<div class="huge" style="color:#c0392b">' + t('collectMore', -x.refund) + '</div>', t('collectMoreSub', x.fee, x.deposit), t('sCollectMore', -x.refund)];
+  if (x.refund < 0) return ['<div class="huge" style="color:#c0392b">' + t('take', -x.refund) + '</div>', t('collectSub'), t('sTake', -x.refund)];
+  if (x.deposit > 0) return ['<div class="huge" style="color:#d9780a">' + t('noRefund') + '</div>', t('noRefundSub', x.deposit), t('sNoRefund')];
+  return ['<div class="huge" style="color:#1c8a4a">' + t('nothing') + '</div>', tk('ty_', x.type), t('sNothing')];
+}
+function exitPreview(plate, noSlip, keepAt) {
+  var o = findOpen(plate);
+  if (!o) { renderCard(plate); return; }
+  var at = keepAt || now(), minutes = runMin(o, at), fee = feeNow(o, at);
+  if (noSlip && o.deposit > fee) fee = o.deposit;
+  var x = { plate: plate, type: o.type, cat: o.cat, slip: o.slip, deposit: o.deposit, minutes: minutes, fee: fee, refund: o.deposit - fee, banked: o.banked || 0, noSlip: !!noSlip,
+    entry: o.entry, pstart: o.pstart, pend: o.status === 'PARKED' ? at : o.pend, exit: at, complexMinutes: Math.max(0, Math.ceil((at - o.entry) / 60000)), at: at };
+  S.exit = x;
+  var m = money(x);
+  buzz(60); say(m[2]);
+  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(o.cat) + ' ' + (o.slip !== '' && o.slip != null ? '🧾 <b>' + esc(o.slip) + '</b> · ' : '') + t('fee') + ' ₹' + fee + m[0] + m[1] + '</div>' +
+    '<button class="btn red" id="exdone" data-t="exdone"><span class="ico">✔</span>' + t('vehLeft') + '</button>' +
+    (o.deposit > 0 ? '<button class="btn plain slim" id="noslip" data-t="noslip">' + (noSlip ? t('slipFound') : t('noSlipBtn')) + '</button>' : '') +
+    timesTable(x) + '<button class="btn grey slim" id="exback">' + t('wrongVeh') + '</button>', 'exit');
+  $('exdone').onclick = exitConfirm;
+  $('exback').onclick = function () { S.exit = null; renderCard(plate); };
+  if ($('noslip')) $('noslip').onclick = function () { exitPreview(plate, !noSlip, at); };
+}
+function exitConfirm() {
+  var x = S.exit;
+  if (!x) return home();
+  S.exit = null;
+  S.mut++;
+  dropOpen(x.plate); delete S.vinfo[x.plate];
+  savePhoto(x.plate, 'EXIT');
+  var m = money(x);
+  buzz(60);
+  S.last = x.plate;
+  show('<div class="box"><div class="plate">' + esc(x.plate) + '</div>' + catTag(x.cat) + '<div class="huge" style="color:#1c8a4a">⬆️ ✔</div>' + t('fee') + ' ₹' + x.fee + ' · ' + m[1] + '</div>' +
+    '<button class="btn dark" data-t="ok" onclick="home()"><span class="ico">✔</span>' + t('nextVeh') + '</button>' + timesTable(x) +
+    '<button class="btn plain slim" data-t="again" onclick="vehicleCard(\'' + x.plate + '\')">' + t('mistake') + '</button>', 'done');
+  bg('⬆️ ' + x.plate, 'apiExitConfirm', [x.plate, x.at, x.noSlip], function (r) {
+    if (r.fee !== x.fee) correction('<div class="plate">' + esc(x.plate) + '</div>' + t('corrFee', r.fee, x.fee));
+  });
+}
+
+/* ================= photo saved on this phone ================= */
+function savePhoto(plate, action) {
+  try {
+    var cv = $('cv');
+    if (!cv.width || S.thumbPlate !== plate) return;
+    var d = new Date();
+    var name = plate + '_' + action + '_' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()) + '.jpg';
+    cv.toBlob(function (b) {
+      if (!b) return;
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      cv.width = 0; cv.height = 0; S.thumb = ''; S.thumbPlate = '';
+    }, 'image/jpeg', 0.6);
+  } catch (e) {}
+}
+
+/* ================= REVIEW (management and superuser) ================= */
+function reviewScreen() {
+  busy();
+  call('apiReviewList', S.pin).then(reviewShow).catch(function (e) { fail(e); });
+}
+function reviewShow(r) {
+  S.reviewCount = r.pending.length;
+  var h = '<h1>' + t('review') + ' — ' + r.pending.length + '</h1>';
+  h += '<h2>' + t('revSizes') + '</h2><table><tr><th>' + t('staff') + '</th><th>' + t('c_MEDIUM') + '</th><th>' + t('c_HEAVY') + '</th></tr>' +
+    (r.sizes.length ? r.sizes.map(function (z) { return '<tr><td>' + esc(z.name) + '</td><td>' + z.MEDIUM + '</td><td>' + z.HEAVY + '</td></tr>'; }).join('') : '<tr><td colspan="3">—</td></tr>') + '</table>';
+  h += '<h2>' + t('revTodo') + '</h2>';
+  if (!r.pending.length) h += '<div class="msg info">' + t('nothingTodo') + '</div>';
+  r.pending.forEach(function (x) {
+    h += '<div class="box" style="text-align:left"><b>' + tk('a_', x.action) + '</b><br><span class="plate" style="font-size:20px">' + esc(x.plate) + '</span><br><small>' + localNote(x.details) +
+      '<br>' + esc(x.staff) + ' (' + tk('ro_', x.role) + ') · ' + fmt(x.time) + '</small>' +
+      '<div class="row2"><button class="btn green slim" data-t="reviewed" onclick="reviewDone(' + x.row + ')">' + t('reviewed') + '</button>' +
+      '<button class="btn plain slim" onclick="vehicleCard(\'' + esc(x.plate) + '\')">' + t('openVeh') + '</button></div></div>';
+  });
+  if (r.done.length) {
+    h += '<h2>' + t('revDone') + '</h2><table>';
+    r.done.forEach(function (x) { h += '<tr><td>' + tk('a_', x.action) + '<br><small>' + esc(x.plate) + ' · ' + esc(x.staff) + ' · ' + fmt(x.time) + '</small></td><td>✔ ' + esc(x.by) + '<br><small>' + fmt(x.at) + '</small></td></tr>'; });
+    h += '</table>';
+  }
+  show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'review');
+}
+function reviewDone(row) {
+  busy();
+  call('apiReviewDone', S.pin, row).then(reviewShow).catch(function (e) { fail(e, 'reviewScreen()'); });
+}
+
+/* ================= EXEMPT LIST (management and superuser) ================= */
+function exemptScreen(plate) {
+  busy();
+  call('apiExemptList', S.pin).then(function (list) { exemptShow(list, plate || ''); }).catch(function (e) { fail(e); });
+}
+function exemptShow(list, plate) {
+  var h = '<h1>' + t('exTitle') + ' — ' + list.length + '</h1><div class="box">' + t('exHelp') +
+    '<label class="f">' + t('vehNo') + '</label><div class="row2"><input id="exp" class="up" type="text" autocapitalize="characters" placeholder="MH04AB1234" value="' + esc(plate) + '" oninput="plateTyped(this)">' +
+    '<button class="btn dark mic" onclick="mic(\'exp\',\'plate\',this)">🎤</button></div>' +
+    '<label class="f">' + t('exNote') + '</label><div class="row2"><input id="exn" class="note" type="text">' +
+    '<button class="btn dark mic" data-t="mic-note" onclick="mic(\'exn\',\'text\',this)">🎤</button></div>' +
+    '<button class="btn green slim" data-t="exadd" onclick="exemptAdd()">' + t('add') + '</button></div>';
+  h += '<table>' + list.slice(0, 200).map(function (e) {
+    return '<tr><td><b>' + esc(e[0]) + '</b></td><td>' + esc(e[2]) + '</td></tr>'; }).join('') + '</table>';
+  show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'exempt');
+}
+function exemptAdd() {
+  var p = norm($('exp').value), n = $('exn').value;
+  if (p.length < 6) { alertMsg(t('fullNoShort')); return; }
+  busy();
+  call('apiExemptAdd', S.pin, p, n).then(function (list) {
+    S.D.exempt[p] = { type: 'TENANT', note: n };
+    exemptShow(list, ''); note(esc(t('added', p)), 'info');
+  }).catch(function (e) { fail(e, 'exemptScreen()'); });
+}
+
+/* ================= RECORDS & CASH ================= */
+function logsHome() {
+  if (!can('records')) return home();
+  var today = ymd(new Date()), full = can('mgmt');
+  var pb = function (k, key) { return '<button class="btn plain slim" data-t="p-' + k + '" onclick="period(\'' + k + '\')">' + t(key) + '</button>'; };
+  show('<h1>' + t('records') + '</h1>' +
+    '<button class="btn green" data-t="cash" onclick="summary()">' + t('cash') + '</button>' +
+    '<div class="row2">' + pb('today', 'pToday') + pb('yesterday', 'pYest') + '</div>' +
+    '<div class="row2">' + pb('week', 'pWeek') + pb('month', 'pMonth') + '</div>' +
+    '<div class="row2">' + pb('lastmonth', 'pLast') + (full ? pb('year', 'pYear') : '') + '</div>' +
+    '<div class="box"><div class="row2"><div><label class="f">' + t('from') + '</label><input id="lf" type="date" value="' + today + '"></div>' +
+    '<div><label class="f">' + t('to') + '</label><input id="lt" type="date" value="' + today + '"></div></div>' +
+    '<label class="f">' + t('vehNo') + '</label><div class="row2"><input id="lq" class="up" type="text" autocapitalize="characters" placeholder="1234" oninput="plateTyped(this)">' +
+    '<button class="btn dark mic" onclick="mic(\'lq\',\'plate\',this)">🎤</button></div>' +
+    '<button class="btn slim" data-t="search" onclick="logsSearch()">' + t('search') + '</button></div>' +
+    (can('su') ? '<button class="btn dark slim" data-t="analytics" onclick="anHome()">' + t('analytics') + '</button>' : '') +
+    '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'logs');
+}
+function range(k) {
+  var a = new Date(), b = new Date();
+  if (k === 'yesterday') { a.setDate(a.getDate() - 1); b.setDate(b.getDate() - 1); }
+  if (k === 'week') { a.setDate(a.getDate() - ((a.getDay() + 6) % 7)); }
+  if (k === 'month') { a.setDate(1); }
+  if (k === 'lastmonth') { a = new Date(a.getFullYear(), a.getMonth() - 1, 1); b = new Date(b.getFullYear(), b.getMonth(), 0); }
+  if (k === 'year') { a = new Date(a.getFullYear(), 0, 1); }
+  if (k === '30') { a.setDate(a.getDate() - 29); }
+  return [ymd(a), ymd(b)];
+}
+function period(k) { var r = range(k); logsRun({ mode: 'past', from: r[0], to: r[1], q: '' }); }
+function logsSearch() {
+  var f = $('lf').value, to = $('lt').value;
+  if (f && to && f > to) { var x = f; f = to; to = x; }
+  logsRun({ mode: 'past', from: f, to: to, q: $('lq').value });
+}
+function logsRun(opt) {
+  S.logOpt = opt;
+  busy();
+  call('apiLogs', S.pin, opt).then(function (r) { S.logs = r.list; logsList(r); }).catch(function (e) { fail(e, 'logsHome()'); });
+}
+function statusTag(x) {
+  if (x.status === 'CANCELLED') return '<b class="tag x">' + t('n_DELETED') + '</b>';
+  if (x.status === 'PARKED') return '<b class="tag">' + t('parkedTag') + '</b>';
+  if (x.status === 'INSIDE') return '<b class="tag b">' + t('inTag') + '</b>';
+  return x.note ? '<b class="tag x">' + noteName(x.note) + '</b>' : '';
+}
+function logsList(r) {
+  var o = S.logOpt, title = o.mode === 'past' ? r.from + (r.to !== r.from ? ' → ' + r.to : '') + (norm(o.q) ? ' · ' + norm(o.q) : '') : norm(o.q);
+  var h = '<h1>' + esc(title) + '</h1><div class="box">' + t('vehicles') + '<div class="huge">' + r.count + '</div>' + t('feesRef', r.fees, r.refunds) +
+    (r.count > r.list.length ? '<br><small>' + t('latestN', r.list.length) + '</small>' : '') + '</div>';
+  if (!r.list.length) h += '<div class="msg info">' + t('noRec') + '</div>';
+  r.list.forEach(function (x, i) {
+    h += '<button class="veh" onclick="logDetail(' + i + ')">' + esc(x.plate) + '<span>' + (x.serial != null ? '#' + esc(x.serial) + ' · ' : '') + catTag(x.cat) + ' ' + fmt(x.entry) +
+      '<br>🅿️ ' + dur(x.pmin) + ' · ₹' + (x.fee || 0) + ' ' + statusTag(x) + '</span></button>';
+  });
+  S.lastLogs = r;
+  show(h + '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>', 'loglist');
+}
+function logDetail(i) {
+  var x = S.logs[i];
+  var inComplex = x.entry ? Math.ceil(((x.exit || now()) - x.entry) / 60000) : 0;
+  var row = function (a, b) { return '<tr><td>' + a + '</td><td>' + b + '</td></tr>'; };
+  var who = function (tm, by) { return fmt(tm) + (by ? '<br><small>' + esc(by) + '</small>' : ''); };
+  var h = '<div class="box"><div class="plate">' + esc(x.plate) + '</div>' + catTag(x.cat) + ' ' + (statusTag(x) || '<b class="tag g">' + t('outTag') + '</b>') + '</div><table>' +
+    (x.serial != null ? row(t('rSerial'), '#' + esc(x.serial)) : '') +
+    row(t('typeRow'), tk('ty_', x.type)) + row(t('slipRow'), x.slip === '' ? '—' : esc(x.slip)) +
+    row(t('rIn'), who(x.entry, x.entryBy)) + row(t('rPs'), who(x.pstart, x.pstartBy)) + row(t('rPe'), who(x.pend, x.pendBy)) + row(t('rOut'), who(x.exit, x.exitBy)) +
+    row(t('rPt'), '<b>' + dur(x.pmin) + '</b>') + row(t('rCt'), '<b>' + dur(inComplex) + '</b>') +
+    row(t('depositRow'), '₹' + x.deposit) + (x.banked ? row(t('rBank'), '₹' + x.banked) : '') + row(t('fee'), x.fee == null ? '—' : '₹' + x.fee) +
+    row(t('refRow'), x.refund == null ? '—' : x.refund >= 0 ? '↩️ ₹' + x.refund : '🤲 ₹' + (-x.refund)) + '</table>';
+  h += '<button class="btn dark slim" onclick="vehicleCard(\'' + esc(x.plate) + '\')">' + t('openVeh') + '</button>' +
+    '<button class="btn grey slim" onclick="logsList(S.lastLogs)">' + t('back') + '</button>';
+  show(h, 'logdetail');
+}
+function summary() {
+  busy();
+  call('apiSummary', S.pin).then(function (r) {
+    var h = '<h1>' + t('cash') + '</h1><div class="box">' + t('sumLine', r.entries, r.inside, r.parked) +
+      (r.full ? '<br>' + t('feesToday', r.fees) : '') +
+      (r.totalEver != null ? '<br>' + t('totals', r.totalEver, r.slipsLeft) : '') + '</div>';
+    r.staff.forEach(function (x) {
+      h += '<div class="box"><b>' + esc(x.name) + '</b><div class="huge">₹' + x.cash + '</div>' + t('cashInHand') + '<br>' +
+        '<small>' + t('cashCalc', x.deposits, x.refunds, x.collected) + '</small></div>';
+    });
+    if (!r.staff.length) h += '<div class="msg info">' + t('noTx') + '</div>';
+    show(h + '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>', 'summary');
+  }).catch(function (e) { fail(e, 'logsHome()'); });
+}
+
+/* ================= ADVANCED ANALYTICS (superuser) ================= */
+/* Row layout from the server: 0 plate, 1 size, 2 type, 3 entry ms, 4 exit ms, 5 parked min, 6 fee, 7 refund,
+   8 deposit, 9 status, 10 note, 11 entry by, 12 exit by, 13 serial, 14 earlier-days fee, 15 parking by */
+function anHome() { anLoad(range('month')); }
+function anLoad(r) {
+  busy(t('loadingData'));
+  call('apiAnalytics', S.pin, r[0], r[1]).then(function (d) {
+    S.an = { d: d, f: { cat: '', st: '', staff: '', q: '' }, sort: 3, desc: true, page: 0 };
+    anShow();
+  }).catch(function (e) { fail(e, 'logsHome()'); });
+}
+function anStatus(r) {
+  if (r[9] === 'CANCELLED') return 'DEL';
+  if (r[9] === 'INSIDE' || r[9] === 'PARKED') return 'IN';
+  if (String(r[10]).indexOf('LEFT') === 0) return 'LEFT';
+  return 'OUT';
+}
+function anRows() {
+  var a = S.an, f = a.f, q = norm(f.q);
+  return a.d.rows.filter(function (r) {
+    if (f.cat && r[1] !== f.cat) return false;
+    if (f.st === 'EX') { if (r[2] !== 'TENANT' && r[2] !== 'PASS') return false; }
+    else if (f.st === 'PK') { if (!(r[5] > 0 || r[14] > 0)) return false; }
+    else if (f.st && anStatus(r) !== f.st) return false;
+    if (f.staff && r[11] !== f.staff && r[12] !== f.staff && r[15] !== f.staff) return false;
+    if (q && r[0].indexOf(q) < 0) return false;
+    return true;
+  });
+}
+/* Simple bar chart drawn as SVG. items: [[label, value], ...] */
+function bars(title, items, rupees) {
+  if (!items.length) return '';
+  var max = 1, Wd = 320, H = 130, n = items.length, bw = (Wd - 10) / n, s = '';
+  items.forEach(function (it) { if (it[1] > max) max = it[1]; });
+  var step = Math.ceil(n / 8);
+  items.forEach(function (it, i) {
+    var bh = Math.round(it[1] / max * (H - 34)), x = 5 + i * bw;
+    s += '<rect x="' + x.toFixed(1) + '" y="' + (H - 18 - bh) + '" width="' + Math.max(1, bw - 2).toFixed(1) + '" height="' + bh + '" fill="#1f5fbf"><title>' + esc(it[0]) + ': ' + it[1] + '</title></rect>';
+    if (i % step === 0) s += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (H - 5) + '" font-size="9" text-anchor="middle" fill="#555">' + esc(it[0]) + '</text>';
+    if (n <= 12 && it[1]) s += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (H - 21 - bh) + '" font-size="9" text-anchor="middle" fill="#111">' + it[1] + '</text>';
+  });
+  return '<div class="chart"><b>' + title + '</b> <small>(' + t('max') + ' ' + (rupees ? '₹' : '') + max + ')</small><svg viewBox="0 0 ' + Wd + ' ' + H + '" width="100%">' + s + '</svg></div>';
+}
+function anShow() {
+  var a = S.an, d = a.d, rows = anRows(), f = a.f;
+  var fees = 0, refunds = 0, parked = 0, pmin = 0, left = 0, leftRs = 0, del = 0, inside = 0, heavy = 0;
+  var byDay = {}, byHour = [], staff = {}, veh = {}, i;
+  for (i = 0; i < 24; i++) byHour.push(0);
+  var st = function (n) { if (!n) n = '—'; if (!staff[n]) staff[n] = { e: 0, x: 0, fee: 0, p: 0 }; return staff[n]; };
+  var longRange = (new Date(d.to) - new Date(d.from)) / 86400000 > 45;
+  rows.forEach(function (r) {
+    var s = anStatus(r), dt = new Date(r[3]), key = longRange ? dt.getFullYear() + '-' + p2(dt.getMonth() + 1) : dt.getDate() + '/' + (dt.getMonth() + 1);
+    if (!byDay[key]) byDay[key] = { n: 0, fee: 0, t: r[3] };
+    if (s === 'DEL') { del++; return; }
+    byDay[key].n++; byDay[key].fee += r[6]; byHour[dt.getHours()]++;
+    fees += r[6]; if (r[7] > 0) refunds += r[7];
+    if (r[5] > 0 || r[14] > 0) { parked++; pmin += r[5]; }
+    if (s === 'LEFT') { left++; leftRs += r[6]; }
+    if (s === 'IN') inside++;
+    if (r[1] === 'HEAVY') heavy++;
+    st(r[11]).e++; if (r[12] && s !== 'IN') { st(r[12]).x++; st(r[12]).fee += r[6]; } if (r[15]) st(r[15]).p++;
+    if (!veh[r[0]]) veh[r[0]] = { n: 0, fee: 0 }; veh[r[0]].n++; veh[r[0]].fee += r[6];
+  });
+  var total = rows.length - del;
+  var names = {}; d.rows.forEach(function (r) { [r[11], r[12], r[15]].forEach(function (n) { if (n) names[n] = 1; }); });
+  var opt = function (v, label, cur) { return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(label) + '</option>'; };
+  var pb = function (k, key) { return '<button class="btn plain slim" style="margin:4px 0" onclick="anLoad(range(\'' + k + '\'))">' + t(key) + '</button>'; };
+  var h = '<h1>' + t('analytics') + '</h1><div class="msg info">' + d.from + ' → ' + d.to + (d.capped ? ' · ' + t('capped') : '') + '</div>' +
+    '<div class="row2">' + pb('today', 'pToday') + pb('week', 'pWeek') + pb('month', 'pMonth') + '</div><div class="row2">' + pb('30', 'p30') + pb('lastmonth', 'pLast') + pb('year', 'pYear') + '</div>' +
+    '<div class="row2"><input id="af" type="date" value="' + d.from + '"><input id="at" type="date" value="' + d.to + '"><button class="btn slim" style="flex:0 0 60px;margin:0" onclick="anLoad([$(\'af\').value,$(\'at\').value])">▶</button></div>' +
+    '<h2>' + t('filters') + '</h2><div class="row2"><select id="fc" onchange="anSet()">' + opt('', t('allSizes'), f.cat) + opt('MEDIUM', t('c_MEDIUM'), f.cat) + opt('HEAVY', t('c_HEAVY'), f.cat) + '</select>' +
+    '<select id="fs" onchange="anSet()">' + opt('', t('allStatus'), f.st) + opt('IN', t('stIn'), f.st) + opt('OUT', t('stOut'), f.st) + opt('PK', t('stPk'), f.st) + opt('LEFT', t('stLeft'), f.st) + opt('DEL', t('stDel'), f.st) + opt('EX', t('stEx'), f.st) + '</select></div>' +
+    '<div class="row2" style="margin-top:8px"><select id="fp" onchange="anSet()">' + opt('', t('allStaff'), f.staff) + Object.keys(names).map(function (n) { return opt(n, n, f.staff); }).join('') + '</select>' +
+    '<input id="fq" class="up note" type="text" placeholder="' + t('vehNo') + '" value="' + esc(f.q) + '" onchange="anSet()"></div>';
+  var kpi = function (v, l) { return '<div class="kpi"><b>' + v + '</b><span>' + l + '</span></div>'; };
+  h += '<h2>' + t('summaryH') + '</h2><div class="kpis">' + kpi(total, t('vehicles')) + kpi('₹' + fees, t('kFees')) + kpi('₹' + refunds, t('kRef')) + kpi(parked + ' (' + (total ? Math.round(parked * 100 / total) : 0) + '%)', t('kPk')) +
+    kpi(dur(parked ? Math.round(pmin / parked) : 0), t('kAvg')) + kpi('₹' + (parked ? Math.round(fees / parked) : 0), t('kFpp')) +
+    kpi(left + ' · ₹' + leftRs, t('kLeft')) + kpi(heavy + ' / ' + (total - heavy), t('kHm')) + kpi(inside, t('kIn')) + kpi(del + ' · ' + d.review.length, t('kDel')) + '</div>';
+  var days = Object.keys(byDay).sort(function (x, y) { return byDay[x].t - byDay[y].t; });
+  h += bars(longRange ? t('chFeeMon') : t('chFeeDay'), days.map(function (k) { return [k, byDay[k].fee]; }), true) +
+    bars(longRange ? t('chVehMon') : t('chVehDay'), days.map(function (k) { return [k, byDay[k].n]; })) +
+    bars(t('chHour'), byHour.map(function (v, i2) { return [String(i2), v]; }));
+  h += '<h2>' + t('staff') + '</h2><table><tr><th>' + t('name') + '</th><th>⬇️</th><th>🅿️</th><th>⬆️</th><th>₹</th></tr>' + Object.keys(staff).map(function (n) {
+    var z = staff[n]; return '<tr><td>' + esc(n) + '</td><td>' + z.e + '</td><td>' + z.p + '</td><td>' + z.x + '</td><td>' + z.fee + '</td></tr>'; }).join('') + '</table>';
+  var top = Object.keys(veh).sort(function (x, y) { return veh[y].fee - veh[x].fee || veh[y].n - veh[x].n; }).slice(0, 10);
+  h += '<h2>' + t('topVeh') + '</h2><table><tr><th>' + t('colVeh') + '</th><th>' + t('times') + '</th><th>₹</th></tr>' + top.map(function (p) {
+    return '<tr><td><a href="#" onclick="vehicleCard(\'' + p + '\');return false">' + p + '</a></td><td>' + veh[p].n + '</td><td>' + veh[p].fee + '</td></tr>'; }).join('') + '</table>';
+  // sortable table
+  var cols = [[0, t('colVeh')], [1, t('colSize')], [3, t('colIn')], [4, t('colOut')], [5, t('colPk')], [6, '₹'], [11, t('colBy')]];
+  rows.sort(function (x, y) { var u = x[a.sort], v = y[a.sort]; if (u == null) u = 0; if (v == null) v = 0; return (u < v ? -1 : u > v ? 1 : 0) * (a.desc ? -1 : 1); });
+  var per = 50, pages = Math.max(1, Math.ceil(rows.length / per));
+  if (a.page >= pages) a.page = 0;
+  h += '<h2>' + t('allRows') + ' — ' + rows.length + '</h2><div class="scroll"><table><tr>' + cols.map(function (c) {
+    return '<th class="s" onclick="anSort(' + c[0] + ')">' + c[1] + (a.sort === c[0] ? (a.desc ? ' ▼' : ' ▲') : '') + '</th>'; }).join('') + '</tr>' +
+    rows.slice(a.page * per, a.page * per + per).map(function (r) {
+      var s = anStatus(r);
+      return '<tr><td><a href="#" onclick="vehicleCard(\'' + r[0] + '\');return false">' + r[0] + '</a>' + (s === 'LEFT' ? ' ✖' : s === 'DEL' ? ' 🗑' : s === 'IN' ? ' ●' : '') + '</td><td>' + catName(r[1]) + '</td><td>' + fmt(r[3]) +
+        '</td><td>' + (r[4] ? fmt(r[4]) : '—') + '</td><td>' + r[5] + '</td><td>' + r[6] + '</td><td>' + esc(r[11]) + '</td></tr>'; }).join('') + '</table></div>' +
+    '<div class="row2"><button class="btn plain slim" onclick="anPage(-1)">◀</button><div class="box" style="margin:10px 0;padding:12px">' + (a.page + 1) + ' / ' + pages + '</div><button class="btn plain slim" onclick="anPage(1)">▶</button></div>' +
+    '<button class="btn dark slim" data-t="csv" onclick="anCsv()">' + t('csv') + '</button>' +
+    '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>';
+  var y = window.scrollY, keep = S.screen === 'analytics';
+  show(h, 'analytics');
+  if (keep) window.scrollTo(0, y);
+}
+function anSet() { var f = S.an.f; f.cat = $('fc').value; f.st = $('fs').value; f.staff = $('fp').value; f.q = $('fq').value; S.an.page = 0; anShow(); }
+function anSort(c) { var a = S.an; if (a.sort === c) a.desc = !a.desc; else { a.sort = c; a.desc = true; } a.page = 0; anShow(); }
+function anPage(n) { var a = S.an, pages = Math.max(1, Math.ceil(anRows().length / 50)); a.page = Math.min(pages - 1, Math.max(0, a.page + n)); anShow(); }
+function anCsv() {
+  var head = ['Vehicle', 'Size', 'Type', 'Entry', 'Exit', 'Parked min', 'Fee', 'Refund', 'Deposit', 'Status', 'Note', 'Entry by', 'Exit by', 'Serial', 'Earlier days fee', 'Parking by'];
+  var iso = function (tm) { if (!tm) return ''; var d = new Date(tm); return ymd(d) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()); };
+  var lines = [head.join(',')].concat(anRows().map(function (r) {
+    return r.map(function (v, i) { if (i === 3 || i === 4) v = iso(v); v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',');
+  }));
+  try {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv' }));
+    a.download = 'globe_parking_' + S.an.d.from + '_' + S.an.d.to + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) { alertMsg(t('dlFail')); }
+}
+
+/* ================= start ================= */
+(function () {
+  var saved = '';
+  window.addEventListener('beforeunload', function (e) { if (S.q.length) { e.preventDefault(); e.returnValue = ''; } });
+  try {
+    saved = localStorage.getItem('gp_pin') || '';
+    S.voice = localStorage.getItem('gp_voice') !== '0';
+    var l = localStorage.getItem('gp_lang'); if (LANGS.indexOf(l) >= 0) S.lang = l;
+  } catch (e) {}
+  document.documentElement.lang = S.lang;
+  var started = false, go = function () { if (started) return; started = true; if (saved) boot(saved); else loginScreen(); };
+  if (!inAppsScript() && !/^https:/.test(API_URL)) {      // hosted page: read config.js first
+    var sc = document.createElement('script');
+    sc.src = 'config.js?v=' + Date.now(); sc.onload = go; sc.onerror = go;
+    document.head.appendChild(sc);
+    setTimeout(go, 4000);
+  } else go();
+})();
+
+</script>
+</body>
+</html>
