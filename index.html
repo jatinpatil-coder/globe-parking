@@ -3,6 +3,8 @@
 <head>
 <base target="_top">
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: "Noto Sans Devanagari", Arial, sans-serif; background: #f2f4f7; color: #111; }
@@ -67,6 +69,33 @@
   .navr { display: flex; gap: 8px; align-items: center; }
   .nav .iconbtn { background: #fff; color: #333; border: 1px solid #ccd; font-size: 20px; padding: 6px 10px; }
   .nav .iconbtn.out { color: #c0392b; font-size: 15px; font-weight: bold; }
+
+  /* ---- always fits the screen ---- */
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  #app { width: 100%; }
+  table { table-layout: auto; } td, th { word-break: break-word; }
+  .row2 > * { min-width: 0; } input, select { min-width: 0; max-width: 100%; }
+  img, svg { max-width: 100%; }
+  /* ---- sunlight theme: white background, black text, strong colours, thick borders ---- */
+  body { background: #fff; color: #000; font-weight: 600; }
+  h1 { color: #000; font-size: 22px; } h2 { color: #000; font-size: 17px; }
+  .box, .tile, .kpi, .chart, table { border: 2px solid #000; }
+  .box, .kpi, .chart { background: #fff; }
+  td, th { border-bottom: 1px solid #000; color: #000; font-size: 17px; }
+  small, .btn small, .veh span, label.f, .nav, .tile .l, .kpi span { color: #000; opacity: 1; }
+  .btn small { color: inherit; font-size: 15px; font-weight: 600; }
+  .veh { border: 2px solid #000; color: #000; } .veh span { font-size: 14px; }
+  .btn { background: #0b3d91; font-weight: 800; }
+  .green { background: #0a6b2d; } .red { background: #a31515; } .orange { background: #b35600; } .grey { background: #333; }
+  .dark { background: #000; } .teal { background: #005f66; } .brown { background: #5a3210; }
+  .plain { background: #fff; color: #0b3d91; border: 3px solid #0b3d91; }
+  .tag { background: #b35600; font-size: 14px; } .tag.h { background: #5a3210; } .tag.m { background: #005f66; } .tag.b { background: #0b3d91; } .tag.g { background: #0a6b2d; } .tag.x { background: #333; }
+  .msg { border: 2px solid #000; font-weight: 700; } .err { background: #ffe0dc; color: #7a0000; } .info { background: #fff; color: #000; }
+  input[type=text], input[type=tel], input[type=password], input[type=date], select { border: 3px solid #000; color: #000; font-weight: 700; }
+  .last { outline: 6px solid #e0a800; }
+  .nav button { background: #000; } .nav .iconbtn { border: 2px solid #000; color: #000; } .nav .iconbtn.out { color: #a31515; }
+  .fullred { background: #a31515; }
+  th.s { color: #0b3d91; }
 </style>
 </head>
 <body>
@@ -143,6 +172,35 @@ var W = {
   exemptHome: ['➕ सूट यादी', '➕ छूट सूची', '➕ Exempt list'],
   noApi: ['ॲपचा पत्ता भरलेला नाही (API_URL).', 'ऐप का पता नहीं भरा (API_URL)।', 'The app address (API_URL) is not filled in.'],
   e_LOCKED: ['खूप चुकीचे पिन. 15 मिनिटे थांबा.', 'बहुत ग़लत पिन। 15 मिनट रुकें।', 'Too many wrong PINs. Wait 15 minutes.'],
+  micMain: ['बोला', 'बोलिए', 'Speak'],
+  micHint: ['उदा. "8899 बाहेर"', 'जैसे "8899 बाहर"', 'e.g. "8899 exit"'],
+  confirmYes: ['बरोबर', 'सही', 'Correct'],
+  confirmNo: ['✖ चूक', '✖ गलत', '✖ Wrong'],
+  ask: ['बरोबर?', 'सही है?', 'Correct?'],
+  whichVeh: ['कोणती गाडी?', 'कौन सी गाड़ी?', 'Which vehicle?'],
+  cont: ['पुढे', 'आगे', 'Continue'],
+  sAskSize: ['आकार निवडा', 'साइज़ चुनिए', 'Pick the size'],
+  editNo: ['✏️ नंबर चुकला? इथे बदला', '✏️ नंबर गलत? यहाँ बदलें', '✏️ Wrong number? Change it here'],
+  unusualT: ['⚠ वेगळा नंबर', '⚠ अलग नंबर', '⚠ Unusual number'],
+  unusualHelp: ['हा नंबर नेहमीच्या नंबर प्लेटसारखा दिसत नाही. नीट तपासा.', 'यह नंबर सामान्य नंबर प्लेट जैसा नहीं दिखता। ठीक से जाँचें।', 'This does not look like a normal number plate. Check it carefully.'],
+  fixNo: ['✏️ नंबर दुरुस्त करा', '✏️ नंबर ठीक करें', '✏️ Correct the number'],
+  goAnyway: ['तरीही पुढे (तपासणीला जाईल)', 'फिर भी आगे (जाँच में जाएगा)', 'Continue anyway (goes to review)'],
+  sUnusual: ['नंबर तपासा', 'नंबर जाँचिए', 'Check the number'],
+  voiceCmd: ['🎤 आवाज', '🎤 आवाज़', '🎤 Voice'],
+  on: ['चालू', 'चालू', 'ON'],
+  off: ['बंद', 'बंद', 'OFF'],
+  notUnderstood: ['समजले नाही. पुन्हा बोला.', 'समझ नहीं आया। फिर बोलें।', 'Did not understand. Speak again.'],
+  heard: ['ऐकले', 'सुना', 'Heard'],
+  cEntry: ['आत नोंद', 'एंट्री', 'Entry'],
+  cGone: ['न सांगता गेली', 'बिना बताए चली गई', 'Left without exit'],
+  cGoneSub: [function (n) { return 'ठेव ₹' + n + ' जप्त'; }, function (n) { return 'जमा ₹' + n + ' ज़ब्त'; }, function (n) { return 'Deposit ₹' + n + ' kept'; }],
+  cSeen: ['इथेच आहे', 'यहीं है', 'Still here'],
+  sizeTo: [function (c) { return 'आकार → ' + c; }, function (c) { return 'साइज़ → ' + c; }, function (c) { return 'Size → ' + c; }],
+  notParked: ['पार्किंगमध्ये नाही', 'पार्किंग में नहीं', 'Not parked'],
+  alreadyParked: ['आधीच पार्किंगमध्ये आहे', 'पहले से पार्किंग में है', 'Already parked'],
+  totalsH: ['एकूण', 'कुल', 'Totals'],
+  e_VOICEOFF: ['आवाज बंद आहे', 'आवाज़ बंद है', 'Voice is turned off'],
+  a_UNUSUAL_NUMBER: ['वेगळा नंबर', 'अलग नंबर', 'Unusual number'],
   reading: ['नंबर वाचत आहे...', 'नंबर पढ़ रहा है...', 'Reading the number...'],
   cancel: ['✖ रद्द', '✖ रद्द', '✖ Cancel'],
   tooLong: ['वेळ लागला', 'बहुत समय लगा', 'Took too long'],
@@ -375,7 +433,7 @@ function t(k) {
 function tk(prefix, key) { var k = prefix + String(key || '').replace(/[^A-Z0-9]+/g, '_'); return W[k] ? t(k) : esc(key); }
 
 /* ======================================================================
-   GLOBE PARKING - phone screens - version 9 (Marathi / Hindi / English)
+   GLOBE PARKING - phone screens - version 10 (Marathi / Hindi / English)
    The app loads the vehicles inside, prices and known vehicles ONCE, keeps
    them on the phone, shows every screen instantly, and saves to the Google
    Sheet in the background.
@@ -388,7 +446,7 @@ function tk(prefix, key) { var k = prefix + String(key || '').replace(/[^A-Z0-9]
 var API_URL = 'PASTE_WEB_APP_URL_HERE';
 
 var S = { pin: '', user: null, D: null, open: [], off: 0, syncAt: 0, q: [], qBusy: false, fails: [], screen: '', slips: [], dayStart: 0, reviewCount: 0, editMin: 10,
-          vinfo: {}, mut: 0, today: 0, thumb: '', thumbPlate: '', voice: true, kb: 'numeric', logs: [], logOpt: null, lastLogs: null, last: null, an: null, lang: 'mr' };
+          vinfo: {}, mut: 0, today: 0, thumb: '', thumbPlate: '', voice: true, kb: 'numeric', logs: [], logOpt: null, lastLogs: null, last: null, an: null, lang: 'mr', voiceOn: true, pre: '', okUnusual: {}, cmdNoSlip: false, openFix: false, exNote: '' };
 
 /* Vehicle pictures are drawn here (not emoji) so they look the same on every phone. */
 function svgIcon(cat, h) {
@@ -469,16 +527,20 @@ function alertMsg(txt) { note(esc(txt), 'err'); }
 function now() { return Date.now() + S.off; }           // server clock
 function dur(m) { m = Math.max(0, m || 0); return m < 60 ? m + ' ' + t('min') : Math.floor(m / 60) + ' ' + t('hr') + ' ' + (m % 60) + ' ' + t('min'); }
 function p2(n) { return (n < 10 ? '0' : '') + n; }
-function hhmm(ms) { if (!ms) return '—'; var d = new Date(ms); return p2(d.getHours()) + ':' + p2(d.getMinutes()); }
-function fmt(ms) { if (!ms) return '—'; var d = new Date(ms); return d.getDate() + '/' + (d.getMonth() + 1) + ' · ' + hhmm(ms); }
+/* All dates and times are shown in Indian Standard Time, whatever the phone's own setting.
+   ist(ms) gives a Date whose UTC fields hold the Indian clock time. */
+function ist(ms) { return new Date(ms + 19800000); }
+function hhmm(ms) { if (!ms) return '—'; var d = ist(ms); return p2(d.getUTCHours()) + ':' + p2(d.getUTCMinutes()); }
+function fmt(ms) { if (!ms) return '—'; var d = ist(ms); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1) + ' · ' + hhmm(ms); }
 function norm(p) { return String(p || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
-function ymd(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+function ymd(d) { return d.getUTCFullYear() + '-' + p2(d.getUTCMonth() + 1) + '-' + p2(d.getUTCDate()); }   // d comes from ist()
 function catTag(c) { var k = CATS[c] ? c : 'MEDIUM'; return '<b class="tag ' + CATS[k][1] + '">' + svgIcon(k, 13) + ' ' + catName(k) + '</b>'; }
 function buzz(pattern) { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }
 /* Speaks a short instruction in the chosen language, so staff do not have to read the screen. */
 function say(txt) {
   try {
     if (!S.voice || !window.speechSynthesis) return;
+    if (S.pre) { txt = S.pre + txt; S.pre = ''; }
     window.speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(txt);
     u.lang = SPEECH[S.lang] || 'mr-IN'; u.rate = 0.95;
@@ -486,6 +548,20 @@ function say(txt) {
   } catch (e) {}
 }
 /* Review notes from the server use MEDIUM / HEAVY; show them in the chosen language. */
+/* "MH04GH8899" -> "M H 0 4 G H 8 8 9 9" so the voice reads it one character at a time. */
+function spell(p) { return String(p).split('').join(' '); }
+function micBtn(target, mode, tag) {
+  return S.voiceOn ? '<button class="btn dark mic"' + (tag ? ' data-t="' + tag + '"' : '') + ' onclick="mic(\'' + target + '\',\'' + mode + '\',this)">🎤</button>' : '';
+}
+function camBtn() {
+  return '<label class="btn dark mic" data-t="cam">📷<input type="file" accept="image/*" capture="environment" style="display:none" onchange="onPhoto(this)"></label>';
+}
+/* Normal Indian plate (MH04AB1234, DL1CAB1234) or BH-series (22BH1234AA). Same rule as the server. */
+function plateOK(p) {
+  if (/^[0-9]{2}BH[0-9]{4}[A-Z]{1,2}$/.test(p)) return true;
+  var m = /^([A-Z]{2})([0-9]{1,2})([A-Z]{1,3})([0-9]{4})$/.exec(p);
+  return !!m && STATES.indexOf(m[1]) >= 0;
+}
 function localNote(s) { return esc(s).replace(/\bMEDIUM\b/g, t('c_MEDIUM')).replace(/\bHEAVY\b/g, t('c_HEAVY')); }
 
 /* ================= language ================= */
@@ -530,6 +606,7 @@ function applySync(sync) {
   if (typeof sync.today === 'number') S.today = sync.today;
   if (sync.dayStart) S.dayStart = sync.dayStart;
   if (typeof sync.reviewCount === 'number') S.reviewCount = sync.reviewCount;
+  if (typeof sync.voice === 'boolean') S.voiceOn = sync.voice;
   if (sync.exempt) { var ex = {}; sync.exempt.forEach(function (e) { ex[e[0]] = { type: e[1], note: e[2] }; }); S.D.exempt = ex; }
   if (S.screen === 'home') { var q = $('hq'); if (q && !q.value && !REC && document.activeElement !== q) home(); else homeCounts(); }
 }
@@ -645,6 +722,7 @@ function toggleVoice() {
 
 /* ================= HOME ================= */
 function home() {
+  S.pre = ''; S.cmdNoSlip = false; S.openFix = false; S.cmd = null;
   var stale = S.open.filter(isStale).length;
   var h = '<div class="nav"><span>' + esc(S.user.name) + '</span><span class="navr">' + langSelect() +
     '<button class="iconbtn" data-t="voice" onclick="toggleVoice()">' + (S.voice ? '🔊' : '🔇') + '</button>' +
@@ -653,19 +731,27 @@ function home() {
     '<div class="tile" data-t="t-in" onclick="insideList(\'\')"><div class="n" id="cIn">0</div><div class="l">' + t('tIn') + '</div></div>' +
     '<div class="tile" data-t="t-pk" onclick="insideList(\'PARKED\')"><div class="n" id="cPk" style="color:#d9780a">0</div><div class="l">' + t('tPk') + '</div></div></div>';
   if (stale) h += '<button class="btn orange slim" data-t="stale" onclick="staleList()">' + t('stale', stale) + '</button>';
-  h += '<label class="btn dark" data-t="photo" style="padding:24px 12px"><span class="ico">📷</span>' + t('photo') +
+  if (S.voiceOn) h += '<button class="btn dark" data-t="mic" style="padding:22px 12px" onclick="mic(\'hq\',\'cmd\',this)"><span class="ico" style="font-size:54px">🎤</span>' + t('micMain') +
+    '<small>' + t('micHint') + '</small></button>';
+  else h += '<label class="btn dark" data-t="photo" style="padding:24px 12px"><span class="ico">📷</span>' + t('photo') +
     '<input type="file" accept="image/*" capture="environment" style="display:none" onchange="onPhoto(this)"></label>';
   h += '<div class="box"><div class="row2"><div style="flex:4"><input id="hq" class="up" type="text" inputmode="' + S.kb + '" autocomplete="off" autocapitalize="characters" ' +
     'placeholder="' + (S.kb === 'numeric' ? '1234' : 'MH04AB1234') + '" oninput="plateTyped(this);homeSuggest()"></div>' +
-    '<button class="btn dark mic" data-t="mic" onclick="mic(\'hq\',\'plate\',this)">🎤</button>' +
+    (S.voiceOn ? camBtn().replace('data-t="cam"', 'data-t="photo"') : '') +
     '<button class="btn grey mic" style="font-size:18px" onclick="toggleKb()">' + (S.kb === 'numeric' ? 'ABC' : '123') + '</button></div>' +
     '<div id="hsug"></div><button class="btn slim" data-t="show" onclick="homeGo()">' + t('find') + '</button></div>';
   if (can('mgmt')) h += '<button class="btn ' + (S.reviewCount ? 'red' : 'plain') + ' slim" data-t="review" onclick="reviewScreen()">' + t('review') + (S.reviewCount ? ' — ' + S.reviewCount : '') + '</button>';
   if (can('records')) h += '<button class="btn plain slim" data-t="records" onclick="logsHome()">' + t('records') + '</button>';
   if (can('mgmt')) h += '<button class="btn plain slim" data-t="exempt" onclick="exemptScreen()">' + t('exemptHome') + '</button>';
+  if (can('su')) h += '<button class="btn ' + (S.voiceOn ? 'green' : 'grey') + ' slim" data-t="voicecmd" onclick="toggleVoiceCmd()">' + t('voiceCmd') + ': ' + (S.voiceOn ? t('on') : t('off')) + '</button>';
   show(h, 'home');
   homeCounts();
   if (Date.now() - S.syncAt > 30000) syncNow();
+}
+function toggleVoiceCmd() {
+  var want = !S.voiceOn;
+  busy();
+  waitIdle().then(function () { return call('apiSetVoice', S.pin, want); }).then(function (sy) { S.voiceOn = want; applySync(sy); home(); }).catch(function (e) { fail(e); });
 }
 function homeCounts() {
   var a = $('cIn'), b = $('cPk'), c = $('cTd');
@@ -762,7 +848,7 @@ function mic(targetId, mode, btn) {
     var src = ctx.createMediaStreamSource(stream), proc = ctx.createScriptProcessor(2048, 1, 1);
     var r = { stream: stream, ctx: ctx, proc: proc, src: src, chunks: [], loud: [], target: targetId, mode: mode, btn: btn, screen: S.screen,
       started: Date.now(), floor: 0, n: 0, firstSpeech: -1, lastSpeech: -1 };
-    var maxMs = mode === 'plate' ? 10000 : 20000;
+    var maxMs = mode === 'text' ? 20000 : 10000;
     proc.onaudioprocess = function (e) {
       if (REC !== r) return;
       var d = new Float32Array(e.inputBuffer.getChannelData(0)), sum = 0;
@@ -829,6 +915,15 @@ function stopMic(discard) {
   var pad = Math.ceil(0.35 * rate / 2048), a = Math.max(0, r.firstSpeech - pad), b = Math.min(r.chunks.length, r.lastSpeech + pad + 1);
   var b64 = wavBase64(r.chunks.slice(a, b), rate);
   micOverlay('busy'); buzz(40);
+  if (r.mode === 'cmd') {
+    call('apiCommand', S.pin, b64, 'audio/wav').then(function (c) {
+      micOverlay('');
+      if (S.screen !== r.screen) return;
+      if (c && c.error) { buzz([200, 100, 200]); alertMsg(readerErr(c.error) + '. ' + t('heardNothing')); return; }
+      runCommand(c || {});
+    }).catch(function (e) { micOverlay(''); alertMsg(errCode(e && e.message) ? errText(e) : t('micNet')); });
+    return;
+  }
   call('apiDictate', S.pin, b64, 'audio/wav', r.mode).then(function (x) {
     micOverlay('');
     if (S.screen !== r.screen) return;
@@ -840,6 +935,8 @@ function stopMic(discard) {
     el.value = r.mode === 'plate' ? txt : (el.value ? el.value + ' ' : '') + txt;
     buzz(60);
     if (r.target === 'hq') return dictatedHome(txt);
+    if (r.target === 'cq') { if (txt.length >= 6) vehicleCard(txt); return; }
+    if (r.target === 'nq') return cmdAskGo();
     if (el.oninput) el.oninput();
   }).catch(function () { micOverlay(''); alertMsg(t('micNet')); });
 }
@@ -909,6 +1006,135 @@ function spokenPlate(text) {
 function plateTyped(el) {
   var v = el.value;
   if (/[\u0900-\u097F]/.test(v) || /\b(zero|one|two|three|four|five|six|seven|eight|nine|double)\b/i.test(v)) el.value = spokenPlate(v);
+}
+
+/* ================= VOICE COMMANDS =================
+   One sentence, for example "MH04GH8899 आली" or "8899 बाहेर". The server only works out what was
+   said: { plate, action, size, note }. Nothing is saved from here without a tap on a confirm screen.
+   Whatever was not said (number, size) is asked on the next screen. */
+var CMD_POOL = {   // which vehicles an action can apply to
+  PARK_START: function (o) { return o.status === 'INSIDE'; }, PARK_END: function (o) { return o.status === 'PARKED'; },
+  EXIT: function () { return true; }, EXIT_NOSLIP: function () { return true; }, GONE: function () { return true; },
+  SET_SIZE: function () { return true; }, STILL_HERE: function (o) { return isStale(o); }
+};
+function cmdLabel(c) {
+  var a = c.action;
+  if (a === 'ENTRY') return '⬇️ ' + t('cEntry');
+  if (a === 'EXIT' || a === 'EXIT_NOSLIP') return '⬆️ ' + t('bExit');
+  if (a === 'PARK_START') return '🅿️ ' + t('bPstart');
+  if (a === 'PARK_END') return '🅿️✖ ' + t('bPend');
+  if (a === 'STILL_HERE') return '✔ ' + t('cSeen');
+  if (a === 'GONE') return '✖ ' + t('cGone');
+  if (a === 'SET_SIZE') return '⚙️ ' + t('colSize');
+  if (a === 'FIX') return t('fix');
+  if (a === 'EXEMPT') return t('exemptHome');
+  return t('find');
+}
+function runCommand(c) {
+  var a = c.action || 'FIND';
+  c = { action: a, plate: spokenPlate(c.plate || ''), size: c.size || '', note: c.note || '', heard: c.heard || '' };
+  if (a === 'NONE' && !c.plate) { buzz([200, 100, 200]); say(t('notUnderstood')); return alertMsg(t('notUnderstood') + (c.heard ? ' (' + t('heard') + ': ' + c.heard + ')' : '')); }
+  if (a === 'NONE') c.action = a = 'FIND';
+  // screens that need no vehicle
+  var deny = function () { buzz([200, 100, 200]); say(t('noPerm')); alertMsg(t('noPerm')); };
+  if (a === 'HOME') return home();
+  if (a === 'LIST_INSIDE') return insideList('');
+  if (a === 'LIST_PARKED') return insideList('PARKED');
+  if (a === 'LIST_OVERNIGHT') return staleList();
+  if (a === 'CASH') return can('records') ? summary() : deny();
+  if (a === 'RECORDS_TODAY') return can('records') ? period('today') : deny();
+  if (a === 'RECORDS_YESTERDAY') return can('records') ? period('yesterday') : deny();
+  if (a === 'REVIEW') return can('mgmt') ? reviewScreen() : deny();
+  if (a === 'EXEMPT_LIST') return can('mgmt') ? exemptScreen() : deny();
+  if (a === 'ANALYTICS') return can('su') ? anHome() : deny();
+  if ((a === 'PARK_START' || a === 'PARK_END' || a === 'SET_SIZE') && !can('park')) return deny();
+  if (a === 'EXEMPT' && !can('mgmt')) return deny();
+  var r = cmdResolve(c, c.plate);
+  if (r.plate) return cmdDo(c, r.plate);
+  cmdAsk(c, r.list);
+}
+/* Turns what was said ("8899" or a full number) into one vehicle, or a list to choose from. */
+function cmdResolve(c, text) {
+  var q = norm(text), pool = CMD_POOL[c.action], list = [];
+  if (pool) {
+    var all = S.open.filter(pool);
+    if (q.length >= 3) list = all.filter(function (o) { return o.plate.indexOf(q) >= 0; }).map(function (o) { return o.plate; });
+    if (list.indexOf(q) >= 0) return { plate: q };
+    if (list.length === 1) return { plate: list[0] };
+    if (!list.length && q.length >= 6) return { plate: q };              // not in the list: cmdDo explains why
+    return { list: list.length ? list : all.map(function (o) { return o.plate; }).slice(0, 30) };
+  }
+  if (q.length >= 6) return { plate: q };
+  list = candidates(q);
+  if (list.length === 1) return { plate: list[0] };
+  return { list: list.slice(0, 12) };
+}
+/* Asks for the missing vehicle number: type, speak, or tap one from the list. */
+function cmdAsk(c, list) {
+  S.cmd = c;
+  buzz(60); say(t('whichVeh'));
+  show('<h1>' + cmdLabel(c) + '</h1><div class="box"><b style="font-size:22px">' + t('whichVeh') + '</b><div class="row2" style="margin-top:8px"><div style="flex:4">' +
+    '<input id="nq" class="up" type="text" autocomplete="off" autocapitalize="characters" placeholder="1234" value="' + esc(norm(c.plate)) + '" oninput="plateTyped(this);cmdAskFilter()"></div>' +
+    micBtn('nq', 'plate', 'nmic') + '</div><div id="nlist"></div>' +
+    '<button class="btn slim" data-t="ncont" onclick="cmdAskGo()">' + t('cont') + '</button></div>' +
+    '<button class="btn grey slim" onclick="home()">' + t('cancel') + '</button>', 'ask');
+  cmdAskList(list || []);
+}
+function cmdAskList(list) {
+  var b = $('nlist'); if (!b) return;
+  b.innerHTML = list.map(function (p) { return plateBtn(p).replace("vehicleCard('" + p + "')", "cmdPick('" + p + "')"); }).join('');
+}
+function cmdAskFilter() { var r = cmdResolve(S.cmd, $('nq').value); cmdAskList(r.plate ? [r.plate] : r.list); }
+function cmdAskGo() {
+  var r = cmdResolve(S.cmd, $('nq').value);
+  if (r.plate) return cmdPick(r.plate);
+  cmdAskList(r.list); alertMsg(r.list.length ? t('pickList') : t('fullNoShort'));
+}
+function cmdPick(plate) { var c = S.cmd; S.cmd = null; if (c) cmdDo(c, plate); else vehicleCard(plate); }
+/* Final check before anything is saved: the number is read aloud and one tap confirms. */
+function confirmScreen(plate, icon, label, sub, onYes) {
+  var o = findOpen(plate);
+  buzz(60); say(spell(plate) + '. ' + label.replace(/<[^>]+>/g, '') + '. ' + t('ask'));
+  show('<div class="box"><div class="plate" style="font-size:38px">' + esc(plate) + '</div>' + (o ? catTag(o.cat) : '') +
+    '<div class="huge">' + icon + '</div><b style="font-size:26px">' + label + '</b>' + (sub ? '<br>' + sub : '') + '</div>' +
+    '<button class="btn green" id="cyes" data-t="cyes"><span class="ico">✔</span>' + t('confirmYes') + '</button>' +
+    '<button class="btn grey slim" id="cno" data-t="cno">' + t('confirmNo') + '</button>', 'confirm');
+  $('cyes').onclick = onYes;
+  $('cno').onclick = function () { vehicleCard(plate); };
+}
+function cmdDo(c, plate) {
+  var a = c.action, o = findOpen(plate), bad = function (msg) { buzz([200, 100, 200]); say(msg); vehicleCard(plate, esc(msg)); };
+  if (a === 'FIND') return vehicleCard(plate);
+  if (a === 'FIX') { S.openFix = true; return vehicleCard(plate); }
+  if (a === 'EXEMPT') { S.exNote = c.note; return exemptScreen(plate); }
+  if (a === 'ENTRY') {
+    if (o) return bad(t('already'));
+    var size = c.size || S.D.known[plate] || '';
+    if (!size) { S.pre = spell(plate) + '. '; say(t('sAskSize')); return vehicleCard(plate); }       // size not said and vehicle is new: ask
+    if (S.D.exempt[plate] && plateOK(plate)) return confirmScreen(plate, '⬇️', t('cEntry') + ' · ' + catName(size), t('noMoney'), function () { doEntry(plate, size, '', now()); });
+    S.pre = spell(plate) + '. ' + catName(size) + '. ';
+    return act('entry', plate, size);                                    // the take-deposit screen is the confirmation
+  }
+  if (!o) return bad(t('notInside'));
+  if (a === 'PARK_START') {
+    if (o.status === 'PARKED') return bad(t('alreadyParked'));
+    return confirmScreen(plate, '🅿️', t('bPstart'), '', function () { act('pstart', plate); });
+  }
+  if (a === 'PARK_END') {
+    if (o.status !== 'PARKED') return bad(t('notParked'));
+    return confirmScreen(plate, '🅿️✖', t('bPend'), dur(runMin(o)), function () { act('pend', plate); });
+  }
+  if (a === 'EXIT' || a === 'EXIT_NOSLIP') { S.pre = spell(plate) + '. '; S.cmdNoSlip = a === 'EXIT_NOSLIP'; return act('exit', plate); }   // the exit screen is the confirmation
+  if (a === 'STILL_HERE') return confirmScreen(plate, '✔', t('cSeen'), '', function () {
+    o.seen = now(); S.mut++; bg('✔ ' + plate, 'apiSeen', [plate]); doneScreen(plate, '<div class="huge" style="color:#0a6b2d">✔</div>' + t('cSeen'), t('sOk')); });
+  if (a === 'GONE') return confirmScreen(plate, '✖', t('cGone'), t('cGoneSub', o.deposit), function () {
+    S.mut++; dropOpen(plate); delete S.vinfo[plate]; bg('✖ ' + plate, 'apiCloseLeft', [plate, now()]);
+    doneScreen(plate, '<div class="huge" style="color:#a31515">✖</div>' + t('cGone') + ' · ' + t('cGoneSub', o.deposit), t('sOk')); });
+  if (a === 'SET_SIZE') {
+    if (!c.size || c.size === o.cat) { S.openFix = true; return vehicleCard(plate); }
+    return confirmScreen(plate, '⚙️', t('sizeTo', catName(c.size)), '', function () { act('setcat', plate, c.size); });
+  }
+  vehicleCard(plate);
 }
 
 /* ================= photo + cloud plate reader ================= */
@@ -988,10 +1214,16 @@ function plateFrom(text) {
 /* ================= VEHICLE CARD ================= */
 /* Shown instantly from what the phone already knows; the server answer (history,
    latest status) arrives a moment later and the card refreshes itself. */
-function vehicleCard(plate) {
+function vehicleCard(plate, notice) {
   plate = norm(plate);
-  renderCard(plate);
-  fetchVehicle(plate).then(function () { if (S.screen === 'card:' + plate) renderCard(plate, true); }).catch(function () {});
+  renderCard(plate, false, notice);
+  fetchVehicle(plate).then(function () { if (S.screen === 'card:' + plate) renderCard(plate, true, notice); }).catch(function () {});
+}
+/* The number on the card was wrong: open the corrected one instead. */
+function cardEdit() {
+  var p = norm($('cq').value);
+  if (p.length < 6) { alertMsg(t('fullNoShort')); return; }
+  vehicleCard(p);
 }
 function fetchVehicle(plate) {
   var mut = S.mut;
@@ -1006,6 +1238,7 @@ function fetchVehicle(plate) {
 }
 function isFresh(plate) { var i = S.vinfo[plate]; return !!(i && i.ok && S.q.length === 0 && Date.now() - i.at < 120000); }
 function renderCard(plate, keepScroll, notice) {
+  var cqv = keepScroll && $('cq') ? $('cq').value : null;
   var y = window.scrollY, o = findOpen(plate), info = S.vinfo[plate], v = info && info.v, ex = S.D.exempt[plate], role = S.user.role, fix = '';
   var h = (notice ? '<div class="msg info">' + notice + '</div>' : '') + '<div class="box"><div class="plate">' + esc(plate) + '</div>' +
     (S.thumbPlate === plate && S.thumb ? '<img class="thumb" src="' + S.thumb + '"><br>' : '');
@@ -1034,7 +1267,10 @@ function renderCard(plate, keepScroll, notice) {
     fix += '<button class="btn plain slim" data-t="left" onclick="act(\'left\',\'' + plate + '\')">' + t('left') + '</button>';
   } else {
     var lastCat = S.D.known[plate] || (v && v.lastCat) || '';
-    h += '<b class="tag x">' + t('notInTag') + '</b></div><h2>' + t('entryHead') + '</h2><div class="row2">' + ['MEDIUM', 'HEAVY'].map(function (c) {
+    h += '<b class="tag x">' + t('notInTag') + '</b></div>' +
+      '<div class="box" style="padding:10px"><label class="f">' + t('editNo') + '</label><div class="row2"><div style="flex:4"><input id="cq" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(plate) + '" oninput="plateTyped(this)"></div>' +
+      micBtn('cq', 'plate', 'cmic') + camBtn() + '<button class="btn green mic" data-t="cedit" onclick="cardEdit()">✔</button></div></div>' +
+      '<h2>' + t('entryHead') + '</h2><div class="row2">' + ['MEDIUM', 'HEAVY'].map(function (c) {
       return '<button class="btn ' + CATS[c][0] + (lastCat === c ? ' last' : '') + '" data-t="entry-' + c + '" onclick="act(\'entry\',\'' + plate + '\',\'' + c + '\')">' +
         '<span class="ico">' + svgIcon(c, 46) + '</span>' + catName(c) + '<small>₹' + (ex ? 0 : S.D.deposits[c]) + '</small></button>';
     }).join('') + '</div>';
@@ -1055,6 +1291,8 @@ function renderCard(plate, keepScroll, notice) {
   h += '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>';
   show(h, 'card:' + plate);
   if ($('fixbtn')) $('fixbtn').onclick = function () { $('fixbox').style.display = 'block'; this.style.display = 'none'; };
+  if (S.openFix && $('fixbtn')) { S.openFix = false; $('fixbtn').onclick(); }
+  if (cqv != null && $('cq')) $('cq').value = cqv;
   if (keepScroll) window.scrollTo(0, y);
 }
 function noteName(n) {
@@ -1082,6 +1320,7 @@ function act(kind, plate, cat) {
 
   if (kind === 'entry') {
     if (o) { alertMsg(t('already')); return; }
+    if (!plateOK(plate) && !S.okUnusual[plate]) return unusualScreen(plate, cat);
     if (S.D.exempt[plate]) return doEntry(plate, cat, '', tm);            // exempt: no payment step
     if (S.slips.length) return payScreen(plate, cat);
     busy(t('gettingSlip'));
@@ -1142,6 +1381,13 @@ function act(kind, plate, cat) {
     }).catch(function (e) { fail(e, "vehicleCard('" + plate + "')"); });
   }
 }
+/* The number does not look like a normal plate: correct it, or go on after one more tap (goes to review). */
+function unusualScreen(plate, cat) {
+  buzz([200, 100, 200]); say(t('sUnusual'));
+  show('<div class="fullred" style="background:#b35600"><div class="huge">' + t('unusualT') + '</div><div class="plate" style="font-size:36px">' + esc(plate) + '</div><br>' + t('unusualHelp') + '</div>' +
+    '<button class="btn dark" data-t="fixno" onclick="vehicleCard(\'' + plate + '\')">' + t('fixNo') + '</button>' +
+    '<button class="btn plain slim" data-t="goanyway" onclick="S.okUnusual[\'' + plate + '\']=1;act(\'entry\',\'' + plate + '\',\'' + cat + '\')">' + t('goAnyway') + '</button>', 'unusual');
+}
 /* Step before the entry is made: take the money first. */
 function payScreen(plate, cat) {
   var dep = S.D.deposits[cat], slip = S.slips[0], tm = now();
@@ -1197,6 +1443,7 @@ function money(x) {
 }
 function exitPreview(plate, noSlip, keepAt) {
   var o = findOpen(plate);
+  if (S.cmdNoSlip) { noSlip = true; S.cmdNoSlip = false; }
   if (!o) { renderCard(plate); return; }
   var at = keepAt || now(), minutes = runMin(o, at), fee = feeNow(o, at);
   if (noSlip && o.deposit > fee) fee = o.deposit;
@@ -1236,8 +1483,7 @@ function savePhoto(plate, action) {
   try {
     var cv = $('cv');
     if (!cv.width || S.thumbPlate !== plate) return;
-    var d = new Date();
-    var name = plate + '_' + action + '_' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()) + '.jpg';
+    var name = plate + '_' + action + '_' + ymd(ist(now())).replace(/-/g, '') + '_' + hhmm(now()).replace(':', '') + '.jpg';
     cv.toBlob(function (b) {
       if (!b) return;
       var a = document.createElement('a');
@@ -1286,12 +1532,13 @@ function exemptScreen(plate) {
 function exemptShow(list, plate) {
   var h = '<h1>' + t('exTitle') + ' — ' + list.length + '</h1><div class="box">' + t('exHelp') +
     '<label class="f">' + t('vehNo') + '</label><div class="row2"><input id="exp" class="up" type="text" autocapitalize="characters" placeholder="MH04AB1234" value="' + esc(plate) + '" oninput="plateTyped(this)">' +
-    '<button class="btn dark mic" onclick="mic(\'exp\',\'plate\',this)">🎤</button></div>' +
-    '<label class="f">' + t('exNote') + '</label><div class="row2"><input id="exn" class="note" type="text">' +
-    '<button class="btn dark mic" data-t="mic-note" onclick="mic(\'exn\',\'text\',this)">🎤</button></div>' +
+    micBtn('exp', 'plate') + '</div>' +
+    '<label class="f">' + t('exNote') + '</label><div class="row2"><input id="exn" class="note" type="text" value="' + esc(S.exNote || '') + '">' +
+    micBtn('exn', 'text', 'mic-note') + '</div>' +
     '<button class="btn green slim" data-t="exadd" onclick="exemptAdd()">' + t('add') + '</button></div>';
   h += '<table>' + list.slice(0, 200).map(function (e) {
     return '<tr><td><b>' + esc(e[0]) + '</b></td><td>' + esc(e[2]) + '</td></tr>'; }).join('') + '</table>';
+  S.exNote = '';
   show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'exempt');
 }
 function exemptAdd() {
@@ -1307,7 +1554,7 @@ function exemptAdd() {
 /* ================= RECORDS & CASH ================= */
 function logsHome() {
   if (!can('records')) return home();
-  var today = ymd(new Date()), full = can('mgmt');
+  var today = ymd(ist(now())), full = can('mgmt');
   var pb = function (k, key) { return '<button class="btn plain slim" data-t="p-' + k + '" onclick="period(\'' + k + '\')">' + t(key) + '</button>'; };
   show('<h1>' + t('records') + '</h1>' +
     '<button class="btn green" data-t="cash" onclick="summary()">' + t('cash') + '</button>' +
@@ -1317,19 +1564,19 @@ function logsHome() {
     '<div class="box"><div class="row2"><div><label class="f">' + t('from') + '</label><input id="lf" type="date" value="' + today + '"></div>' +
     '<div><label class="f">' + t('to') + '</label><input id="lt" type="date" value="' + today + '"></div></div>' +
     '<label class="f">' + t('vehNo') + '</label><div class="row2"><input id="lq" class="up" type="text" autocapitalize="characters" placeholder="1234" oninput="plateTyped(this)">' +
-    '<button class="btn dark mic" onclick="mic(\'lq\',\'plate\',this)">🎤</button></div>' +
+    micBtn('lq', 'plate') + '</div>' +
     '<button class="btn slim" data-t="search" onclick="logsSearch()">' + t('search') + '</button></div>' +
     (can('su') ? '<button class="btn dark slim" data-t="analytics" onclick="anHome()">' + t('analytics') + '</button>' : '') +
     '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'logs');
 }
 function range(k) {
-  var a = new Date(), b = new Date();
-  if (k === 'yesterday') { a.setDate(a.getDate() - 1); b.setDate(b.getDate() - 1); }
-  if (k === 'week') { a.setDate(a.getDate() - ((a.getDay() + 6) % 7)); }
-  if (k === 'month') { a.setDate(1); }
-  if (k === 'lastmonth') { a = new Date(a.getFullYear(), a.getMonth() - 1, 1); b = new Date(b.getFullYear(), b.getMonth(), 0); }
-  if (k === 'year') { a = new Date(a.getFullYear(), 0, 1); }
-  if (k === '30') { a.setDate(a.getDate() - 29); }
+  var a = ist(now()), b = ist(now());
+  if (k === 'yesterday') { a.setUTCDate(a.getUTCDate() - 1); b.setUTCDate(b.getUTCDate() - 1); }
+  if (k === 'week') { a.setUTCDate(a.getUTCDate() - ((a.getUTCDay() + 6) % 7)); }
+  if (k === 'month') { a.setUTCDate(1); }
+  if (k === 'lastmonth') { a = new Date(Date.UTC(a.getUTCFullYear(), a.getUTCMonth() - 1, 1)); b = new Date(Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), 0)); }
+  if (k === 'year') { a = new Date(Date.UTC(a.getUTCFullYear(), 0, 1)); }
+  if (k === '30') { a.setUTCDate(a.getUTCDate() - 29); }
   return [ymd(a), ymd(b)];
 }
 function period(k) { var r = range(k); logsRun({ mode: 'past', from: r[0], to: r[1], q: '' }); }
@@ -1382,7 +1629,7 @@ function summary() {
   call('apiSummary', S.pin).then(function (r) {
     var h = '<h1>' + t('cash') + '</h1><div class="box">' + t('sumLine', r.entries, r.inside, r.parked) +
       (r.full ? '<br>' + t('feesToday', r.fees) : '') +
-      (r.totalEver != null ? '<br>' + t('totals', r.totalEver, r.slipsLeft) : '') + '</div>';
+      '</div>';
     r.staff.forEach(function (x) {
       h += '<div class="box"><b>' + esc(x.name) + '</b><div class="huge">₹' + x.cash + '</div>' + t('cashInHand') + '<br>' +
         '<small>' + t('cashCalc', x.deposits, x.refunds, x.collected) + '</small></div>';
@@ -1443,10 +1690,10 @@ function anShow() {
   var st = function (n) { if (!n) n = '—'; if (!staff[n]) staff[n] = { e: 0, x: 0, fee: 0, p: 0 }; return staff[n]; };
   var longRange = (new Date(d.to) - new Date(d.from)) / 86400000 > 45;
   rows.forEach(function (r) {
-    var s = anStatus(r), dt = new Date(r[3]), key = longRange ? dt.getFullYear() + '-' + p2(dt.getMonth() + 1) : dt.getDate() + '/' + (dt.getMonth() + 1);
+    var s = anStatus(r), dt = ist(r[3]), key = longRange ? dt.getUTCFullYear() + '-' + p2(dt.getUTCMonth() + 1) : dt.getUTCDate() + '/' + (dt.getUTCMonth() + 1);
     if (!byDay[key]) byDay[key] = { n: 0, fee: 0, t: r[3] };
     if (s === 'DEL') { del++; return; }
-    byDay[key].n++; byDay[key].fee += r[6]; byHour[dt.getHours()]++;
+    byDay[key].n++; byDay[key].fee += r[6]; byHour[dt.getUTCHours()]++;
     fees += r[6]; if (r[7] > 0) refunds += r[7];
     if (r[5] > 0 || r[14] > 0) { parked++; pmin += r[5]; }
     if (s === 'LEFT') { left++; leftRs += r[6]; }
@@ -1492,6 +1739,7 @@ function anShow() {
         '</td><td>' + (r[4] ? fmt(r[4]) : '—') + '</td><td>' + r[5] + '</td><td>' + r[6] + '</td><td>' + esc(r[11]) + '</td></tr>'; }).join('') + '</table></div>' +
     '<div class="row2"><button class="btn plain slim" onclick="anPage(-1)">◀</button><div class="box" style="margin:10px 0;padding:12px">' + (a.page + 1) + ' / ' + pages + '</div><button class="btn plain slim" onclick="anPage(1)">▶</button></div>' +
     '<button class="btn dark slim" data-t="csv" onclick="anCsv()">' + t('csv') + '</button>' +
+    '<h2>' + t('totalsH') + '</h2><div class="box" data-t="totals">' + t('totals', d.totalEver, d.slipsLeft) + '</div>' +
     '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>';
   var y = window.scrollY, keep = S.screen === 'analytics';
   show(h, 'analytics');
@@ -1502,7 +1750,7 @@ function anSort(c) { var a = S.an; if (a.sort === c) a.desc = !a.desc; else { a.
 function anPage(n) { var a = S.an, pages = Math.max(1, Math.ceil(anRows().length / 50)); a.page = Math.min(pages - 1, Math.max(0, a.page + n)); anShow(); }
 function anCsv() {
   var head = ['Vehicle', 'Size', 'Type', 'Entry', 'Exit', 'Parked min', 'Fee', 'Refund', 'Deposit', 'Status', 'Note', 'Entry by', 'Exit by', 'Serial', 'Earlier days fee', 'Parking by'];
-  var iso = function (tm) { if (!tm) return ''; var d = new Date(tm); return ymd(d) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()); };
+  var iso = function (tm) { return tm ? ymd(ist(tm)) + ' ' + hhmm(tm) : ''; };
   var lines = [head.join(',')].concat(anRows().map(function (r) {
     return r.map(function (v, i) { if (i === 3 || i === 4) v = iso(v); v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',');
   }));
@@ -1532,7 +1780,6 @@ function anCsv() {
     setTimeout(go, 4000);
   } else go();
 })();
-
 </script>
 </body>
 </html>
