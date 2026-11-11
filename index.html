@@ -96,6 +96,8 @@
   .nav button { background: #000; } .nav .iconbtn { border: 2px solid #000; color: #000; } .nav .iconbtn.out { color: #a31515; }
   .fullred { background: #a31515; }
   th.s { color: #0b3d91; }
+  .nav .navmic { background: #0b3d91; font-size: 22px; padding: 7px 16px; }
+  .nav .navr span { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -201,6 +203,32 @@ var W = {
   totalsH: ['एकूण', 'कुल', 'Totals'],
   e_VOICEOFF: ['आवाज बंद आहे', 'आवाज़ बंद है', 'Voice is turned off'],
   a_UNUSUAL_NUMBER: ['वेगळा नंबर', 'अलग नंबर', 'Unusual number'],
+  voiceLog: ['🗒 आवाज नोंदी', '🗒 आवाज़ लॉग', '🗒 Voice log'],
+  vlAll: ['सर्व', 'सभी', 'All'],
+  vlProb: ['अडचणी व हळू', 'दिक्कतें और धीमे', 'Problems and slow'],
+  vlUnderstood: ['समजले', 'समझा', 'Understood'],
+  vlUsed: ['वापरली', 'इस्तेमाल', 'Used'],
+  vlSteps: ['पायऱ्या', 'चरण', 'Steps'],
+  vlShown: [function (a, b) { return 'शेवटच्या ' + a + ' / एकूण ' + b; }, function (a, b) { return 'आख़िरी ' + a + ' / कुल ' + b; }, function (a, b) { return 'Latest ' + a + ' of ' + b; }],
+  sec: ['से', 'से', 's'],
+  f_OK: ['ठीक', 'ठीक', 'OK'],
+  f_SLOW: ['हळू / जास्त पायऱ्या', 'धीमा / ज़्यादा चरण', 'Slow / extra steps'],
+  f_PROBLEM: ['अडचण', 'दिक्कत', 'Problem'],
+  vr_DONE: ['पूर्ण', 'पूरा', 'Done'],
+  vr_OPENED: ['उघडले', 'खोला', 'Opened'],
+  vr_CANCELLED: ['✖ चूक दाबले', '✖ गलत दबाया', '✖ Cancelled'],
+  vr_ABANDONED: ['अर्धवट सोडले', 'बीच में छोड़ा', 'Left unfinished'],
+  vr_NOT_UNDERSTOOD: ['समजले नाही', 'समझ नहीं आया', 'Not understood'],
+  vr_DENIED: ['परवानगी नाही', 'अनुमति नहीं', 'Not allowed'],
+  vr_WRONG_STATE: ['गाडीची स्थिती जुळली नाही', 'गाड़ी की स्थिति मेल नहीं खाई', 'Did not fit the vehicle state'],
+  vr_ERROR: ['त्रुटी', 'त्रुटि', 'Error'],
+  vs_ASK_PLATE: ['नंबर विचारला', 'नंबर पूछा', 'Asked number'],
+  vs_ASK_SIZE: ['आकार विचारला', 'साइज़ पूछा', 'Asked size'],
+  vs_CONFIRM: ['खात्री', 'पुष्टि', 'Confirm'],
+  vs_PAY: ['ठेव स्क्रीन', 'जमा स्क्रीन', 'Deposit screen'],
+  vs_EXIT_SCREEN: ['बाहेर स्क्रीन', 'एग्ज़िट स्क्रीन', 'Exit screen'],
+  vs_UNUSUAL: ['वेगळा नंबर', 'अलग नंबर', 'Unusual number'],
+  vs_EDIT_NUMBER: ['नंबर दुरुस्त केला', 'नंबर ठीक किया', 'Number corrected'],
   reading: ['नंबर वाचत आहे...', 'नंबर पढ़ रहा है...', 'Reading the number...'],
   cancel: ['✖ रद्द', '✖ रद्द', '✖ Cancel'],
   tooLong: ['वेळ लागला', 'बहुत समय लगा', 'Took too long'],
@@ -433,7 +461,7 @@ function t(k) {
 function tk(prefix, key) { var k = prefix + String(key || '').replace(/[^A-Z0-9]+/g, '_'); return W[k] ? t(k) : esc(key); }
 
 /* ======================================================================
-   GLOBE PARKING - phone screens - version 10 (Marathi / Hindi / English)
+   GLOBE PARKING - phone screens - version 11 (Marathi / Hindi / English)
    The app loads the vehicles inside, prices and known vehicles ONCE, keeps
    them on the phone, shows every screen instantly, and saves to the Google
    Sheet in the background.
@@ -481,7 +509,8 @@ function show(html, name) {
   stopMic(true);
   var nav = '';
   if (S.user && name !== 'home' && name !== 'login') {
-    nav = '<div class="nav"><button data-t="home" onclick="home()">' + t('home') + '</button><span>' + esc(S.user.name) + '</span></div>';
+    nav = '<div class="nav"><button data-t="home" onclick="home()">' + t('home') + '</button><span class="navr">' +
+      (S.voiceOn ? '<button class="navmic" data-t="navmic" onclick="mic(\'\',\'cmd\',this)">🎤</button>' : '') + '<span>' + esc(S.user.name) + '</span></span></div>';
   }
   $('app').innerHTML = nav + html; window.scrollTo(0, 0);
 }
@@ -722,6 +751,7 @@ function toggleVoice() {
 
 /* ================= HOME ================= */
 function home() {
+  vlEnd('ABANDONED');
   S.pre = ''; S.cmdNoSlip = false; S.openFix = false; S.cmd = null;
   var stale = S.open.filter(isStale).length;
   var h = '<div class="nav"><span>' + esc(S.user.name) + '</span><span class="navr">' + langSelect() +
@@ -743,6 +773,7 @@ function home() {
   if (can('mgmt')) h += '<button class="btn ' + (S.reviewCount ? 'red' : 'plain') + ' slim" data-t="review" onclick="reviewScreen()">' + t('review') + (S.reviewCount ? ' — ' + S.reviewCount : '') + '</button>';
   if (can('records')) h += '<button class="btn plain slim" data-t="records" onclick="logsHome()">' + t('records') + '</button>';
   if (can('mgmt')) h += '<button class="btn plain slim" data-t="exempt" onclick="exemptScreen()">' + t('exemptHome') + '</button>';
+  if (can('su')) h += '<button class="btn plain slim" data-t="voicelog" onclick="vlScreen()">' + t('voiceLog') + '</button>';
   if (can('su')) h += '<button class="btn ' + (S.voiceOn ? 'green' : 'grey') + ' slim" data-t="voicecmd" onclick="toggleVoiceCmd()">' + t('voiceCmd') + ': ' + (S.voiceOn ? t('on') : t('off')) + '</button>';
   show(h, 'home');
   homeCounts();
@@ -916,11 +947,16 @@ function stopMic(discard) {
   var b64 = wavBase64(r.chunks.slice(a, b), rate);
   micOverlay('busy'); buzz(40);
   if (r.mode === 'cmd') {
+    var sent = Date.now();
     call('apiCommand', S.pin, b64, 'audio/wav').then(function (c) {
       micOverlay('');
       if (S.screen !== r.screen) return;
-      if (c && c.error) { buzz([200, 100, 200]); alertMsg(readerErr(c.error) + '. ' + t('heardNothing')); return; }
-      runCommand(c || {});
+      c = c || {};
+      vlEnd('ABANDONED');
+      S.vl = { t0: r.started, from: String(r.screen).split(':')[0], heard: c.heard || '', plate: c.plate || '', action: c.action || '', size: c.size || '',
+        audioMs: sent - r.started, replyMs: Date.now() - sent, path: [] };
+      if (c.error) { vlEnd('ERROR', c.error); buzz([200, 100, 200]); alertMsg(readerErr(c.error) + '. ' + t('heardNothing')); return; }
+      runCommand(c);
     }).catch(function (e) { micOverlay(''); alertMsg(errCode(e && e.message) ? errText(e) : t('micNet')); });
     return;
   }
@@ -1008,6 +1044,21 @@ function plateTyped(el) {
   if (/[\u0900-\u097F]/.test(v) || /\b(zero|one|two|three|four|five|six|seven|eight|nine|double)\b/i.test(v)) el.value = spokenPlate(v);
 }
 
+/* ================= voice command log =================
+   Every spoken command leaves one line: what was heard, what was understood, which extra steps
+   were needed, how it ended and how long it took. It is sent in the background and never blocks. */
+function vlStep(step) { var v = S.vl; if (v && v.path[v.path.length - 1] !== step) v.path.push(step); }
+function vlEnd(result, detail) {
+  var v = S.vl;
+  if (!v) return;
+  S.vl = null;
+  var path = v.path.join('>'), flag = 'OK';
+  if (/ASK_|EDIT_NUMBER|UNUSUAL/.test(path) || v.replyMs > 5000) flag = 'SLOW';
+  if (/EDIT_NUMBER/.test(path) || ['DONE', 'OPENED'].indexOf(result) < 0) flag = 'PROBLEM';
+  call('apiVoiceLog', S.pin, { lang: S.lang, from: v.from, heard: v.heard, plate: v.plate, action: v.action, size: v.size, resolved: v.resolved || '', path: path,
+    result: result, detail: detail || '', audioMs: v.audioMs, replyMs: v.replyMs, totalMs: Date.now() - v.t0, flag: flag }).catch(function () {});
+}
+
 /* ================= VOICE COMMANDS =================
    One sentence, for example "MH04GH8899 आली" or "8899 बाहेर". The server only works out what was
    said: { plate, action, size, note }. Nothing is saved from here without a tap on a confirm screen.
@@ -1033,20 +1084,22 @@ function cmdLabel(c) {
 function runCommand(c) {
   var a = c.action || 'FIND';
   c = { action: a, plate: spokenPlate(c.plate || ''), size: c.size || '', note: c.note || '', heard: c.heard || '' };
-  if (a === 'NONE' && !c.plate) { buzz([200, 100, 200]); say(t('notUnderstood')); return alertMsg(t('notUnderstood') + (c.heard ? ' (' + t('heard') + ': ' + c.heard + ')' : '')); }
+  S.pay = null; S.exit = null; S.pre = '';
+  if (a === 'NONE' && !c.plate) { vlEnd('NOT_UNDERSTOOD'); buzz([200, 100, 200]); say(t('notUnderstood')); return alertMsg(t('notUnderstood') + (c.heard ? ' (' + t('heard') + ': ' + c.heard + ')' : '')); }
   if (a === 'NONE') c.action = a = 'FIND';
   // screens that need no vehicle
-  var deny = function () { buzz([200, 100, 200]); say(t('noPerm')); alertMsg(t('noPerm')); };
-  if (a === 'HOME') return home();
-  if (a === 'LIST_INSIDE') return insideList('');
-  if (a === 'LIST_PARKED') return insideList('PARKED');
-  if (a === 'LIST_OVERNIGHT') return staleList();
-  if (a === 'CASH') return can('records') ? summary() : deny();
-  if (a === 'RECORDS_TODAY') return can('records') ? period('today') : deny();
-  if (a === 'RECORDS_YESTERDAY') return can('records') ? period('yesterday') : deny();
-  if (a === 'REVIEW') return can('mgmt') ? reviewScreen() : deny();
-  if (a === 'EXEMPT_LIST') return can('mgmt') ? exemptScreen() : deny();
-  if (a === 'ANALYTICS') return can('su') ? anHome() : deny();
+  var deny = function () { vlEnd('DENIED'); buzz([200, 100, 200]); say(t('noPerm')); alertMsg(t('noPerm')); };
+  var go = function (ok, fn) { if (!ok) return deny(); vlEnd('OPENED'); fn(); };
+  if (a === 'HOME') return go(true, home);
+  if (a === 'LIST_INSIDE') return go(true, function () { insideList(''); });
+  if (a === 'LIST_PARKED') return go(true, function () { insideList('PARKED'); });
+  if (a === 'LIST_OVERNIGHT') return go(true, staleList);
+  if (a === 'CASH') return go(can('records'), summary);
+  if (a === 'RECORDS_TODAY') return go(can('records'), function () { period('today'); });
+  if (a === 'RECORDS_YESTERDAY') return go(can('records'), function () { period('yesterday'); });
+  if (a === 'REVIEW') return go(can('mgmt'), reviewScreen);
+  if (a === 'EXEMPT_LIST') return go(can('mgmt'), function () { exemptScreen(); });
+  if (a === 'ANALYTICS') return go(can('su'), anHome);
   if ((a === 'PARK_START' || a === 'PARK_END' || a === 'SET_SIZE') && !can('park')) return deny();
   if (a === 'EXEMPT' && !can('mgmt')) return deny();
   var r = cmdResolve(c, c.plate);
@@ -1071,7 +1124,7 @@ function cmdResolve(c, text) {
 }
 /* Asks for the missing vehicle number: type, speak, or tap one from the list. */
 function cmdAsk(c, list) {
-  S.cmd = c;
+  S.cmd = c; vlStep('ASK_PLATE');
   buzz(60); say(t('whichVeh'));
   show('<h1>' + cmdLabel(c) + '</h1><div class="box"><b style="font-size:22px">' + t('whichVeh') + '</b><div class="row2" style="margin-top:8px"><div style="flex:4">' +
     '<input id="nq" class="up" type="text" autocomplete="off" autocapitalize="characters" placeholder="1234" value="' + esc(norm(c.plate)) + '" oninput="plateTyped(this);cmdAskFilter()"></div>' +
@@ -1094,23 +1147,25 @@ function cmdPick(plate) { var c = S.cmd; S.cmd = null; if (c) cmdDo(c, plate); e
 /* Final check before anything is saved: the number is read aloud and one tap confirms. */
 function confirmScreen(plate, icon, label, sub, onYes) {
   var o = findOpen(plate);
+  vlStep('CONFIRM');
   buzz(60); say(spell(plate) + '. ' + label.replace(/<[^>]+>/g, '') + '. ' + t('ask'));
   show('<div class="box"><div class="plate" style="font-size:38px">' + esc(plate) + '</div>' + (o ? catTag(o.cat) : '') +
     '<div class="huge">' + icon + '</div><b style="font-size:26px">' + label + '</b>' + (sub ? '<br>' + sub : '') + '</div>' +
     '<button class="btn green" id="cyes" data-t="cyes"><span class="ico">✔</span>' + t('confirmYes') + '</button>' +
     '<button class="btn grey slim" id="cno" data-t="cno">' + t('confirmNo') + '</button>', 'confirm');
-  $('cyes').onclick = onYes;
-  $('cno').onclick = function () { vehicleCard(plate); };
+  $('cyes').onclick = function () { vlEnd('DONE'); onYes(); };
+  $('cno').onclick = function () { vlEnd('CANCELLED'); vehicleCard(plate); };
 }
 function cmdDo(c, plate) {
-  var a = c.action, o = findOpen(plate), bad = function (msg) { buzz([200, 100, 200]); say(msg); vehicleCard(plate, esc(msg)); };
-  if (a === 'FIND') return vehicleCard(plate);
-  if (a === 'FIX') { S.openFix = true; return vehicleCard(plate); }
-  if (a === 'EXEMPT') { S.exNote = c.note; return exemptScreen(plate); }
+  var a = c.action, o = findOpen(plate), bad = function (msg) { vlEnd('WRONG_STATE', msg); buzz([200, 100, 200]); say(msg); vehicleCard(plate, esc(msg)); };
+  if (S.vl) S.vl.resolved = plate;
+  if (a === 'FIND') { vlEnd('OPENED'); return vehicleCard(plate); }
+  if (a === 'FIX') { vlEnd('OPENED'); S.openFix = true; return vehicleCard(plate); }
+  if (a === 'EXEMPT') { vlEnd('OPENED'); S.exNote = c.note; return exemptScreen(plate); }
   if (a === 'ENTRY') {
     if (o) return bad(t('already'));
     var size = c.size || S.D.known[plate] || '';
-    if (!size) { S.pre = spell(plate) + '. '; say(t('sAskSize')); return vehicleCard(plate); }       // size not said and vehicle is new: ask
+    if (!size) { vlStep('ASK_SIZE'); S.pre = spell(plate) + '. '; say(t('sAskSize')); return vehicleCard(plate); }       // size not said and vehicle is new: ask
     if (S.D.exempt[plate] && plateOK(plate)) return confirmScreen(plate, '⬇️', t('cEntry') + ' · ' + catName(size), t('noMoney'), function () { doEntry(plate, size, '', now()); });
     S.pre = spell(plate) + '. ' + catName(size) + '. ';
     return act('entry', plate, size);                                    // the take-deposit screen is the confirmation
@@ -1131,9 +1186,10 @@ function cmdDo(c, plate) {
     S.mut++; dropOpen(plate); delete S.vinfo[plate]; bg('✖ ' + plate, 'apiCloseLeft', [plate, now()]);
     doneScreen(plate, '<div class="huge" style="color:#a31515">✖</div>' + t('cGone') + ' · ' + t('cGoneSub', o.deposit), t('sOk')); });
   if (a === 'SET_SIZE') {
-    if (!c.size || c.size === o.cat) { S.openFix = true; return vehicleCard(plate); }
+    if (!c.size || c.size === o.cat) { vlStep('ASK_SIZE'); vlEnd('OPENED'); S.openFix = true; return vehicleCard(plate); }
     return confirmScreen(plate, '⚙️', t('sizeTo', catName(c.size)), '', function () { act('setcat', plate, c.size); });
   }
+  vlEnd('OPENED');
   vehicleCard(plate);
 }
 
@@ -1223,6 +1279,7 @@ function vehicleCard(plate, notice) {
 function cardEdit() {
   var p = norm($('cq').value);
   if (p.length < 6) { alertMsg(t('fullNoShort')); return; }
+  if (S.vl) { vlStep('EDIT_NUMBER'); S.vl.resolved = p; }
   vehicleCard(p);
 }
 function fetchVehicle(plate) {
@@ -1383,6 +1440,7 @@ function act(kind, plate, cat) {
 }
 /* The number does not look like a normal plate: correct it, or go on after one more tap (goes to review). */
 function unusualScreen(plate, cat) {
+  vlStep('UNUSUAL');
   buzz([200, 100, 200]); say(t('sUnusual'));
   show('<div class="fullred" style="background:#b35600"><div class="huge">' + t('unusualT') + '</div><div class="plate" style="font-size:36px">' + esc(plate) + '</div><br>' + t('unusualHelp') + '</div>' +
     '<button class="btn dark" data-t="fixno" onclick="vehicleCard(\'' + plate + '\')">' + t('fixNo') + '</button>' +
@@ -1392,6 +1450,7 @@ function unusualScreen(plate, cat) {
 function payScreen(plate, cat) {
   var dep = S.D.deposits[cat], slip = S.slips[0], tm = now();
   S.pay = { plate: plate, cat: cat, slip: slip, t: tm };
+  vlStep('PAY');
   buzz(60); say(t('sTake', dep));
   show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(cat) +
     '<div class="huge" style="color:#d9780a">' + t('take', dep) + '</div></div>' +
@@ -1402,9 +1461,10 @@ function payScreen(plate, cat) {
     '<button class="btn green" id="paid" data-t="paid"><span class="ico">✔ ₹</span>' + t('paid') + '</button>' +
     '<button class="btn grey slim" id="notpaid" data-t="notpaid">' + t('notPaid') + '</button>', 'pay');
   $('paid').onclick = function () { var p = S.pay; S.pay = null; if (!p) return; S.slips.shift(); slipStore(); doEntry(p.plate, p.cat, p.slip, p.t); };
-  $('notpaid').onclick = function () { S.pay = null; renderCard(plate); };
+  $('notpaid').onclick = function () { S.pay = null; vlEnd('CANCELLED'); renderCard(plate); };
 }
 function doEntry(plate, cat, slip, tm) {
+  if (S.vl) { S.vl.resolved = plate; vlEnd('DONE'); }
   var ex = S.D.exempt[plate], type = ex ? ex.type : 'DEPOSIT', dep = type === 'DEPOSIT' ? S.D.deposits[cat] : 0;
   S.mut++; S.today++;
   S.open.push({ row: null, plate: plate, status: 'INSIDE', cat: cat, type: type, slip: slip, deposit: dep, entry: tm, entryBy: S.user.name, pstart: null, pend: null, pmin: 0, banked: 0, seen: null });
@@ -1450,6 +1510,7 @@ function exitPreview(plate, noSlip, keepAt) {
   var x = { plate: plate, type: o.type, cat: o.cat, slip: o.slip, deposit: o.deposit, minutes: minutes, fee: fee, refund: o.deposit - fee, banked: o.banked || 0, noSlip: !!noSlip,
     entry: o.entry, pstart: o.pstart, pend: o.status === 'PARKED' ? at : o.pend, exit: at, complexMinutes: Math.max(0, Math.ceil((at - o.entry) / 60000)), at: at };
   S.exit = x;
+  vlStep('EXIT_SCREEN');
   var m = money(x);
   buzz(60); say(m[2]);
   show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(o.cat) + ' ' + (o.slip !== '' && o.slip != null ? '🧾 <b>' + esc(o.slip) + '</b> · ' : '') + t('fee') + ' ₹' + fee + m[0] + m[1] + '</div>' +
@@ -1457,13 +1518,14 @@ function exitPreview(plate, noSlip, keepAt) {
     (o.deposit > 0 ? '<button class="btn plain slim" id="noslip" data-t="noslip">' + (noSlip ? t('slipFound') : t('noSlipBtn')) + '</button>' : '') +
     timesTable(x) + '<button class="btn grey slim" id="exback">' + t('wrongVeh') + '</button>', 'exit');
   $('exdone').onclick = exitConfirm;
-  $('exback').onclick = function () { S.exit = null; renderCard(plate); };
+  $('exback').onclick = function () { S.exit = null; vlEnd('CANCELLED'); renderCard(plate); };
   if ($('noslip')) $('noslip').onclick = function () { exitPreview(plate, !noSlip, at); };
 }
 function exitConfirm() {
   var x = S.exit;
   if (!x) return home();
   S.exit = null;
+  vlEnd('DONE');
   S.mut++;
   dropOpen(x.plate); delete S.vinfo[x.plate];
   savePhoto(x.plate, 'EXIT');
@@ -1760,6 +1822,54 @@ function anCsv() {
     a.download = 'globe_parking_' + S.an.d.from + '_' + S.an.d.to + '.csv';
     document.body.appendChild(a); a.click(); a.remove();
   } catch (e) { alertMsg(t('dlFail')); }
+}
+
+/* ================= VOICE LOG (superuser) ================= */
+/* Row layout: 0 time, 1 staff, 2 role, 3 language, 4 screen, 5 heard, 6 number heard, 7 action, 8 size, 9 vehicle used,
+   10 steps, 11 result, 12 detail, 13 speech ms, 14 reply ms, 15 total ms, 16 flag */
+function vlScreen() {
+  busy();
+  call('apiVoiceLogs', S.pin, 300).then(function (d) { S.vlog = { d: d, only: false }; vlShow(); }).catch(function (e) { fail(e); });
+}
+function vlShow() {
+  var v = S.vlog, rows = v.d.rows, n = { OK: 0, SLOW: 0, PROBLEM: 0 };
+  rows.forEach(function (r) { n[r[16]] = (n[r[16]] || 0) + 1; });
+  var list = v.only ? rows.filter(function (r) { return r[16] !== 'OK'; }) : rows;
+  var secs = function (ms) { return (Math.round(ms / 100) / 10) + ' ' + t('sec'); };
+  var col = { OK: '#0a6b2d', SLOW: '#b35600', PROBLEM: '#a31515' };
+  var h = '<h1>' + t('voiceLog') + '</h1><div class="msg info">' + t('vlShown', rows.length, v.d.total) + '</div>' +
+    '<div class="kpis"><div class="kpi"><b style="color:' + col.OK + '">' + n.OK + '</b><span>' + t('f_OK') + '</span></div><div class="kpi"><b style="color:' + col.SLOW + '">' + n.SLOW + '</b><span>' + t('f_SLOW') + '</span></div>' +
+    '<div class="kpi"><b style="color:' + col.PROBLEM + '">' + n.PROBLEM + '</b><span>' + t('f_PROBLEM') + '</span></div></div>' +
+    '<div class="row2"><button class="btn ' + (v.only ? 'plain' : 'dark') + ' slim" data-t="vl-all" onclick="S.vlog.only=false;vlShow()">' + t('vlAll') + '</button>' +
+    '<button class="btn ' + (v.only ? 'dark' : 'plain') + ' slim" data-t="vl-prob" onclick="S.vlog.only=true;vlShow()">' + t('vlProb') + '</button></div>' +
+    '<button class="btn dark slim" data-t="vl-csv" onclick="vlCsv()">' + t('csv') + '</button>';
+  if (!list.length) h += '<div class="msg info">' + t('noRec') + '</div>';
+  list.slice(0, 150).forEach(function (r) {
+    var steps = String(r[10] || '').split('>').filter(Boolean).map(function (x) { return tk('vs_', x); }).join(' → ');
+    h += '<div class="box vl" style="text-align:left;border-left:10px solid ' + (col[r[16]] || '#000') + '"><small>' + fmt(r[0]) + ' · ' + esc(r[1]) + ' · ' + secs(r[15]) + ' (' + secs(r[14]) + ')</small>' +
+      '<br><b>“' + esc(r[5] || '—') + '”</b>' +
+      '<br>' + t('vlUnderstood') + ': ' + (r[7] && r[7] !== 'NONE' ? cmdLabel({ action: r[7] }) : '—') + (r[6] ? ' · ' + esc(r[6]) : '') + (r[8] ? ' · ' + catName(r[8]) : '') +
+      (r[9] && r[9] !== r[6] ? '<br>' + t('vlUsed') + ': <b>' + esc(r[9]) + '</b>' : '') +
+      (steps ? '<br>' + t('vlSteps') + ': ' + steps : '') +
+      '<br><b style="color:' + (col[r[16]] || '#000') + '">' + tk('vr_', r[11]) + '</b>' + (r[12] ? ' · ' + esc(r[12]) : '') + '</div>';
+  });
+  show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'voicelog');
+}
+function vlCsv() {
+  busy();
+  call('apiVoiceLogs', S.pin, 3000).then(function (d) {
+    var head = ['Time (IST)', 'Staff', 'Role', 'Language', 'Screen', 'Heard', 'Number heard', 'Action', 'Size', 'Vehicle used', 'Steps', 'Result', 'Detail', 'Speech ms', 'Reply ms', 'Total ms', 'Flag'];
+    var lines = [head.join(',')].concat(d.rows.map(function (r) {
+      return r.map(function (x, i) { if (i === 0) x = x ? ymd(ist(x)) + ' ' + hhmm(x) : ''; x = x == null ? '' : String(x); return /[",\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; }).join(',');
+    }));
+    vlShow();
+    try {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\n')], { type: 'text/csv' }));
+      a.download = 'globe_voice_log_' + ymd(ist(now())) + '.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch (e) { alertMsg(t('dlFail')); }
+  }).catch(function (e) { fail(e); });
 }
 
 /* ================= start ================= */
