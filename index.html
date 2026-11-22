@@ -98,6 +98,10 @@
   th.s { color: #0b3d91; }
   .nav .navmic { background: #0b3d91; font-size: 22px; padding: 7px 16px; }
   .nav .navr span { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .livetx { font-size: 26px; font-weight: bold; color: #ffe27a; min-height: 34px; max-width: 420px; margin: 0 0 14px; text-align: center; word-break: break-word; }
+  .heard { background: #fff7d6; border: 2px solid #e0b400; border-radius: 12px; padding: 10px 12px; margin: 8px 0; font-size: 17px; text-align: left; }
+  .heard .iconbtn { color: #333; border-color: #c9a400; }
+  .bsel { flex: 1; font-size: 20px; padding: 10px; border-radius: 10px; border: 2px solid #bbb; background: #fff; min-width: 0; }
 </style>
 </head>
 <body>
@@ -109,6 +113,55 @@
    Every text on screen comes from this table: [Marathi, Hindi, English].
    A function is used where a number goes inside the sentence. */
 var W = {
+  /* v12: tickets, entry details, parking list, voice box */
+  parkList: ['पार्किंग यादी', 'पार्किंग सूची', 'Parking list'],
+  rNear: ['कुठे उभी', 'कहाँ खड़ी', 'Parked near'],
+  rTo: ['कुठे जाणार', 'कहाँ जाएगी', 'Going to'],
+  rTickets: ['तिकीट', 'टिकट', 'Tickets'],
+  paidTill: ['पर्यंत', 'तक', 'paid till'],
+  runAgain: ['पुन्हा करा', 'फिर से करें', 'Run again'],
+  newTicket: ['नवीन तिकीट', 'नया टिकट', 'New ticket'],
+  noTicket: ['तिकीट नाही', 'टिकट नहीं', 'No ticket'],
+  overBy: [function (x) { return 'वेळ संपली ' + x + ' ता'; }, function (x) { return 'समय खत्म ' + x + ' घं'; }, function (x) { return 'Over by ' + x + ' h'; }],
+  leftFor: [function (x) { return x + ' ता बाकी'; }, function (x) { return x + ' घं बाकी'; }, function (x) { return x + ' h left'; }],
+  untick: [function (n) { return '🎫✖ चुकीचे तिकीट ' + n + ' काढा'; }, function (n) { return '🎫✖ गलत टिकट ' + n + ' हटाएँ'; }, function (n) { return '🎫✖ Remove wrong ticket ' + n; }],
+  untickDone: [function (n, a) { return 'तिकीट ' + n + ' काढले (₹' + a + ')'; }, function (n, a) { return 'टिकट ' + n + ' हटाया (₹' + a + ')'; }, function (n, a) { return 'Ticket ' + n + ' removed (₹' + a + ')'; }],
+  goingTo: ['कुठे जाणार (हवे तर)', 'कहाँ जाएगी (चाहें तो)', 'Going to (optional)'],
+  unitPh: ['गाळा नं.', 'यूनिट नं.', 'Unit no.'],
+  companyPh: ['कंपनीचे नाव', 'कंपनी का नाम', 'Company name'],
+  parkNoEntry: ['आत नोंद नसली तरी पार्किंग सुरू', 'एंट्री न हो तो भी पार्किंग शुरू', 'Start parking (no entry yet)'],
+  willEnter: ['आत नोंद आपोआप होईल', 'एंट्री अपने आप होगी', 'entry will be made automatically'],
+  stillPaid: [function (x) { return 'आधीचे तिकीट ' + x + ' पर्यंत चालू — पैसे नको'; }, function (x) { return 'पिछला टिकट ' + x + ' तक चालू — पैसे नहीं'; }, function (x) { return 'Earlier ticket valid till ' + x + ' — no money'; }],
+  ticketNo: ['तिकीट नंबर', 'टिकट नंबर', 'Ticket number'],
+  parkNear: ['कोणत्या बिल्डिंगजवळ उभी (हवे तर)', 'किस बिल्डिंग के पास खड़ी (चाहें तो)', 'Parked near building (optional)'],
+  paidPark: ['पैसे मिळाले — पार्किंग सुरू', 'पैसे मिले — पार्किंग शुरू', 'Paid — start parking'],
+  needTicket: ['तिकीट नंबर लिहा', 'टिकट नंबर लिखें', 'Write the ticket number'],
+  fromOld: ['आधीचे संपल्यापासून', 'पिछले के खत्म होने से', 'from when the last one ended'],
+  sTicket: ['तिकीट झाले', 'टिकट हो गया', 'Ticket done'],
+  sEntry: ['आत नोंद झाली', 'एंट्री हो गई', 'Entry done'],
+  sExitAsk: ['गाडी बाहेर गेली का?', 'गाड़ी बाहर गई?', 'Has the vehicle left?'],
+  feesTk: [function (f, n) { return '₹' + f + ' · 🎫 ' + n; }, function (f, n) { return '₹' + f + ' · 🎫 ' + n; }, function (f, n) { return '₹' + f + ' · 🎫 ' + n; }],
+  ticketsSold: ['तिकीट विकली', 'टिकट बेचे', 'tickets sold'],
+  stOd: ['वेळ संपून गेल्या', 'समय खत्म होकर गईं', 'Left overdue'],
+  kTk: ['तिकीट', 'टिकट', 'Tickets'],
+  kOd: ['वेळ संपून गेल्या', 'समय खत्म होकर गईं', 'Left overdue'],
+  chBld: ['कोणत्या बिल्डिंगला गेल्या', 'किस बिल्डिंग गईं', 'Going to building'],
+  nearH: ['कुठे उभ्या (बिल्डिंगजवळ)', 'कहाँ खड़ी (बिल्डिंग के पास)', 'Parked near building'],
+  n_OVERDUE: ['वेळ संपून गेली', 'समय खत्म होकर गई', 'Left overdue'],
+  n_PRESUMED: ['गेली असावी (आपोआप)', 'चली गई होगी (अपने आप)', 'Presumed left (auto)'],
+  n_ATPARK: ['पार्किंगला नोंद', 'पार्किंग पर एंट्री', 'Entered at parking'],
+  u_PRESUMED_LEFT: ['"गेली असावी" नोंद', '"चली गई होगी" एंट्री', '"presumed left"'],
+  vs_PARK_SCREEN: ['पार्किंग स्क्रीन', 'पार्किंग स्क्रीन', 'Parking screen'],
+  vs_TICKET_SCREEN: ['तिकीट स्क्रीन', 'टिकट स्क्रीन', 'Ticket screen'],
+  vs_EDIT_CMD: ['आज्ञा दुरुस्त केली', 'कमांड ठीक की', 'Command corrected'],
+  a_TICKET_NUMBER_REPEATED: ['तिकीट नंबर पुन्हा वापरला', 'टिकट नंबर दोबारा', 'Ticket number repeated'],
+  a_TICKET_REMOVED: ['तिकीट काढले', 'टिकट हटाया', 'Ticket removed'],
+  a_PRESUMED_LEFT: ['गेली असावी (९ तास काही नाही)', 'चली गई होगी (९ घंटे कुछ नहीं)', 'Presumed left (nothing for 9 h)'],
+  a_LEFT_AFTER_TICKET_ENDED: ['तिकीट संपून गेली', 'टिकट खत्म होकर गई', 'Left after ticket ended'],
+  a_PARKED_WITHOUT_TICKET: ['तिकीटाशिवाय पार्किंग', 'बिना टिकट पार्किंग', 'Parked without ticket'],
+  a_OLD_DEPOSIT_TO_RETURN: ['जुनी ठेव परत द्या', 'पुरानी जमा वापस दें', 'Old deposit to return'],
+  a_UNDONE_PRESUMED_LEFT: ['"गेली असावी" मागे घेतले', '"चली गई होगी" वापस', '"Presumed left" undone'],
+
   appName: ['ग्लोब पार्किंग', 'ग्लोब पार्किंग', 'Globe Parking'],
   home: ['🏠 मुख्य', '🏠 होम', '🏠 Home'],
   back: ['← मागे', '← पीछे', '← Back'],
@@ -195,7 +248,6 @@ var W = {
   heard: ['ऐकले', 'सुना', 'Heard'],
   cEntry: ['आत नोंद', 'एंट्री', 'Entry'],
   cGone: ['न सांगता गेली', 'बिना बताए चली गई', 'Left without exit'],
-  cGoneSub: [function (n) { return 'ठेव ₹' + n + ' जप्त'; }, function (n) { return 'जमा ₹' + n + ' ज़ब्त'; }, function (n) { return 'Deposit ₹' + n + ' kept'; }],
   cSeen: ['इथेच आहे', 'यहीं है', 'Still here'],
   sizeTo: [function (c) { return 'आकार → ' + c; }, function (c) { return 'साइज़ → ' + c; }, function (c) { return 'Size → ' + c; }],
   notParked: ['पार्किंगमध्ये नाही', 'पार्किंग में नहीं', 'Not parked'],
@@ -225,7 +277,6 @@ var W = {
   vs_ASK_PLATE: ['नंबर विचारला', 'नंबर पूछा', 'Asked number'],
   vs_ASK_SIZE: ['आकार विचारला', 'साइज़ पूछा', 'Asked size'],
   vs_CONFIRM: ['खात्री', 'पुष्टि', 'Confirm'],
-  vs_PAY: ['ठेव स्क्रीन', 'जमा स्क्रीन', 'Deposit screen'],
   vs_EXIT_SCREEN: ['बाहेर स्क्रीन', 'एग्ज़िट स्क्रीन', 'Exit screen'],
   vs_UNUSUAL: ['वेगळा नंबर', 'अलग नंबर', 'Unusual number'],
   vs_EDIT_NUMBER: ['नंबर दुरुस्त केला', 'नंबर ठीक किया', 'Number corrected'],
@@ -250,10 +301,7 @@ var W = {
   rPt: ['🅿️ वेळ', '🅿️ समय', '🅿️ Parked'],
   todayP: [' (आज)', ' (आज)', ' (today)'],
   rCt: ['⏱ आत वेळ', '⏱ अंदर समय', '⏱ In complex'],
-  rSlip: ['🧾 पावती · ठेव', '🧾 पर्ची · जमा', '🧾 Slip · deposit'],
-  rBank: ['मागील दिवसांचे शुल्क', 'पिछले दिनों का शुल्क', 'Earlier days fee'],
   rSerial: ['🔢 क्रमांक', '🔢 क्रमांक', '🔢 Serial'],
-  rFeeNow: ['₹ आत्ता शुल्क', '₹ अभी शुल्क', '₹ Fee now'],
   bPstart: ['पार्किंग सुरू', 'पार्किंग शुरू', 'Start parking'],
   bPend: ['पार्किंग बंद', 'पार्किंग बंद', 'End parking'],
   bExit: ['बाहेर', 'बाहर', 'Exit'],
@@ -272,58 +320,26 @@ var W = {
   openAgain: ['हीच गाडी पुन्हा उघडा', 'यही गाड़ी फिर खोलें', 'Open this vehicle again'],
   noPerm: ['परवानगी नाही', 'अनुमति नहीं', 'Not allowed'],
   already: ['आधीच आत आहे', 'पहले से अंदर है', 'Already inside'],
-  gettingSlip: ['पावती नंबर घेत आहे...', 'पर्ची नंबर ला रहा है...', 'Getting a slip number...'],
   noNetRetry: ['नेटवर्क नाही. पुन्हा प्रयत्न करा.', 'नेटवर्क नहीं। फिर कोशिश करें।', 'No network. Try again.'],
   undoing: ['मागे घेत आहे...', 'वापस ले रहा है...', 'Undoing...'],
-  takeAgain: [function (n) { return '🤲 ₹' + n + ' पुन्हा घ्या'; }, function (n) { return '🤲 ₹' + n + ' फिर से लें'; }, function (n) { return '🤲 Take ₹' + n + ' again'; }],
-  sTakeAgain: [function (n) { return n + ' रुपये पुन्हा घ्या'; }, function (n) { return n + ' रुपये फिर से लें'; }, function (n) { return 'Take ' + n + ' rupees again'; }],
-  takeBack: [function (n) { return '🤲 ₹' + n + ' परत घ्या'; }, function (n) { return '🤲 ₹' + n + ' वापस लें'; }, function (n) { return '🤲 Take back ₹' + n; }],
-  sTakeBack: [function (n) { return n + ' रुपये परत घ्या'; }, function (n) { return n + ' रुपये वापस लें'; }, function (n) { return 'Take back ' + n + ' rupees'; }],
-  giveBack: [function (n) { return '↩️ ₹' + n + ' परत द्या'; }, function (n) { return '↩️ ₹' + n + ' वापस दें'; }, function (n) { return '↩️ Give back ₹' + n; }],
-  sGiveBack: [function (n) { return n + ' रुपये परत द्या'; }, function (n) { return n + ' रुपये वापस दें'; }, function (n) { return 'Give back ' + n + ' rupees'; }],
   sOk: ['ठीक आहे', 'ठीक है', 'Done'],
   backInside: ['गाडी पुन्हा आत आहे', 'गाड़ी फिर अंदर है', 'Vehicle is inside again'],
   notInside: ['गाडी आत नाही', 'गाड़ी अंदर नहीं है', 'Vehicle is not inside'],
   sPstart: ['पार्किंग सुरू', 'पार्किंग शुरू', 'Parking started'],
   sPend: ['पार्किंग बंद', 'पार्किंग बंद', 'Parking ended'],
   deleted: ['नोंद काढली', 'एंट्री हटाई', 'Entry deleted'],
-  takeSlipBack: ['पावती परत घ्या', 'पर्ची वापस लें', 'Take the slip back'],
   sizeChanged: [function (c) { return 'आकार बदलला → ' + c; }, function (c) { return 'साइज़ बदला → ' + c; }, function (c) { return 'Size changed → ' + c; }],
   leftDone: [function (n) { return 'जुनी नोंद बंद. जुनी ठेव ₹' + n + ' परत नाही. आता नवीन नोंद करा.'; }, function (n) { return 'पुरानी एंट्री बंद। पुराना जमा ₹' + n + ' वापस नहीं। अब नई एंट्री करें।'; }, function (n) { return 'Old visit closed. Old deposit ₹' + n + ' is kept. Now make the new entry.'; }],
   calc: ['हिशोब होत आहे...', 'हिसाब हो रहा है...', 'Calculating...'],
   alreadyOut: ['ही गाडी आधीच बाहेर गेली आहे', 'यह गाड़ी पहले ही निकल चुकी है', 'This vehicle has already left'],
   take: [function (n) { return '🤲 ₹' + n + ' घ्या'; }, function (n) { return '🤲 ₹' + n + ' लें'; }, function (n) { return '🤲 Take ₹' + n; }],
   sTake: [function (n) { return n + ' रुपये घ्या'; }, function (n) { return n + ' रुपये लें'; }, function (n) { return 'Take ' + n + ' rupees'; }],
-  writeSlip: ['✍️ पावतीवर लिहा', '✍️ पर्ची पर लिखें', '✍️ Write on the slip'],
-  slipNo: ['🧾 नंबर', '🧾 नंबर', '🧾 Number'],
-  depRow: ['₹ ठेव', '₹ जमा', '₹ Deposit'],
   timeRow: ['⏱ वेळ', '⏱ समय', '⏱ Time'],
   paid: ['पैसे मिळाले', 'पैसे मिल गए', 'Payment received'],
-  notPaid: ['✖ पैसे मिळाले नाहीत', '✖ पैसे नहीं मिले', '✖ Not paid'],
-  sEntrySlip: ['नोंद झाली, पावती द्या', 'एंट्री हो गई, पर्ची दें', 'Entry done, give the slip'],
-  noMoney: ['पैसे नाहीत', 'पैसे नहीं', 'No payment'],
-  sNoMoney: ['पैसे घ्यायचे नाहीत', 'पैसे नहीं लेने हैं', 'No payment needed'],
-  corrDep: [function (n, m) { return 'या गाडीची ठेव <b>₹' + n + '</b> आहे, ₹' + m + ' नाही'; }, function (n, m) { return 'इस गाड़ी का जमा <b>₹' + n + '</b> है, ₹' + m + ' नहीं'; }, function (n, m) { return 'Deposit for this vehicle is <b>₹' + n + '</b>, not ₹' + m; }],
-  corrSlip: ['पावतीवर हा नवीन नंबर लिहा', 'पर्ची पर यह नया नंबर लिखें', 'Write this new number on the slip'],
-  noSlipNoRef: ['🧾✖ परत नाही', '🧾✖ वापस नहीं', '🧾✖ No refund'],
-  noSlipSub: [function (n) { return 'पावती नाही · ठेव ₹' + n + ' जप्त'; }, function (n) { return 'पर्ची नहीं · जमा ₹' + n + ' ज़ब्त'; }, function (n) { return 'No slip · deposit ₹' + n + ' kept'; }],
-  sNoSlip: ['पावती नाही, पैसे परत नाहीत', 'पर्ची नहीं, पैसे वापस नहीं', 'No slip, no refund'],
-  collectMore: [function (n) { return '🤲 ₹' + n + ' आणखी घ्या'; }, function (n) { return '🤲 ₹' + n + ' और लें'; }, function (n) { return '🤲 Collect ₹' + n + ' more'; }],
-  collectMoreSub: [function (f, d) { return 'शुल्क ₹' + f + ' · ठेव ₹' + d + ' · पावती परत घ्या'; }, function (f, d) { return 'शुल्क ₹' + f + ' · जमा ₹' + d + ' · पर्ची वापस लें'; }, function (f, d) { return 'Fee ₹' + f + ' · deposit ₹' + d + ' · take the slip back'; }],
-  sCollectMore: [function (n) { return n + ' रुपये आणखी घ्या'; }, function (n) { return n + ' रुपये और लें'; }, function (n) { return 'Collect ' + n + ' more rupees'; }],
-  collectSub: ['ठेव घेतली नव्हती', 'जमा नहीं लिया था', 'No deposit was taken'],
-  noRefund: ['🚫 परत नाही', '🚫 वापस नहीं', '🚫 No refund'],
-  noRefundSub: [function (n) { return 'ठेव ₹' + n + ' = शुल्क · पावती परत घ्या'; }, function (n) { return 'जमा ₹' + n + ' = शुल्क · पर्ची वापस लें'; }, function (n) { return 'Deposit ₹' + n + ' = fee · take the slip back'; }],
-  sNoRefund: ['पैसे परत नाहीत', 'पैसे वापस नहीं', 'No refund'],
-  nothing: ['🚫₹ पैसे नाहीत', '🚫₹ पैसे नहीं', '🚫₹ Nothing to pay'],
-  sNothing: ['काही घ्यायचे नाही', 'कुछ नहीं लेना', 'Nothing to pay'],
   fee: ['शुल्क', 'शुल्क', 'Fee'],
   vehLeft: ['गाडी गेली', 'गाड़ी चली गई', 'Vehicle left'],
-  noSlipBtn: ['🧾✖ पावती नाही (ठेव जप्त)', '🧾✖ पर्ची नहीं (जमा ज़ब्त)', '🧾✖ No slip (deposit kept)'],
-  slipFound: ['🧾 पावती मिळाली', '🧾 पर्ची मिल गई', '🧾 Slip found'],
   wrongVeh: ['← चुकीची गाडी', '← गलत गाड़ी', '← Wrong vehicle'],
   mistake: ['चूक झाली? ही गाडी उघडा', 'गलती हुई? यह गाड़ी खोलें', 'Mistake? Open this vehicle'],
-  corrFee: [function (a, b) { return 'सेव्ह झालेले शुल्क <b>₹' + a + '</b>, स्क्रीनवर ₹' + b + ' होते. व्यवस्थापकाला सांगा.'; }, function (a, b) { return 'सेव हुआ शुल्क <b>₹' + a + '</b>, स्क्रीन पर ₹' + b + ' था। मैनेजर को बताएँ।'; }, function (a, b) { return 'Saved fee is <b>₹' + a + '</b>, the screen showed ₹' + b + '. Tell the manager.'; }],
 
   revSizes: ['आजच्या नोंदी (आकारानुसार)', 'आज की एंट्री (साइज़ के अनुसार)', 'Today\'s entries by size'],
   staff: ['कर्मचारी', 'कर्मचारी', 'Staff'],
@@ -355,18 +371,13 @@ var W = {
   analytics: ['📊 विश्लेषण', '📊 विश्लेषण', '📊 Analytics'],
   outTag: ['बाहेर गेली', 'बाहर गई', 'Left'],
   vehicles: ['गाड्या', 'गाड़ियाँ', 'Vehicles'],
-  feesRef: [function (f, r) { return 'शुल्क <b>₹' + f + '</b> · परत दिले <b>₹' + r + '</b>'; }, function (f, r) { return 'शुल्क <b>₹' + f + '</b> · वापस दिए <b>₹' + r + '</b>'; }, function (f, r) { return 'Fees <b>₹' + f + '</b> · refunds <b>₹' + r + '</b>'; }],
   latestN: [function (n) { return 'खाली शेवटच्या ' + n + ' दाखवल्या'; }, function (n) { return 'नीचे आख़िरी ' + n + ' दिखाईं'; }, function (n) { return 'Latest ' + n + ' shown below'; }],
   noRec: ['नोंद नाही', 'रिकॉर्ड नहीं', 'No records'],
   typeRow: ['प्रकार', 'प्रकार', 'Type'],
-  slipRow: ['🧾 पावती', '🧾 पर्ची', '🧾 Slip'],
-  depositRow: ['ठेव', 'जमा', 'Deposit'],
-  refRow: ['परत / घेतले', 'वापस / लिए', 'Refund / collected'],
   sumLine: [function (e, i, p) { return 'आज आल्या <b>' + e + '</b> · आत <b>' + i + '</b> · पार्किंग <b>' + p + '</b>'; }, function (e, i, p) { return 'आज आईं <b>' + e + '</b> · अंदर <b>' + i + '</b> · पार्किंग <b>' + p + '</b>'; }, function (e, i, p) { return 'Today <b>' + e + '</b> · inside <b>' + i + '</b> · parked <b>' + p + '</b>'; }],
   feesToday: [function (n) { return 'आजचे शुल्क <b>₹' + n + '</b>'; }, function (n) { return 'आज का शुल्क <b>₹' + n + '</b>'; }, function (n) { return 'Fees today <b>₹' + n + '</b>'; }],
   totals: [function (a, b) { return 'एकूण गाड्या <b>' + a + '</b> · पावती नंबर शिल्लक <b>' + b + '</b>'; }, function (a, b) { return 'कुल गाड़ियाँ <b>' + a + '</b> · पर्ची नंबर बाक़ी <b>' + b + '</b>'; }, function (a, b) { return 'Total vehicles <b>' + a + '</b> · slip numbers left <b>' + b + '</b>'; }],
   cashInHand: ['हातात रोख', 'हाथ में कैश', 'Cash in hand'],
-  cashCalc: [function (d, r, c) { return 'ठेव ₹' + d + ' − परत ₹' + r + ' + जास्त घेतले ₹' + c; }, function (d, r, c) { return 'जमा ₹' + d + ' − वापस ₹' + r + ' + ज़्यादा लिए ₹' + c; }, function (d, r, c) { return 'Deposits ₹' + d + ' − refunds ₹' + r + ' + collected ₹' + c; }],
   noTx: ['आज अजून व्यवहार नाही', 'आज अभी कोई लेन-देन नहीं', 'No transactions yet today'],
 
   loadingData: ['माहिती आणत आहे...', 'डेटा ला रहा है...', 'Loading data...'],
@@ -383,7 +394,6 @@ var W = {
   allStaff: ['सर्व कर्मचारी', 'सभी कर्मचारी', 'All staff'],
   summaryH: ['सारांश', 'सारांश', 'Summary'],
   kFees: ['शुल्क', 'शुल्क', 'Fees'],
-  kRef: ['परत दिले', 'वापस दिए', 'Refunds'],
   kPk: ['पार्क केल्या', 'पार्क कीं', 'Parked'],
   kAvg: ['सरासरी पार्किंग', 'औसत पार्किंग', 'Average parking'],
   kFpp: ['प्रति पार्किंग शुल्क', 'प्रति पार्किंग शुल्क', 'Fee per parking'],
@@ -431,7 +441,6 @@ var W = {
   a_UNDONE_ENTRY_DELETED: ['काढलेली नोंद परत आणली', 'हटाई एंट्री वापस लाई', 'Deleted entry restored'],
   a_UNDONE_LEFT_WITHOUT_EXIT: ['गेलेली गाडी परत आत', 'गई हुई गाड़ी फिर अंदर', '"Gone" mark undone'],
   a_EXIT_UNDONE: ['बाहेर मागे घेतले', 'एग्ज़िट वापस लिया', 'Exit undone'],
-  a_EXIT_WITHOUT_SLIP: ['पावतीशिवाय बाहेर', 'बिना पर्ची बाहर', 'Exit without slip'],
   a_SIZE_CHANGED: ['आकार बदलला', 'साइज़ बदला', 'Size changed'],
   a_SIZE_LOWER_THAN_LAST_VISIT: ['मागील वेळी जड, आता मध्यम', 'पिछली बार भारी, अब मध्यम', 'Heavy last time, medium now'],
   a_CLOSED_LEFT_WITHOUT_EXIT: ['न सांगता गेली', 'बिना बताए चली गई', 'Left without exit'],
@@ -473,8 +482,8 @@ function tk(prefix, key) { var k = prefix + String(key || '').replace(/[^A-Z0-9]
    (or paste it between the quotes below). Inside Apps Script it is not needed. */
 var API_URL = 'PASTE_WEB_APP_URL_HERE';
 
-var S = { pin: '', user: null, D: null, open: [], off: 0, syncAt: 0, q: [], qBusy: false, fails: [], screen: '', slips: [], dayStart: 0, reviewCount: 0, editMin: 10,
-          vinfo: {}, mut: 0, today: 0, thumb: '', thumbPlate: '', voice: true, kb: 'numeric', logs: [], logOpt: null, lastLogs: null, last: null, an: null, lang: 'mr', voiceOn: true, pre: '', okUnusual: {}, cmdNoSlip: false, openFix: false, exNote: '' };
+var S = { pin: '', user: null, D: null, open: [], off: 0, syncAt: 0, q: [], qBusy: false, fails: [], screen: '', dayStart: 0, reviewCount: 0, editMin: 10,
+          vinfo: {}, mut: 0, today: 0, thumb: '', thumbPlate: '', voice: true, kb: 'numeric', logs: [], logOpt: null, lastLogs: null, last: null, an: null, lang: 'mr', voiceOn: true, pre: '', okUnusual: {}, openFix: false, exNote: '' };
 
 /* Vehicle pictures are drawn here (not emoji) so they look the same on every phone. */
 function svgIcon(cat, h) {
@@ -512,7 +521,9 @@ function show(html, name) {
     nav = '<div class="nav"><button data-t="home" onclick="home()">' + t('home') + '</button><span class="navr">' +
       (S.voiceOn ? '<button class="navmic" data-t="navmic" onclick="mic(\'\',\'cmd\',this)">🎤</button>' : '') + '<span>' + esc(S.user.name) + '</span></span></div>';
   }
-  $('app').innerHTML = nav + html; window.scrollTo(0, 0);
+  var hb = S.heard && name !== 'login' ? heardBox() : '';
+  if (S.heard) S.heard.shown = true;
+  $('app').innerHTML = nav + hb + html; window.scrollTo(0, 0);
 }
 function inAppsScript() { return !!(window.google && google.script && google.script.run); }
 function call(fn) {
@@ -591,7 +602,10 @@ function plateOK(p) {
   var m = /^([A-Z]{2})([0-9]{1,2})([A-Z]{1,3})([0-9]{4})$/.exec(p);
   return !!m && STATES.indexOf(m[1]) >= 0;
 }
-function localNote(s) { return esc(s).replace(/\bMEDIUM\b/g, t('c_MEDIUM')).replace(/\bHEAVY\b/g, t('c_HEAVY')); }
+function localNote(s) {
+  return esc(s).replace(/\bMEDIUM\b/g, t('c_MEDIUM')).replace(/\bHEAVY\b/g, t('c_HEAVY')).replace(/ENTERED AT PARKING/g, t('n_ATPARK'))
+    .replace(/PRESUMED LEFT \(auto\)/g, t('n_PRESUMED')).replace(/LEFT OVERDUE/g, t('n_OVERDUE')).replace(/LEFT WITHOUT EXIT/g, t('n_LEFT'));
+}
 
 /* ================= language ================= */
 function langSelect() {
@@ -609,16 +623,6 @@ function setLang(l) {
 /* ================= data kept on the phone ================= */
 function findOpen(plate) { for (var i = 0; i < S.open.length; i++) if (S.open[i].plate === plate) return S.open[i]; return null; }
 function dropOpen(plate) { S.open = S.open.filter(function (o) { return o.plate !== plate; }); }
-/* Same fee rule as the server (Rates tab): fee for the minutes parked in one parking day. */
-function feeLocal(minutes, cat, type) {
-  if (type === 'TENANT' || type === 'PASS') return 0;
-  if (minutes <= 0) return 0;
-  var r = S.D.rates, list = r[cat] && r[cat].length ? r[cat] : (r.MEDIUM || []);
-  if (!list.length) return 0;
-  for (var i = 0; i < list.length; i++) if (list[i].upto === null || minutes <= list[i].upto) return list[i].fee;
-  return list[list.length - 1].fee;
-}
-function feeNow(o, at) { return (o.banked || 0) + feeLocal(runMin(o, at), o.cat, o.type); }
 /* A vehicle that stayed overnight and has not been checked today. */
 function isStale(o) { return S.dayStart && o.entry < S.dayStart && !(o.seen && o.seen >= S.dayStart); }
 /* Minutes parked (in the current parking day) up to the moment "at" (server clock). */
@@ -651,7 +655,6 @@ function qLoad() {
   try { S.q = JSON.parse(localStorage.getItem('gp_q') || '[]') || []; } catch (e) { S.q = []; }
   S.q.forEach(function (j) { j.tries = 0; });
 }
-function slipStore() { try { localStorage.setItem('gp_slips', JSON.stringify(S.slips)); } catch (e) {} }
 function badge() {
   var b = $('sync');
   if (!S.user) { b.style.display = 'none'; return; }
@@ -721,23 +724,16 @@ function boot(pin) {
     S.pin = pin; S.user = b.user;
     var kn = {};
     b.known.forEach(function (k) { kn[k[0]] = k[1]; });
-    S.D = { deposits: b.deposits, rates: b.rates, exempt: {}, known: kn };
+    S.D = { prices: b.prices, hours: b.ticketHours || 3, buildings: b.buildings || [], companies: b.companies || [], exempt: {}, known: kn };
     S.editMin = b.editMinutes || 10;
     S.appLink = b.appLink || '';
     S.fails = []; S.vinfo = {}; S.q = [];
     applySync(b.sync);
     qLoad();                                   // actions that were not saved before the app was closed
-    try { S.slips = JSON.parse(localStorage.getItem('gp_slips') || '[]') || []; } catch (e) { S.slips = []; }
     try { localStorage.setItem('gp_pin', pin); } catch (e) {}
     home();
     if (S.q.length) { note(esc(t('pendingResent', S.q.length)), 'info'); badge(); pump(); }
-    topUpSlips();
   }).catch(function (e) { loginScreen(errText(e)); });
-}
-/* Keeps about 10 unused slip numbers on the phone, so one can be shown before the entry is saved. */
-function topUpSlips() {
-  if (S.slips.length >= 6) return Promise.resolve();
-  return call('apiSlips', S.pin, 10 - S.slips.length).then(function (list) { S.slips = S.slips.concat(list); slipStore(); }).catch(function () {});
 }
 function logout() {
   try { localStorage.removeItem('gp_pin'); } catch (e) {}
@@ -752,14 +748,19 @@ function toggleVoice() {
 /* ================= HOME ================= */
 function home() {
   vlEnd('ABANDONED');
-  S.pre = ''; S.cmdNoSlip = false; S.openFix = false; S.cmd = null;
+  if (S.heard && S.heard.shown) S.heard = null;
+  S.pre = ''; S.openFix = false; S.cmd = null; S.park = null; S.entryInfo = null;
   var stale = S.open.filter(isStale).length;
   var h = '<div class="nav"><span>' + esc(S.user.name) + '</span><span class="navr">' + langSelect() +
     '<button class="iconbtn" data-t="voice" onclick="toggleVoice()">' + (S.voice ? '🔊' : '🔇') + '</button>' +
     '<button class="iconbtn out" data-t="logout" onclick="logout()">' + POWER + ' ' + t('logout') + '</button></span></div>';
   h += '<div class="tiles"><div class="tile" data-t="t-today" onclick="todayTile()"><div class="n" id="cTd" style="color:#1c8a4a">0</div><div class="l">' + t('tToday') + '</div></div>' +
     '<div class="tile" data-t="t-in" onclick="insideList(\'\')"><div class="n" id="cIn">0</div><div class="l">' + t('tIn') + '</div></div>' +
-    '<div class="tile" data-t="t-pk" onclick="insideList(\'PARKED\')"><div class="n" id="cPk" style="color:#d9780a">0</div><div class="l">' + t('tPk') + '</div></div></div>';
+    '<div class="tile" data-t="t-pk" onclick="can(\'park\')?parkList():insideList(\'PARKED\')"><div class="n" id="cPk" style="color:#d9780a">0</div><div class="l">' + t('tPk') + '</div></div></div>';
+  if (can('park')) {
+    var due = S.open.filter(function (o) { var l = leftMin(o); return o.status === 'PARKED' && !exemptV(o) && (l === null || l < 30); }).length;
+    h += '<button class="btn ' + (due ? 'red' : 'orange') + ' slim" data-t="plist" onclick="parkList()">🅿️ ' + t('parkList') + (due ? ' — ⚠ ' + due : '') + '</button>';
+  }
   if (stale) h += '<button class="btn orange slim" data-t="stale" onclick="staleList()">' + t('stale', stale) + '</button>';
   if (S.voiceOn) h += '<button class="btn dark" data-t="mic" style="padding:22px 12px" onclick="mic(\'hq\',\'cmd\',this)"><span class="ico" style="font-size:54px">🎤</span>' + t('micMain') +
     '<small>' + t('micHint') + '</small></button>';
@@ -805,7 +806,7 @@ function plateBtn(p) {
   var o = findOpen(p), c = o ? o.cat : S.D.known[p];
   var st = o ? (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inTag') + '</b>') : '<b class="tag x">' + t('notInTag') + '</b>';
   return '<button class="veh" onclick="vehicleCard(\'' + p + '\')">' + esc(p) + '<span>' + (c ? catTag(c) + ' ' : '') + st +
-    (o ? '<br>' + dur(Math.round((now() - o.entry) / 60000)) : '') + '</span></button>';
+    (o ? ' ' + leftTag(o) + '<br>' + dur(Math.round((now() - o.entry) / 60000)) + (o.near ? ' · 🅿️' + esc(o.near) : '') : '') + '</span></button>';
 }
 function homeSuggest() {
   var q = norm($('hq').value), box = $('hsug');
@@ -830,6 +831,25 @@ function insideFilter(only) {
   var q = norm($('iq').value);
   var list = S.open.filter(function (o) { return (!only || o.status === only) && o.plate.indexOf(q) >= 0; });
   $('ilist').innerHTML = list.map(function (o) { return plateBtn(o.plate); }).join('');
+}
+/* Agent's list: parked vehicles, longest stay first, with what each ticket still covers. */
+function parkList() {
+  var list = S.open.filter(function (o) { return o.status === 'PARKED'; });
+  list.sort(function (a, b) { return (a.pstart || a.entry) - (b.pstart || b.entry); });
+  var h = '<h1>' + t('parkList') + ' — ' + list.length + '</h1>' + (list.length ? '' : '<div class="msg info">' + t('none') + '</div>');
+  list.forEach(function (o) {
+    var l = leftMin(o), bad = !exemptV(o) && (l === null || l < 0), soon = !bad && !exemptV(o) && l < 30;
+    h += '<div class="box" data-t="pl-' + o.plate + '" onclick="vehicleCard(\'' + o.plate + '\')" style="text-align:left;cursor:pointer;border-left:8px solid ' + (bad ? '#a31515' : soon ? '#b35600' : '#0a6b2d') + '">' +
+      '<span class="plate" style="font-size:24px">' + esc(o.plate) + '</span> ' + catTag(o.cat) + ' ' + leftTag(o) +
+      '<table style="margin:4px 0 0"><tr><td>' + t('rPt') + '</td><td><b>' + dur(Math.ceil((now() - (o.pstart || o.entry)) / 60000)) + '</b></td></tr>' +
+      '<tr><td>' + t('rPs') + '</td><td>' + fmt(o.pstart) + '</td></tr>' +
+      '<tr><td>' + t('rIn') + '</td><td>' + fmt(o.entry) + '</td></tr>' +
+      (o.near ? '<tr><td>' + t('rNear') + '</td><td><b>' + esc(o.near) + '</b></td></tr>' : '') +
+      (whereTo(o) ? '<tr><td>' + t('rTo') + '</td><td>' + whereTo(o) + '</td></tr>' : '') +
+      ((o.tickets || []).length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '</td></tr>' : '') + '</table></div>';
+  });
+  show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'plist');
+  syncNow();
 }
 /* Morning check: vehicles that stayed overnight. Staff look for each one in the complex. */
 function staleList() {
@@ -896,6 +916,7 @@ function mic(targetId, mode, btn) {
     src.connect(proc); proc.connect(ctx.destination);
     REC = r;
     micOverlay('listen');
+    liveStart(r);
     buzz(40);
   }).catch(function (e) {
     micOverlay('');
@@ -912,6 +933,7 @@ function micOverlay(state) {
   if (!o) { o = document.createElement('div'); o.id = 'micov'; document.body.appendChild(o); }
   if (state === 'listen') {
     o.innerHTML = '<div class="micbig pulse">🎤</div><div class="miclbl">' + t('speakNow') + '</div><div class="micbar"><i id="miclv"></i></div>' +
+      '<div id="livetx" class="livetx">' + (LIVE_OK() ? '…' : '') + '</div>' +
       '<button class="btn red" data-t="micstop" onclick="stopMic(false)">' + t('micStop') + '</button>' +
       '<button class="btn grey slim" data-t="miccancel" onclick="stopMic(true)">' + t('cancel') + '</button>';
   } else {
@@ -937,6 +959,7 @@ function stopMic(discard) {
   var r = REC;
   if (!r) { if (discard) micOverlay(''); return; }
   REC = null;
+  liveStop(r);
   try { r.proc.disconnect(); r.src.disconnect(); r.stream.getTracks().forEach(function (x) { x.stop(); }); } catch (e) {}
   var rate = r.ctx.sampleRate;
   try { r.ctx.close(); } catch (e) {}
@@ -1059,19 +1082,84 @@ function vlEnd(result, detail) {
     result: result, detail: detail || '', audioMs: v.audioMs, replyMs: v.replyMs, totalMs: Date.now() - v.t0, flag: flag }).catch(function () {});
 }
 
+/* ================= live words while speaking =================
+   The phone's own speech service (free, built into Chrome) writes the words on the screen as they
+   are spoken. It is only a preview: the final reading still comes from the server. If the phone
+   does not support it, or it fails once, it is switched off on that phone and recording works as before. */
+function LIVE_OK() {
+  var ok = true; try { ok = localStorage.getItem('gp_live') !== '0'; } catch (e) {}
+  return ok && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+function liveStart(r) {
+  if (!LIVE_OK()) return;
+  try {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition, sr = new SR();
+    sr.lang = { mr: 'mr-IN', hi: 'hi-IN', en: 'en-IN' }[S.lang] || 'mr-IN';
+    sr.interimResults = true; sr.continuous = true; sr.maxAlternatives = 1;
+    sr.onresult = function (e) {
+      if (REC !== r) return;
+      var txt = '';
+      for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+      r.live = txt.trim();
+      var b = $('livetx'); if (b) b.textContent = r.live || '…';
+    };
+    sr.onerror = function (e) {
+      var b = $('livetx'); if (b) b.textContent = '';
+      if (e && (e.error === 'audio-capture' || e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'language-not-supported'))
+        try { localStorage.setItem('gp_live', '0'); } catch (x) {}
+    };
+    sr.start(); r.sr = sr;
+  } catch (e) { try { localStorage.setItem('gp_live', '0'); } catch (x) {} }
+}
+function liveStop(r) { if (r && r.sr) { try { r.sr.abort(); } catch (e) {} r.sr = null; } }
+
+/* Box at the top of the screen after a voice command: what was heard, what the app understood,
+   and ✏️ to correct it and run it again. */
+var EDIT_ACTIONS = ['FIND', 'ENTRY', 'PARK_START', 'TICKET', 'PARK_END', 'EXIT', 'STILL_HERE', 'GONE', 'SET_SIZE'];
+function heardBox() {
+  var c = S.heard, bits = [cmdLabel(c)];
+  if (c.plate) bits.push('<b>' + esc(c.plate) + '</b>');
+  if (c.size) bits.push(catName(c.size));
+  if (c.ticket) bits.push('🎫 ' + esc(c.ticket));
+  if (c.building) bits.push('🏢 ' + esc(c.building) + (c.unit ? '-' + esc(c.unit) : ''));
+  if (c.company) bits.push(esc(c.company));
+  if (c.near) bits.push('🅿️ ' + esc(c.near));
+  return '<div class="heard" data-t="heard"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1">🎤 <i>“' + esc(c.heard || '—') + '”</i><br>' + bits.join(' · ') + '</div>' +
+    '<button class="iconbtn" data-t="heardedit" onclick="heardEdit()">✏️</button></div><div id="heardf"></div></div>';
+}
+function heardEdit() {
+  var c = S.heard, f = $('heardf'); if (!c || !f) return;
+  var opt = function (list, cur, lab) { return list.map(function (x) { return '<option value="' + x + '"' + (x === cur ? ' selected' : '') + '>' + lab(x) + '</option>'; }).join(''); };
+  f.innerHTML = '<div class="row2" style="margin-top:8px"><div style="flex:3"><input id="hp" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(c.plate || '') + '" oninput="plateTyped(this)"></div>' +
+    '<select id="ha" class="bsel" style="flex:3">' + opt(EDIT_ACTIONS, c.action, function (a) { return cmdLabel({ action: a }); }) + '</select></div>' +
+    '<div class="row2" style="margin-top:6px"><select id="hs" class="bsel"><option value="">—</option>' + opt(['MEDIUM', 'HEAVY'], c.size, catName) + '</select>' +
+    (can('park') ? '<input id="ht" type="tel" inputmode="numeric" placeholder="🎫" value="' + esc(c.ticket || '') + '">' : '') + '</div>' +
+    '<button class="btn green slim" data-t="heardrun" onclick="heardRun()">✔ ' + t('runAgain') + '</button>';
+}
+function heardRun() {
+  var c = S.heard; if (!c) return;
+  var n = { action: $('ha').value, plate: norm($('hp').value), size: $('hs').value, ticket: $('ht') ? $('ht').value.replace(/[^0-9A-Za-z-]/g, '') : '',
+    building: c.building, unit: c.unit, company: c.company, near: c.near, note: c.note, heard: c.heard };
+  vlEnd('ABANDONED');
+  S.vl = { t0: Date.now(), from: String(S.screen).split(':')[0], heard: c.heard, plate: n.plate, action: n.action, size: n.size, audioMs: 0, replyMs: 0, path: ['EDIT_CMD'] };
+  runCommand(n);
+}
+
 /* ================= VOICE COMMANDS =================
    One sentence, for example "MH04GH8899 आली" or "8899 बाहेर". The server only works out what was
    said: { plate, action, size, note }. Nothing is saved from here without a tap on a confirm screen.
    Whatever was not said (number, size) is asked on the next screen. */
 var CMD_POOL = {   // which vehicles an action can apply to
   PARK_START: function (o) { return o.status === 'INSIDE'; }, PARK_END: function (o) { return o.status === 'PARKED'; },
-  EXIT: function () { return true; }, EXIT_NOSLIP: function () { return true; }, GONE: function () { return true; },
+  EXIT: function () { return true; }, GONE: function () { return true; }, TICKET: function (o) { return o.status === 'PARKED'; },
   SET_SIZE: function () { return true; }, STILL_HERE: function (o) { return isStale(o); }
 };
 function cmdLabel(c) {
   var a = c.action;
   if (a === 'ENTRY') return '⬇️ ' + t('cEntry');
-  if (a === 'EXIT' || a === 'EXIT_NOSLIP') return '⬆️ ' + t('bExit');
+  if (a === 'EXIT') return '⬆️ ' + t('bExit');
+  if (a === 'TICKET') return '🎫 ' + t('newTicket');
+  if (a === 'LIST_EXPIRING') return '🅿️ ' + t('parkList');
   if (a === 'PARK_START') return '🅿️ ' + t('bPstart');
   if (a === 'PARK_END') return '🅿️✖ ' + t('bPend');
   if (a === 'STILL_HERE') return '✔ ' + t('cSeen');
@@ -1083,8 +1171,10 @@ function cmdLabel(c) {
 }
 function runCommand(c) {
   var a = c.action || 'FIND';
-  c = { action: a, plate: spokenPlate(c.plate || ''), size: c.size || '', note: c.note || '', heard: c.heard || '' };
-  S.pay = null; S.exit = null; S.pre = '';
+  if (a === 'EXIT_NOSLIP') a = 'EXIT';
+  c = { action: a, plate: spokenPlate(c.plate || ''), size: c.size || '', note: c.note || '', heard: c.heard || '',
+    ticket: c.ticket || '', building: c.building || '', unit: c.unit || '', company: c.company || '', near: c.near || '' };
+  S.heard = c; S.park = null; S.exit = null; S.pre = '';
   if (a === 'NONE' && !c.plate) { vlEnd('NOT_UNDERSTOOD'); buzz([200, 100, 200]); say(t('notUnderstood')); return alertMsg(t('notUnderstood') + (c.heard ? ' (' + t('heard') + ': ' + c.heard + ')' : '')); }
   if (a === 'NONE') c.action = a = 'FIND';
   // screens that need no vehicle
@@ -1092,7 +1182,8 @@ function runCommand(c) {
   var go = function (ok, fn) { if (!ok) return deny(); vlEnd('OPENED'); fn(); };
   if (a === 'HOME') return go(true, home);
   if (a === 'LIST_INSIDE') return go(true, function () { insideList(''); });
-  if (a === 'LIST_PARKED') return go(true, function () { insideList('PARKED'); });
+  if (a === 'LIST_PARKED') return go(true, function () { can('park') ? parkList() : insideList('PARKED'); });
+  if (a === 'LIST_EXPIRING') return go(can('park'), parkList);
   if (a === 'LIST_OVERNIGHT') return go(true, staleList);
   if (a === 'CASH') return go(can('records'), summary);
   if (a === 'RECORDS_TODAY') return go(can('records'), function () { period('today'); });
@@ -1100,7 +1191,7 @@ function runCommand(c) {
   if (a === 'REVIEW') return go(can('mgmt'), reviewScreen);
   if (a === 'EXEMPT_LIST') return go(can('mgmt'), function () { exemptScreen(); });
   if (a === 'ANALYTICS') return go(can('su'), anHome);
-  if ((a === 'PARK_START' || a === 'PARK_END' || a === 'SET_SIZE') && !can('park')) return deny();
+  if ((a === 'PARK_START' || a === 'PARK_END' || a === 'SET_SIZE' || a === 'TICKET') && !can('park')) return deny();
   if (a === 'EXEMPT' && !can('mgmt')) return deny();
   var r = cmdResolve(c, c.plate);
   if (r.plate) return cmdDo(c, r.plate);
@@ -1165,26 +1256,33 @@ function cmdDo(c, plate) {
   if (a === 'ENTRY') {
     if (o) return bad(t('already'));
     var size = c.size || S.D.known[plate] || '';
+    var inf = { b: c.building, u: c.unit, co: c.company };
+    S.entryPre = { plate: plate, building: c.building, unit: c.unit, company: c.company };
     if (!size) { vlStep('ASK_SIZE'); S.pre = spell(plate) + '. '; say(t('sAskSize')); return vehicleCard(plate); }       // size not said and vehicle is new: ask
-    if (S.D.exempt[plate] && plateOK(plate)) return confirmScreen(plate, '⬇️', t('cEntry') + ' · ' + catName(size), t('noMoney'), function () { doEntry(plate, size, '', now()); });
-    S.pre = spell(plate) + '. ' + catName(size) + '. ';
-    return act('entry', plate, size);                                    // the take-deposit screen is the confirmation
+    return confirmScreen(plate, '⬇️', t('cEntry') + ' · ' + catName(size), whereTo({ destB: inf.b, destU: inf.u, company: inf.co }), function () {
+      S.entryInfo = inf; act('entry', plate, size); });
+  }
+  if (a === 'PARK_START') {                                               // the parking screen (ticket, place) is the confirmation
+    if (o && o.status === 'PARKED') return bad(t('alreadyParked'));
+    S.pre = spell(plate) + '. ';
+    return parkScreen(plate, { size: c.size, ticket: c.ticket, near: c.near });
   }
   if (!o) return bad(t('notInside'));
-  if (a === 'PARK_START') {
-    if (o.status === 'PARKED') return bad(t('alreadyParked'));
-    return confirmScreen(plate, '🅿️', t('bPstart'), '', function () { act('pstart', plate); });
+  if (a === 'TICKET') {
+    if (o.status !== 'PARKED') return parkScreen(plate, { size: c.size, ticket: c.ticket, near: c.near });
+    S.pre = spell(plate) + '. ';
+    return ticketScreen(plate, { ticket: c.ticket });
   }
   if (a === 'PARK_END') {
     if (o.status !== 'PARKED') return bad(t('notParked'));
     return confirmScreen(plate, '🅿️✖', t('bPend'), dur(runMin(o)), function () { act('pend', plate); });
   }
-  if (a === 'EXIT' || a === 'EXIT_NOSLIP') { S.pre = spell(plate) + '. '; S.cmdNoSlip = a === 'EXIT_NOSLIP'; return act('exit', plate); }   // the exit screen is the confirmation
+  if (a === 'EXIT') { S.pre = spell(plate) + '. '; return act('exit', plate); }   // the exit screen is the confirmation
   if (a === 'STILL_HERE') return confirmScreen(plate, '✔', t('cSeen'), '', function () {
     o.seen = now(); S.mut++; bg('✔ ' + plate, 'apiSeen', [plate]); doneScreen(plate, '<div class="huge" style="color:#0a6b2d">✔</div>' + t('cSeen'), t('sOk')); });
-  if (a === 'GONE') return confirmScreen(plate, '✖', t('cGone'), t('cGoneSub', o.deposit), function () {
+  if (a === 'GONE') return confirmScreen(plate, '✖', t('cGone'), '', function () {
     S.mut++; dropOpen(plate); delete S.vinfo[plate]; bg('✖ ' + plate, 'apiCloseLeft', [plate, now()]);
-    doneScreen(plate, '<div class="huge" style="color:#a31515">✖</div>' + t('cGone') + ' · ' + t('cGoneSub', o.deposit), t('sOk')); });
+    doneScreen(plate, '<div class="huge" style="color:#a31515">✖</div>' + t('cGone'), t('sOk')); });
   if (a === 'SET_SIZE') {
     if (!c.size || c.size === o.cat) { vlStep('ASK_SIZE'); vlEnd('OPENED'); S.openFix = true; return vehicleCard(plate); }
     return confirmScreen(plate, '⚙️', t('sizeTo', catName(c.size)), '', function () { act('setcat', plate, c.size); });
@@ -1294,43 +1392,86 @@ function fetchVehicle(plate) {
   });
 }
 function isFresh(plate) { var i = S.vinfo[plate]; return !!(i && i.ok && S.q.length === 0 && Date.now() - i.at < 120000); }
+
+/* ---- tickets (never shown to guards) ---- */
+function money() { return S.user && S.user.role !== 'GUARD'; }
+function price(cat) { return S.D.prices ? (S.D.prices[cat] || 0) : 0; }
+function exemptV(o) { return o && (o.type === 'TENANT' || o.type === 'PASS'); }
+function ticketTotal(o) { return (o.tickets || []).reduce(function (z, k) { return z + (Number(k.a) || 0); }, 0); }
+/* minutes left on the ticket (negative = overdue), or null when there is no ticket */
+function leftMin(o) { return o && o.paidUntil ? Math.floor((o.paidUntil - now()) / 60000) : null; }
+function needsTicket(o) { return !exemptV(o) && !(o && o.paidUntil && o.paidUntil > now()); }
+function hm(m) { m = Math.abs(m); return Math.floor(m / 60) + ':' + p2(m % 60); }
+function leftTag(o) {
+  if (!money() || o.status !== 'PARKED') return '';
+  if (exemptV(o)) return '<b class="tag g">' + tk('ty_', o.type) + '</b>';
+  var l = leftMin(o);
+  if (l === null) return '<b class="tag" style="background:#a31515">⚠ ' + t('noTicket') + '</b>';
+  if (l < 0) return '<b class="tag" style="background:#a31515">⚠ ' + t('overBy', hm(l)) + '</b>';
+  return '<b class="tag" style="background:' + (l < 30 ? '#b35600' : '#0a6b2d') + '">⏳ ' + t('leftFor', hm(l)) + '</b>';
+}
+/* same rule as the server: a ticket bought while still parked continues from the end of the last one */
+function localTicket(o, no, tm) {
+  var from = o.paidUntil && (o.status === 'PARKED' || o.paidUntil > tm) ? o.paidUntil : tm;
+  var k = { n: no, a: price(o.cat), t: tm, by: S.user.name, u: from + S.D.hours * 3600000 };
+  o.tickets = (o.tickets || []).concat([k]); o.paidUntil = k.u;
+  return k;
+}
+function bldOptions(id, cur) {
+  return '<select id="' + id + '" class="bsel"><option value="">—</option>' + S.D.buildings.map(function (b) {
+    return '<option' + (b === cur ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select>';
+}
+function whereTo(o) {
+  var d = [o.destB ? '🏢 ' + esc(o.destB) + (o.destU ? '-' + esc(o.destU) : '') : '', o.company ? esc(o.company) : ''].filter(String).join(' · ');
+  return d;
+}
+
 function renderCard(plate, keepScroll, notice) {
-  var cqv = keepScroll && $('cq') ? $('cq').value : null;
+  var keep = {}; ['cq', 'eb', 'eu', 'ec'].forEach(function (k) { if (keepScroll && $(k)) keep[k] = $(k).value; });
   var y = window.scrollY, o = findOpen(plate), info = S.vinfo[plate], v = info && info.v, ex = S.D.exempt[plate], role = S.user.role, fix = '';
   var h = (notice ? '<div class="msg info">' + notice + '</div>' : '') + '<div class="box"><div class="plate">' + esc(plate) + '</div>' +
     (S.thumbPlate === plate && S.thumb ? '<img class="thumb" src="' + S.thumb + '"><br>' : '');
   if (ex) h += '<b class="tag g">' + tk('ty_', ex.type) + '</b> ' + esc(ex.note) + '<br>';
   if (o) {
-    var m = runMin(o), fee = feeNow(o), other = o.cat === 'HEAVY' ? 'MEDIUM' : 'HEAVY';
-    h += catTag(o.cat) + ' ' + (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inside') + '</b>') + '</div>';
+    var other = o.cat === 'HEAVY' ? 'MEDIUM' : 'HEAVY', last = (o.tickets || [])[o.tickets ? o.tickets.length - 1 : 0];
+    h += catTag(o.cat) + ' ' + (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inside') + '</b>') + ' ' + leftTag(o) + '</div>';
     if (isStale(o)) h += '<button class="btn green slim" data-t="seen" onclick="markSeenCard(\'' + plate + '\')">' + t('seenOvernight') + '</button>';
     h += '<table><tr><td>' + t('rIn') + '</td><td>' + fmt(o.entry) + '</td></tr>' +
+      (whereTo(o) ? '<tr><td>' + t('rTo') + '</td><td>' + whereTo(o) + '</td></tr>' : '') +
+      (o.near ? '<tr><td>' + t('rNear') + '</td><td><b>' + esc(o.near) + '</b></td></tr>' : '') +
       '<tr><td>' + t('rPs') + '</td><td>' + fmt(o.pstart) + '</td></tr>' +
-      '<tr><td>' + t('rPt') + (o.banked ? t('todayP') : '') + '</td><td><b>' + dur(m) + '</b></td></tr>' +
+      '<tr><td>' + t('rPt') + '</td><td><b>' + dur(runMin(o)) + '</b></td></tr>' +
       '<tr><td>' + t('rCt') + '</td><td><b>' + dur(Math.ceil((now() - o.entry) / 60000)) + '</b></td></tr>' +
-      '<tr><td>' + t('rSlip') + '</td><td>' + (o.slip === '' || o.slip == null ? '—' : esc(o.slip)) + ' · ₹' + o.deposit + '</td></tr>' +
-      (o.banked ? '<tr><td>' + t('rBank') + '</td><td>₹' + o.banked + '</td></tr>' : '') +
-      (v && v.open && v.open.serial != null ? '<tr><td>' + t('rSerial') + '</td><td>#' + esc(v.open.serial) + '</td></tr>' : '') +
-      '<tr><td>' + t('rFeeNow') + '</td><td><b>₹' + fee + '</b></td></tr></table>';
+      (money() && o.tickets && o.tickets.length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ₹' + ticketTotal(o) + '<br><small>🎫 ' + esc(last.n) + ' · ' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '</small></td></tr>' : '') +
+      (v && v.open && v.open.serial != null ? '<tr><td>' + t('rSerial') + '</td><td>#' + esc(v.open.serial) + '</td></tr>' : '') + '</table>';
     if (can('park')) {
-      if (o.status === 'PARKED') h += '<button class="btn grey" data-t="pend" onclick="act(\'pend\',\'' + plate + '\')"><span class="ico">🅿️✖</span>' + t('bPend') + '</button>';
-      else h += '<button class="btn orange" data-t="pstart" onclick="act(\'pstart\',\'' + plate + '\')"><span class="ico">🅿️</span>' + t('bPstart') + '</button>';
+      if (o.status === 'PARKED') {
+        if (!exemptV(o)) h += '<button class="btn orange" data-t="ticket" onclick="ticketScreen(\'' + plate + '\')"><span class="ico">🎫</span>' + t('newTicket') + '<small>₹' + price(o.cat) + ' · ' + S.D.hours + ' ' + t('hr') + '</small></button>';
+        h += '<button class="btn grey" data-t="pend" onclick="act(\'pend\',\'' + plate + '\')"><span class="ico">🅿️✖</span>' + t('bPend') + '</button>';
+      } else h += '<button class="btn orange" data-t="pstart" onclick="parkScreen(\'' + plate + '\')"><span class="ico">🅿️</span>' + t('bPstart') + '</button>';
     }
     h += '<button class="btn red" data-t="exit" onclick="act(\'exit\',\'' + plate + '\')"><span class="ico">⬆️</span>' + t('bExit') + '</button>';
-    if (o.status === 'INSIDE' && !o.pstart && !o.pmin && now() - o.entry < S.editMin * 60000)
+    if (o.status === 'INSIDE' && !o.pstart && !o.pmin && !(o.tickets || []).length && now() - o.entry < S.editMin * 60000)
       fix += '<button class="btn plain slim" data-t="cancel" onclick="act(\'cancel\',\'' + plate + '\')">' + t('cancelEntry') + '</button>';
+    if (can('park') && last && (can('mgmt') || now() - last.t < S.editMin * 60000))
+      fix += '<button class="btn plain slim" data-t="untick" onclick="act(\'untick\',\'' + plate + '\')">' + t('untick', last.n) + '</button>';
     if (can('park')) fix += '<button class="btn plain slim" data-t="setcat" onclick="act(\'setcat\',\'' + plate + '\',\'' + other + '\')">' + svgIcon(other, 18).replace(/#fff/g, '#1f5fbf') +
       ' ' + t('setcat', catName(other)) + '</button>';
     fix += '<button class="btn plain slim" data-t="left" onclick="act(\'left\',\'' + plate + '\')">' + t('left') + '</button>';
   } else {
-    var lastCat = S.D.known[plate] || (v && v.lastCat) || '';
+    var lastCat = S.D.known[plate] || (v && v.lastCat) || '', pre = S.entryPre && S.entryPre.plate === plate ? S.entryPre : {};
     h += '<b class="tag x">' + t('notInTag') + '</b></div>' +
       '<div class="box" style="padding:10px"><label class="f">' + t('editNo') + '</label><div class="row2"><div style="flex:4"><input id="cq" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(plate) + '" oninput="plateTyped(this)"></div>' +
       micBtn('cq', 'plate', 'cmic') + camBtn() + '<button class="btn green mic" data-t="cedit" onclick="cardEdit()">✔</button></div></div>' +
+      '<div class="box" style="padding:10px"><label class="f">' + t('goingTo') + '</label><div class="row2">' + bldOptions('eb', pre.building || '') +
+      '<input id="eu" type="tel" inputmode="numeric" placeholder="' + t('unitPh') + '" value="' + esc(pre.unit || '') + '"></div>' +
+      '<div class="row2" style="margin-top:6px"><div style="flex:4"><input id="ec" class="note" type="text" list="colist" placeholder="' + t('companyPh') + '" value="' + esc(pre.company || '') + '"></div>' +
+      micBtn('ec', 'text') + '</div><datalist id="colist">' + S.D.companies.slice(0, 200).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></div>' +
       '<h2>' + t('entryHead') + '</h2><div class="row2">' + ['MEDIUM', 'HEAVY'].map(function (c) {
       return '<button class="btn ' + CATS[c][0] + (lastCat === c ? ' last' : '') + '" data-t="entry-' + c + '" onclick="act(\'entry\',\'' + plate + '\',\'' + c + '\')">' +
-        '<span class="ico">' + svgIcon(c, 46) + '</span>' + catName(c) + '<small>₹' + (ex ? 0 : S.D.deposits[c]) + '</small></button>';
+        '<span class="ico">' + svgIcon(c, 46) + '</span>' + catName(c) + '</button>';
     }).join('') + '</div>';
+    if (can('park')) h += '<button class="btn orange slim" data-t="pstart" onclick="parkScreen(\'' + plate + '\')">🅿️ ' + t('parkNoEntry') + '</button>';
     if (v && v.undo) h += '<button class="btn plain slim" data-t="undo" onclick="act(\'undo\',\'' + plate + '\')">' + t('undoBtn', t('u_' + v.undo.what), hhmm(v.undo.at)) + '</button>';
   }
   if (can('mgmt') && !ex) fix += '<button class="btn plain slim" data-t="addex" onclick="exemptScreen(\'' + plate + '\')">' + t('addEx') + '</button>';
@@ -1341,7 +1482,7 @@ function renderCard(plate, keepScroll, notice) {
     else if (!v.history.length) h += '<div class="msg info">' + (v.visits ? t('noHist') : t('newVeh')) + '</div>';
     else {
       h += '<div class="msg info">' + t('visits', v.visits, v.totalFees) + '</div><table><tr><th>' + t('rIn') + '</th><th>🅿️</th><th>₹</th></tr>';
-      v.history.forEach(function (x) { h += '<tr><td>' + fmt(x.entry) + (x.note ? '<br><small>' + noteName(x.note) + '</small>' : '') + '</td><td>' + dur(x.pmin) + '</td><td>' + (x.fee == null ? '—' : '₹' + x.fee) + '</td></tr>'; });
+      v.history.forEach(function (x) { h += '<tr><td>' + fmt(x.entry) + (x.note ? '<br><small>' + noteName(x.note) + '</small>' : '') + '</td><td>' + dur(x.pmin) + '</td><td>' + (x.fee ? '₹' + x.fee : '—') + '</td></tr>'; });
       h += '</table><button class="btn plain slim" onclick="logsRun({mode:\'all\',q:\'' + plate + '\'})">' + t('allVisits') + '</button>';
     }
   }
@@ -1349,12 +1490,15 @@ function renderCard(plate, keepScroll, notice) {
   show(h, 'card:' + plate);
   if ($('fixbtn')) $('fixbtn').onclick = function () { $('fixbox').style.display = 'block'; this.style.display = 'none'; };
   if (S.openFix && $('fixbtn')) { S.openFix = false; $('fixbtn').onclick(); }
-  if (cqv != null && $('cq')) $('cq').value = cqv;
+  Object.keys(keep).forEach(function (k) { if ($(k)) $(k).value = keep[k]; });
   if (keepScroll) window.scrollTo(0, y);
 }
 function noteName(n) {
   n = String(n || '');
-  if (n.indexOf('LEFT') === 0) return t('n_LEFT');
+  if (n.indexOf('LEFT WITHOUT') === 0 || n.indexOf('LEFT') === 0 && n.indexOf('OVERDUE') < 0) return t('n_LEFT');
+  if (n.indexOf('LEFT OVERDUE') === 0) return t('n_OVERDUE');
+  if (n.indexOf('PRESUMED') === 0) return t('n_PRESUMED');
+  if (n.indexOf('ENTERED AT PARKING') === 0) return t('n_ATPARK');
   if (n.indexOf('ENTRY DELETED') === 0) return t('n_DELETED');
   if (n.indexOf('NO SLIP') === 0) return t('n_NOSLIP');
   return esc(n);
@@ -1371,52 +1515,45 @@ function doneScreen(plate, body, speak, extra) {
   $('okbtn').onclick = home;
   $('again').onclick = function () { vehicleCard(plate); };
 }
+function entryInfo() {
+  return { b: $('eb') ? $('eb').value : '', u: $('eu') ? $('eu').value.replace(/[^0-9]/g, '') : '', co: $('ec') ? $('ec').value.trim() : '' };
+}
 function act(kind, plate, cat) {
   var o = findOpen(plate), tm = now();
-  if ((kind === 'pstart' || kind === 'pend' || kind === 'setcat') && !can('park')) { alertMsg(t('noPerm')); return; }
+  if ((kind === 'pend' || kind === 'setcat' || kind === 'untick') && !can('park')) { alertMsg(t('noPerm')); return; }
 
   if (kind === 'entry') {
     if (o) { alertMsg(t('already')); return; }
+    var inf = S.entryInfo || entryInfo(); S.entryInfo = inf;
     if (!plateOK(plate) && !S.okUnusual[plate]) return unusualScreen(plate, cat);
-    if (S.D.exempt[plate]) return doEntry(plate, cat, '', tm);            // exempt: no payment step
-    if (S.slips.length) return payScreen(plate, cat);
-    busy(t('gettingSlip'));
-    return topUpSlips().then(function () {
-      if (S.slips.length) payScreen(plate, cat); else fail(new Error(t('noNetRetry')), "vehicleCard('" + plate + "')");
-    });
+    S.entryInfo = null;
+    return doEntry(plate, cat, inf, tm);
   }
   if (kind === 'undo') {
     S.mut++; delete S.vinfo[plate];
     busy(t('undoing'));
     return waitIdle().then(function () { return call('apiUndo', S.pin, plate); }).then(function (r) {
       applySync(r.sync);
-      var money = '', speak = t('sOk');
-      if (r.what === 'ENTRY DELETED') { if (r.deposit > 0) { money = '<div class="huge" style="color:#d9780a">' + t('takeAgain', r.deposit) + '</div>'; speak = t('sTakeAgain', r.deposit); } }
-      else if (r.refund > 0) { money = '<div class="huge" style="color:#c0392b">' + t('takeBack', r.refund) + '</div>'; speak = t('sTakeBack', r.refund); }
-      else if (r.refund < 0) { money = '<div class="huge" style="color:#1c8a4a">' + t('giveBack', -r.refund) + '</div>'; speak = t('sGiveBack', -r.refund); }
-      doneScreen(plate, '<div class="huge" style="color:#1f5fbf">↩️ ✔</div>' + t('backInside') + money, speak);
+      doneScreen(plate, '<div class="huge" style="color:#0b3d91">↩️ ✔</div>' + t('backInside'), t('sOk'));
     }).catch(function (e) { fail(e, "vehicleCard('" + plate + "')"); });
   }
   if (!o) { alertMsg(t('notInside')); return; }
   S.mut++;
-  if (kind === 'pstart') {
-    o.status = 'PARKED'; o.pstart = tm; o.pend = null; o.seen = tm; delete S.vinfo[plate];
-    savePhoto(plate, 'PARKSTART');
-    doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#d9780a">🅿️ ✔</div>' + t('sPstart') + ' · ' + hhmm(tm), t('sPstart'));
-    return bg('🅿️ ' + plate, 'apiPark', [plate, 'start', tm]);
-  }
   if (kind === 'pend') {
     o.pmin = runMin(o, tm); o.status = 'INSIDE'; o.pend = tm; o.seen = tm; delete S.vinfo[plate];
     savePhoto(plate, 'PARKEND');
-    doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#5d6b7a">🅿️✖ ✔</div>' + t('sPend') + ' · <b>' + dur(o.pmin) + '</b>', t('sPend'));
+    doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#333">🅿️✖ ✔</div>' + t('sPend') + ' · <b>' + dur(o.pmin) + '</b>', t('sPend'));
     return bg('🅿️✖ ' + plate, 'apiPark', [plate, 'end', tm]);
   }
   if (kind === 'cancel') {
-    var dep = o.deposit;
     dropOpen(plate); delete S.vinfo[plate]; S.today = Math.max(0, S.today - 1);
-    doneScreen(plate, '<div class="huge" style="color:#1c8a4a">🗑 ✔</div>' + t('deleted') +
-      (dep > 0 ? '<div class="huge" style="color:#1c8a4a">' + t('giveBack', dep) + '</div>' + t('takeSlipBack') : ''), dep > 0 ? t('sGiveBack', dep) : t('deleted'));
+    doneScreen(plate, '<div class="huge" style="color:#0a6b2d">🗑 ✔</div>' + t('deleted'), t('deleted'));
     return bg('🗑 ' + plate, 'apiCancelEntry', [plate]);
+  }
+  if (kind === 'untick') {
+    var k = o.tickets.pop(); o.paidUntil = o.tickets.length ? o.tickets[o.tickets.length - 1].u : null; delete S.vinfo[plate];
+    bg('🎫✖ ' + plate, 'apiTicketUndo', [plate]);
+    return renderCard(plate, false, t('untickDone', k.n, k.a));
   }
   if (kind === 'setcat') {
     o.cat = cat; S.D.known[plate] = cat; delete S.vinfo[plate];
@@ -1424,13 +1561,11 @@ function act(kind, plate, cat) {
     return renderCard(plate, false, t('sizeChanged', catName(cat)));
   }
   if (kind === 'left') {
-    var kept = o.deposit;
     dropOpen(plate); delete S.vinfo[plate];
     bg('✖ ' + plate, 'apiCloseLeft', [plate, tm]);
-    return renderCard(plate, false, t('leftDone', kept));
+    return renderCard(plate, false, t('leftDone'));
   }
   if (kind === 'exit') {
-    // Money is involved, so the numbers must come from the server's latest record.
     if (isFresh(plate)) return exitPreview(plate);
     busy(t('calc'));
     waitIdle().then(function () { return fetchVehicle(plate); }).then(function (v) {
@@ -1439,87 +1574,136 @@ function act(kind, plate, cat) {
   }
 }
 /* The number does not look like a normal plate: correct it, or go on after one more tap (goes to review). */
-function unusualScreen(plate, cat) {
+function unusualScreen(plate, cat, then) {
   vlStep('UNUSUAL');
   buzz([200, 100, 200]); say(t('sUnusual'));
+  S.unusualThen = then || function () { act('entry', plate, cat); };
   show('<div class="fullred" style="background:#b35600"><div class="huge">' + t('unusualT') + '</div><div class="plate" style="font-size:36px">' + esc(plate) + '</div><br>' + t('unusualHelp') + '</div>' +
-    '<button class="btn dark" data-t="fixno" onclick="vehicleCard(\'' + plate + '\')">' + t('fixNo') + '</button>' +
-    '<button class="btn plain slim" data-t="goanyway" onclick="S.okUnusual[\'' + plate + '\']=1;act(\'entry\',\'' + plate + '\',\'' + cat + '\')">' + t('goAnyway') + '</button>', 'unusual');
+    '<button class="btn dark" data-t="fixno" onclick="S.entryInfo=null;vehicleCard(\'' + plate + '\')">' + t('fixNo') + '</button>' +
+    '<button class="btn plain slim" data-t="goanyway" onclick="S.okUnusual[\'' + plate + '\']=1;S.unusualThen()">' + t('goAnyway') + '</button>', 'unusual');
 }
-/* Step before the entry is made: take the money first. */
-function payScreen(plate, cat) {
-  var dep = S.D.deposits[cat], slip = S.slips[0], tm = now();
-  S.pay = { plate: plate, cat: cat, slip: slip, t: tm };
-  vlStep('PAY');
-  buzz(60); say(t('sTake', dep));
-  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(cat) +
-    '<div class="huge" style="color:#d9780a">' + t('take', dep) + '</div></div>' +
-    '<div class="box">' + t('writeSlip') + '<table>' +
-    '<tr><td>' + t('slipNo') + '</td><td><b style="font-size:32px;letter-spacing:3px">' + slip + '</b></td></tr>' +
-    '<tr><td>' + t('depRow') + '</td><td><b style="font-size:26px">₹' + dep + '</b></td></tr>' +
-    '<tr><td>' + t('timeRow') + '</td><td><b style="font-size:26px">' + hhmm(tm) + '</b></td></tr></table></div>' +
-    '<button class="btn green" id="paid" data-t="paid"><span class="ico">✔ ₹</span>' + t('paid') + '</button>' +
-    '<button class="btn grey slim" id="notpaid" data-t="notpaid">' + t('notPaid') + '</button>', 'pay');
-  $('paid').onclick = function () { var p = S.pay; S.pay = null; if (!p) return; S.slips.shift(); slipStore(); doEntry(p.plate, p.cat, p.slip, p.t); };
-  $('notpaid').onclick = function () { S.pay = null; vlEnd('CANCELLED'); renderCard(plate); };
-}
-function doEntry(plate, cat, slip, tm) {
+function doEntry(plate, cat, inf, tm) {
   if (S.vl) { S.vl.resolved = plate; vlEnd('DONE'); }
-  var ex = S.D.exempt[plate], type = ex ? ex.type : 'DEPOSIT', dep = type === 'DEPOSIT' ? S.D.deposits[cat] : 0;
-  S.mut++; S.today++;
-  S.open.push({ row: null, plate: plate, status: 'INSIDE', cat: cat, type: type, slip: slip, deposit: dep, entry: tm, entryBy: S.user.name, pstart: null, pend: null, pmin: 0, banked: 0, seen: null });
+  inf = inf || {};
+  var ex = S.D.exempt[plate], type = ex ? ex.type : 'NORMAL';
+  S.mut++; S.today++; S.entryPre = null;
+  S.open.push({ row: null, plate: plate, status: 'INSIDE', cat: cat, type: type, entry: tm, entryBy: S.user.name, pstart: null, pend: null, pmin: 0, seen: null,
+    destB: inf.b || '', destU: inf.u || '', company: inf.co || '', near: '', tickets: [], paidUntil: null });
   S.D.known[plate] = cat; delete S.vinfo[plate];
+  if (inf.co && S.D.companies.indexOf(inf.co) < 0) S.D.companies.unshift(inf.co);
   savePhoto(plate, 'ENTRY');
-  var park = can('park') ? '<button class="btn orange" data-t="pstart" onclick="act(\'pstart\',\'' + plate + '\')"><span class="ico">🅿️</span>' + t('bPstart') + '</button>' : '';
-  if (dep > 0) doneScreen(plate, catTag(cat) + '<div class="huge" style="color:#1c8a4a">⬇️ ✔</div>🧾 <b>' + slip + '</b> · ₹' + dep + ' · ' + hhmm(tm), t('sEntrySlip'), park);
-  else doneScreen(plate, catTag(cat) + '<div class="huge" style="color:#1c8a4a">⬇️ ✔</div><b>' + t('noMoney') + '</b> · ' + tk('ty_', type) + (ex && ex.note ? ' — ' + esc(ex.note) : ''), t('sNoMoney'), park);
-  bg('⬇️ ' + plate, 'apiEntry', [plate, cat, slip, tm], function (r) {
-    if (r.newSlips && r.newSlips.length) { S.slips = S.slips.concat(r.newSlips); slipStore(); }
-    if (r.deposit !== dep) correction('<div class="plate">' + esc(plate) + '</div>' + t('corrDep', r.deposit, dep));
-    else if (dep > 0 && String(r.slip) !== String(slip)) correction('<div class="plate">' + esc(plate) + '</div>' + t('corrSlip') + '<div class="huge">' + esc(r.slip) + '</div>');
-  });
+  var park = can('park') ? '<button class="btn orange" data-t="pstart" onclick="parkScreen(\'' + plate + '\')"><span class="ico">🅿️</span>' + t('bPstart') + '</button>' : '';
+  doneScreen(plate, catTag(cat) + '<div class="huge" style="color:#0a6b2d">⬇️ ✔</div>' + hhmm(tm) + (inf.b || inf.co ? '<br>' + whereTo({ destB: inf.b, destU: inf.u, company: inf.co }) : '') +
+    (ex ? '<br><b class="tag g">' + tk('ty_', type) + '</b>' : ''), t('sEntry'), park);
+  bg('⬇️ ' + plate, 'apiEntry', [plate, cat, inf, tm]);
 }
 
-/* ================= EXIT ================= */
+/* ================= PARKING: ticket at the start ================= */
+/* One screen for "parking start": size (sets the price), money to take, ticket number, building it is parked near.
+   It is also the confirmation screen for a spoken "8899 पार्किंग सुरू". */
+function parkScreen(plate, pre) {
+  if (!can('park')) return alertMsg(t('noPerm'));
+  pre = pre || {};
+  var o = findOpen(plate), ex = S.D.exempt[plate], cat = pre.size || (o && o.cat) || S.D.known[plate] || 'MEDIUM';
+  if (o && o.status === 'PARKED') return vehicleCard(plate, esc(t('alreadyParked')));
+  var probe = o || { type: ex ? ex.type : 'NORMAL' }, need = needsTicket(probe);
+  S.park = { plate: plate, cat: cat, need: need };
+  vlStep('PARK_SCREEN');
+  if (need) { buzz(60); say(t('sTake', price(cat))); }
+  var h = '<div class="box"><div class="plate">' + esc(plate) + '</div>' + (o ? '' : '<b class="tag x">' + t('notInTag') + '</b> <small>' + t('willEnter') + '</small>') +
+    '<div class="row2" style="margin-top:8px">' + ['MEDIUM', 'HEAVY'].map(function (c) {
+      return '<button class="btn ' + (c === cat ? CATS[c][0] : 'plain') + ' slim" data-t="psize-' + c + '" onclick="parkSize(\'' + c + '\')">' + svgIcon(c, 22) + ' ' + catName(c) + (need ? '<small>₹' + price(c) + '</small>' : '') + '</button>';
+    }).join('') + '</div>' +
+    (need ? '<div class="huge" style="color:#b35600" id="ptake">' + t('take', price(cat)) + '</div><small>' + S.D.hours + ' ' + t('hr') + '</small>' :
+      '<div class="msg info">' + (exemptV(probe) ? tk('ty_', probe.type) : t('stillPaid', hhmm(o && o.paidUntil))) + '</div>') + '</div>';
+  if (need) h += '<div class="box"><label class="f">🎫 ' + t('ticketNo') + '</label><div class="row2"><div style="flex:4"><input id="tno" type="tel" inputmode="numeric" autocomplete="off" value="' + esc(pre.ticket || '') + '"></div>' +
+    micBtn('tno', 'plate', 'tmic') + '</div></div>';
+  h += '<div class="box"><label class="f">' + t('parkNear') + '</label>' + bldOptions('pn', pre.near || (o && o.near) || '') + '</div>' +
+    '<button class="btn green" data-t="pok" onclick="parkGo()"><span class="ico">✔' + (need ? ' ₹' : '') + '</span>' + (need ? t('paidPark') : t('bPstart')) + '</button>' +
+    '<button class="btn grey slim" data-t="pno" onclick="S.park=null;vlEnd(\'CANCELLED\');vehicleCard(\'' + plate + '\')">' + t('cancel') + '</button>';
+  show(h, 'park');
+}
+function parkSize(c) {
+  var p = S.park, keepNo = $('tno') ? $('tno').value : '', keepNear = $('pn').value;
+  parkScreen(p.plate, { size: c, ticket: keepNo, near: keepNear });
+}
+function parkGo() {
+  var p = S.park; if (!p) return home();
+  var no = $('tno') ? $('tno').value.replace(/[^0-9A-Za-z-]/g, '') : '', near = $('pn').value, tm = now();
+  if (p.need && !no) { buzz([200, 100, 200]); say(t('ticketNo')); return alertMsg(t('needTicket')); }
+  if (!plateOK(p.plate) && !S.okUnusual[p.plate] && !findOpen(p.plate)) return unusualScreen(p.plate, p.cat, function () { parkScreen(p.plate, { size: p.cat, ticket: no, near: near }); });
+  S.park = null;
+  if (S.vl) { S.vl.resolved = p.plate; vlEnd('DONE'); }
+  var o = findOpen(p.plate), ex = S.D.exempt[p.plate];
+  S.mut++;
+  if (!o) {
+    o = { row: null, plate: p.plate, status: 'INSIDE', cat: p.cat, type: ex ? ex.type : 'NORMAL', entry: tm, entryBy: S.user.name, pstart: null, pend: null, pmin: 0, seen: null,
+      destB: '', destU: '', company: '', near: '', tickets: [], paidUntil: null };
+    S.open.push(o); S.today++;
+  }
+  o.cat = p.cat; S.D.known[p.plate] = p.cat;
+  if (no && !exemptV(o)) localTicket(o, no, tm);
+  if (near) o.near = near;
+  o.status = 'PARKED'; o.pstart = tm; o.pend = null; o.seen = tm; delete S.vinfo[p.plate];
+  savePhoto(p.plate, 'PARKSTART');
+  doneScreen(p.plate, catTag(p.cat) + '<div class="huge" style="color:#b35600">🅿️ ✔</div>' + t('sPstart') + ' · ' + hhmm(tm) +
+    (no ? '<br>🎫 <b>' + esc(no) + '</b> · ₹' + price(p.cat) + ' · ' + t('paidTill') + ' <b>' + hhmm(o.paidUntil) + '</b>' : '') + (near ? '<br>' + t('rNear') + ' <b>' + esc(near) + '</b>' : ''), t('sPstart'));
+  bg('🅿️ ' + p.plate, 'apiPark', [p.plate, 'start', tm, { ticket: no, near: near, cat: p.cat }]);
+}
+/* Another ticket for a vehicle that is already parked. */
+function ticketScreen(plate, pre) {
+  var o = findOpen(plate);
+  if (!o || !can('park')) return vehicleCard(plate);
+  if (o.status !== 'PARKED') return parkScreen(plate, pre);
+  if (exemptV(o)) return vehicleCard(plate, tk('ty_', o.type));
+  pre = pre || {};
+  vlStep('TICKET_SCREEN');
+  var l = leftMin(o); buzz(60); say(t('sTake', price(o.cat)));
+  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(o.cat) + ' ' + leftTag(o) +
+    '<div class="huge" style="color:#b35600">' + t('take', price(o.cat)) + '</div><small>+' + S.D.hours + ' ' + t('hr') + (l !== null && l < 0 ? ' · ' + t('fromOld') : '') + '</small></div>' +
+    '<div class="box"><label class="f">🎫 ' + t('ticketNo') + '</label><div class="row2"><div style="flex:4"><input id="tno" type="tel" inputmode="numeric" autocomplete="off" value="' + esc(pre.ticket || '') + '"></div>' +
+    micBtn('tno', 'plate', 'tmic') + '</div></div>' +
+    '<button class="btn green" data-t="tok" onclick="ticketGo(\'' + plate + '\')"><span class="ico">✔ ₹</span>' + t('paid') + '</button>' +
+    '<button class="btn grey slim" data-t="tcancel" onclick="vlEnd(\'CANCELLED\');vehicleCard(\'' + plate + '\')">' + t('cancel') + '</button>', 'ticket');
+}
+function ticketGo(plate) {
+  var o = findOpen(plate), no = $('tno').value.replace(/[^0-9A-Za-z-]/g, ''), tm = now();
+  if (!no) { buzz([200, 100, 200]); return alertMsg(t('needTicket')); }
+  if (S.vl) { S.vl.resolved = plate; vlEnd('DONE'); }
+  S.mut++; delete S.vinfo[plate];
+  var k = localTicket(o, no, tm);
+  doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#0a6b2d">🎫 ✔</div>🎫 <b>' + esc(no) + '</b> · ₹' + k.a + '<br>' + t('paidTill') + ' <b>' + hhmm(k.u) + '</b>', t('sTicket'));
+  bg('🎫 ' + plate, 'apiTicket', [plate, no, tm]);
+}
+
+/* ================= EXIT (no money at the gate) ================= */
 function timesTable(x) {
   return '<table>' +
     '<tr><td>' + t('rIn') + '</td><td>' + fmt(x.entry) + '</td></tr>' +
     '<tr><td>' + t('rPs') + '</td><td>' + fmt(x.pstart) + '</td></tr>' +
     '<tr><td>' + t('rPe') + '</td><td>' + (x.pstart ? fmt(x.pend) : '—') + '</td></tr>' +
     '<tr><td>' + t('rOut') + '</td><td>' + fmt(x.exit) + '</td></tr>' +
-    '<tr><td>' + t('rPt') + (x.banked ? t('todayP') : '') + '</td><td><b>' + dur(x.minutes) + '</b></td></tr>' +
-    (x.banked ? '<tr><td>' + t('rBank') + '</td><td>₹' + x.banked + '</td></tr>' : '') +
+    '<tr><td>' + t('rPt') + '</td><td><b>' + dur(x.minutes) + '</b></td></tr>' +
     '<tr><td>' + t('rCt') + '</td><td><b>' + dur(x.complexMinutes) + '</b></td></tr>' +
+    (money() && x.tickets ? '<tr><td>' + t('rTickets') + '</td><td>' + x.tickets + ' · ₹' + x.fee + '</td></tr>' : '') +
     '</table>';
 }
-/* Returns [big coloured instruction, small explanation, sentence to speak]. */
-function money(x) {
-  if (x.noSlip && x.refund === 0 && x.deposit > 0) return ['<div class="huge" style="color:#d9780a">' + t('noSlipNoRef') + '</div>', t('noSlipSub', x.deposit), t('sNoSlip')];
-  if (x.refund > 0) return ['<div class="huge" style="color:#1c8a4a">' + t('giveBack', x.refund) + '</div>', t('takeSlipBack'), t('sGiveBack', x.refund)];
-  if (x.refund < 0 && x.deposit > 0) return ['<div class="huge" style="color:#c0392b">' + t('collectMore', -x.refund) + '</div>', t('collectMoreSub', x.fee, x.deposit), t('sCollectMore', -x.refund)];
-  if (x.refund < 0) return ['<div class="huge" style="color:#c0392b">' + t('take', -x.refund) + '</div>', t('collectSub'), t('sTake', -x.refund)];
-  if (x.deposit > 0) return ['<div class="huge" style="color:#d9780a">' + t('noRefund') + '</div>', t('noRefundSub', x.deposit), t('sNoRefund')];
-  return ['<div class="huge" style="color:#1c8a4a">' + t('nothing') + '</div>', tk('ty_', x.type), t('sNothing')];
-}
-function exitPreview(plate, noSlip, keepAt) {
+function exitPreview(plate) {
   var o = findOpen(plate);
-  if (S.cmdNoSlip) { noSlip = true; S.cmdNoSlip = false; }
   if (!o) { renderCard(plate); return; }
-  var at = keepAt || now(), minutes = runMin(o, at), fee = feeNow(o, at);
-  if (noSlip && o.deposit > fee) fee = o.deposit;
-  var x = { plate: plate, type: o.type, cat: o.cat, slip: o.slip, deposit: o.deposit, minutes: minutes, fee: fee, refund: o.deposit - fee, banked: o.banked || 0, noSlip: !!noSlip,
-    entry: o.entry, pstart: o.pstart, pend: o.status === 'PARKED' ? at : o.pend, exit: at, complexMinutes: Math.max(0, Math.ceil((at - o.entry) / 60000)), at: at };
+  var at = now(), l = leftMin(o);
+  var x = { plate: plate, cat: o.cat, minutes: runMin(o, at), entry: o.entry, pstart: o.pstart, pend: o.status === 'PARKED' ? at : o.pend, exit: at,
+    complexMinutes: Math.max(0, Math.ceil((at - o.entry) / 60000)), at: at, tickets: (o.tickets || []).length, fee: ticketTotal(o),
+    over: o.status === 'PARKED' && !exemptV(o) ? (l === null ? -1 : (l < 0 ? -l : 0)) : 0 };
   S.exit = x;
   vlStep('EXIT_SCREEN');
-  var m = money(x);
-  buzz(60); say(m[2]);
-  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(o.cat) + ' ' + (o.slip !== '' && o.slip != null ? '🧾 <b>' + esc(o.slip) + '</b> · ' : '') + t('fee') + ' ₹' + fee + m[0] + m[1] + '</div>' +
+  buzz(60); say(t('sExitAsk'));
+  var warn = money() && x.over ? '<div class="msg err">⚠ ' + (x.over < 0 ? t('noTicket') : t('overBy', hm(x.over))) + '</div>' : '';
+  show('<div class="box"><div class="plate">' + esc(plate) + '</div>' + catTag(o.cat) + '<div class="huge">⬆️</div><b style="font-size:24px">' + t('bExit') + '?</b></div>' + warn +
     '<button class="btn red" id="exdone" data-t="exdone"><span class="ico">✔</span>' + t('vehLeft') + '</button>' +
-    (o.deposit > 0 ? '<button class="btn plain slim" id="noslip" data-t="noslip">' + (noSlip ? t('slipFound') : t('noSlipBtn')) + '</button>' : '') +
     timesTable(x) + '<button class="btn grey slim" id="exback">' + t('wrongVeh') + '</button>', 'exit');
   $('exdone').onclick = exitConfirm;
   $('exback').onclick = function () { S.exit = null; vlEnd('CANCELLED'); renderCard(plate); };
-  if ($('noslip')) $('noslip').onclick = function () { exitPreview(plate, !noSlip, at); };
 }
 function exitConfirm() {
   var x = S.exit;
@@ -1529,15 +1713,12 @@ function exitConfirm() {
   S.mut++;
   dropOpen(x.plate); delete S.vinfo[x.plate];
   savePhoto(x.plate, 'EXIT');
-  var m = money(x);
   buzz(60);
   S.last = x.plate;
-  show('<div class="box"><div class="plate">' + esc(x.plate) + '</div>' + catTag(x.cat) + '<div class="huge" style="color:#1c8a4a">⬆️ ✔</div>' + t('fee') + ' ₹' + x.fee + ' · ' + m[1] + '</div>' +
+  show('<div class="box"><div class="plate">' + esc(x.plate) + '</div>' + catTag(x.cat) + '<div class="huge" style="color:#0a6b2d">⬆️ ✔</div>' + hhmm(x.exit) + '</div>' +
     '<button class="btn dark" data-t="ok" onclick="home()"><span class="ico">✔</span>' + t('nextVeh') + '</button>' + timesTable(x) +
     '<button class="btn plain slim" data-t="again" onclick="vehicleCard(\'' + x.plate + '\')">' + t('mistake') + '</button>', 'done');
-  bg('⬆️ ' + x.plate, 'apiExitConfirm', [x.plate, x.at, x.noSlip], function (r) {
-    if (r.fee !== x.fee) correction('<div class="plate">' + esc(x.plate) + '</div>' + t('corrFee', r.fee, x.fee));
-  });
+  bg('⬆️ ' + x.plate, 'apiExitConfirm', [x.plate, x.at]);
 }
 
 /* ================= photo saved on this phone ================= */
@@ -1660,12 +1841,12 @@ function statusTag(x) {
 }
 function logsList(r) {
   var o = S.logOpt, title = o.mode === 'past' ? r.from + (r.to !== r.from ? ' → ' + r.to : '') + (norm(o.q) ? ' · ' + norm(o.q) : '') : norm(o.q);
-  var h = '<h1>' + esc(title) + '</h1><div class="box">' + t('vehicles') + '<div class="huge">' + r.count + '</div>' + t('feesRef', r.fees, r.refunds) +
+  var h = '<h1>' + esc(title) + '</h1><div class="box">' + t('vehicles') + '<div class="huge">' + r.count + '</div>' + t('feesTk', r.fees, r.tickets) +
     (r.count > r.list.length ? '<br><small>' + t('latestN', r.list.length) + '</small>' : '') + '</div>';
   if (!r.list.length) h += '<div class="msg info">' + t('noRec') + '</div>';
   r.list.forEach(function (x, i) {
     h += '<button class="veh" onclick="logDetail(' + i + ')">' + esc(x.plate) + '<span>' + (x.serial != null ? '#' + esc(x.serial) + ' · ' : '') + catTag(x.cat) + ' ' + fmt(x.entry) +
-      '<br>🅿️ ' + dur(x.pmin) + ' · ₹' + (x.fee || 0) + ' ' + statusTag(x) + '</span></button>';
+      '<br>🅿️ ' + dur(x.pmin) + ' · 🎫' + (x.tickets || []).length + ' · ₹' + (x.fee || 0) + (x.destB ? ' · 🏢' + esc(x.destB) : '') + ' ' + statusTag(x) + '</span></button>';
   });
   S.lastLogs = r;
   show(h + '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>', 'loglist');
@@ -1677,11 +1858,11 @@ function logDetail(i) {
   var who = function (tm, by) { return fmt(tm) + (by ? '<br><small>' + esc(by) + '</small>' : ''); };
   var h = '<div class="box"><div class="plate">' + esc(x.plate) + '</div>' + catTag(x.cat) + ' ' + (statusTag(x) || '<b class="tag g">' + t('outTag') + '</b>') + '</div><table>' +
     (x.serial != null ? row(t('rSerial'), '#' + esc(x.serial)) : '') +
-    row(t('typeRow'), tk('ty_', x.type)) + row(t('slipRow'), x.slip === '' ? '—' : esc(x.slip)) +
+    row(t('typeRow'), tk('ty_', x.type)) + (whereTo(x) ? row(t('rTo'), whereTo(x)) : '') + (x.near ? row(t('rNear'), esc(x.near)) : '') +
     row(t('rIn'), who(x.entry, x.entryBy)) + row(t('rPs'), who(x.pstart, x.pstartBy)) + row(t('rPe'), who(x.pend, x.pendBy)) + row(t('rOut'), who(x.exit, x.exitBy)) +
     row(t('rPt'), '<b>' + dur(x.pmin) + '</b>') + row(t('rCt'), '<b>' + dur(inComplex) + '</b>') +
-    row(t('depositRow'), '₹' + x.deposit) + (x.banked ? row(t('rBank'), '₹' + x.banked) : '') + row(t('fee'), x.fee == null ? '—' : '₹' + x.fee) +
-    row(t('refRow'), x.refund == null ? '—' : x.refund >= 0 ? '↩️ ₹' + x.refund : '🤲 ₹' + (-x.refund)) + '</table>';
+    row(t('fee'), '₹' + (x.fee || 0)) + (x.tickets || []).map(function (k) {
+      return row('🎫 ' + esc(k.n), '₹' + k.a + ' · ' + fmt(k.t) + '<br><small>' + esc(k.by) + ' · ' + t('paidTill') + ' ' + hhmm(k.u) + '</small>'); }).join('') + '</table>';
   h += '<button class="btn dark slim" onclick="vehicleCard(\'' + esc(x.plate) + '\')">' + t('openVeh') + '</button>' +
     '<button class="btn grey slim" onclick="logsList(S.lastLogs)">' + t('back') + '</button>';
   show(h, 'logdetail');
@@ -1690,11 +1871,10 @@ function summary() {
   busy();
   call('apiSummary', S.pin).then(function (r) {
     var h = '<h1>' + t('cash') + '</h1><div class="box">' + t('sumLine', r.entries, r.inside, r.parked) +
-      (r.full ? '<br>' + t('feesToday', r.fees) : '') +
+      (r.full ? '<br>' + t('feesToday', r.fees) + ' · 🎫 ' + r.sold : '') +
       '</div>';
     r.staff.forEach(function (x) {
-      h += '<div class="box"><b>' + esc(x.name) + '</b><div class="huge">₹' + x.cash + '</div>' + t('cashInHand') + '<br>' +
-        '<small>' + t('cashCalc', x.deposits, x.refunds, x.collected) + '</small></div>';
+      h += '<div class="box"><b>' + esc(x.name) + '</b><div class="huge">₹' + x.cash + '</div>' + t('cashInHand') + '<br><small>🎫 ' + x.tickets + ' ' + t('ticketsSold') + '</small></div>';
     });
     if (!r.staff.length) h += '<div class="msg info">' + t('noTx') + '</div>';
     show(h + '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>', 'summary');
@@ -1702,8 +1882,9 @@ function summary() {
 }
 
 /* ================= ADVANCED ANALYTICS (superuser) ================= */
-/* Row layout from the server: 0 plate, 1 size, 2 type, 3 entry ms, 4 exit ms, 5 parked min, 6 fee, 7 refund,
-   8 deposit, 9 status, 10 note, 11 entry by, 12 exit by, 13 serial, 14 earlier-days fee, 15 parking by */
+/* Row layout from the server: 0 plate, 1 size, 2 type, 3 entry ms, 4 exit ms, 5 parked min, 6 fee, 7 tickets,
+   8 overdue min at exit, 9 status, 10 note, 11 entry by, 12 exit by, 13 serial, 14 (unused), 15 parking by,
+   16 going to building, 17 parked near, 18 company */
 function anHome() { anLoad(range('month')); }
 function anLoad(r) {
   busy(t('loadingData'));
@@ -1723,7 +1904,8 @@ function anRows() {
   return a.d.rows.filter(function (r) {
     if (f.cat && r[1] !== f.cat) return false;
     if (f.st === 'EX') { if (r[2] !== 'TENANT' && r[2] !== 'PASS') return false; }
-    else if (f.st === 'PK') { if (!(r[5] > 0 || r[14] > 0)) return false; }
+    else if (f.st === 'PK') { if (!(r[5] > 0 || r[7] > 0)) return false; }
+    else if (f.st === 'OD') { if (!(r[8] > 0)) return false; }
     else if (f.st && anStatus(r) !== f.st) return false;
     if (f.staff && r[11] !== f.staff && r[12] !== f.staff && r[15] !== f.staff) return false;
     if (q && r[0].indexOf(q) < 0) return false;
@@ -1746,8 +1928,8 @@ function bars(title, items, rupees) {
 }
 function anShow() {
   var a = S.an, d = a.d, rows = anRows(), f = a.f;
-  var fees = 0, refunds = 0, parked = 0, pmin = 0, left = 0, leftRs = 0, del = 0, inside = 0, heavy = 0;
-  var byDay = {}, byHour = [], staff = {}, veh = {}, i;
+  var fees = 0, tks = 0, over = 0, parked = 0, pmin = 0, left = 0, leftRs = 0, del = 0, inside = 0, heavy = 0;
+  var byDay = {}, byHour = [], staff = {}, veh = {}, bld = {}, near = {}, i;
   for (i = 0; i < 24; i++) byHour.push(0);
   var st = function (n) { if (!n) n = '—'; if (!staff[n]) staff[n] = { e: 0, x: 0, fee: 0, p: 0 }; return staff[n]; };
   var longRange = (new Date(d.to) - new Date(d.from)) / 86400000 > 45;
@@ -1756,8 +1938,9 @@ function anShow() {
     if (!byDay[key]) byDay[key] = { n: 0, fee: 0, t: r[3] };
     if (s === 'DEL') { del++; return; }
     byDay[key].n++; byDay[key].fee += r[6]; byHour[dt.getUTCHours()]++;
-    fees += r[6]; if (r[7] > 0) refunds += r[7];
-    if (r[5] > 0 || r[14] > 0) { parked++; pmin += r[5]; }
+    fees += r[6]; tks += r[7]; if (r[8] > 0) over++;
+    if (r[5] > 0 || r[7] > 0) { parked++; pmin += r[5]; }
+    if (r[16]) bld[r[16]] = (bld[r[16]] || 0) + 1; if (r[17]) { if (!near[r[17]]) near[r[17]] = { n: 0, fee: 0 }; near[r[17]].n++; near[r[17]].fee += r[6]; }
     if (s === 'LEFT') { left++; leftRs += r[6]; }
     if (s === 'IN') inside++;
     if (r[1] === 'HEAVY') heavy++;
@@ -1772,11 +1955,11 @@ function anShow() {
     '<div class="row2">' + pb('today', 'pToday') + pb('week', 'pWeek') + pb('month', 'pMonth') + '</div><div class="row2">' + pb('30', 'p30') + pb('lastmonth', 'pLast') + pb('year', 'pYear') + '</div>' +
     '<div class="row2"><input id="af" type="date" value="' + d.from + '"><input id="at" type="date" value="' + d.to + '"><button class="btn slim" style="flex:0 0 60px;margin:0" onclick="anLoad([$(\'af\').value,$(\'at\').value])">▶</button></div>' +
     '<h2>' + t('filters') + '</h2><div class="row2"><select id="fc" onchange="anSet()">' + opt('', t('allSizes'), f.cat) + opt('MEDIUM', t('c_MEDIUM'), f.cat) + opt('HEAVY', t('c_HEAVY'), f.cat) + '</select>' +
-    '<select id="fs" onchange="anSet()">' + opt('', t('allStatus'), f.st) + opt('IN', t('stIn'), f.st) + opt('OUT', t('stOut'), f.st) + opt('PK', t('stPk'), f.st) + opt('LEFT', t('stLeft'), f.st) + opt('DEL', t('stDel'), f.st) + opt('EX', t('stEx'), f.st) + '</select></div>' +
+    '<select id="fs" onchange="anSet()">' + opt('', t('allStatus'), f.st) + opt('IN', t('stIn'), f.st) + opt('OUT', t('stOut'), f.st) + opt('PK', t('stPk'), f.st) + opt('LEFT', t('stLeft'), f.st) + opt('DEL', t('stDel'), f.st) + opt('EX', t('stEx'), f.st) + opt('OD', t('stOd'), f.st) + '</select></div>' +
     '<div class="row2" style="margin-top:8px"><select id="fp" onchange="anSet()">' + opt('', t('allStaff'), f.staff) + Object.keys(names).map(function (n) { return opt(n, n, f.staff); }).join('') + '</select>' +
     '<input id="fq" class="up note" type="text" placeholder="' + t('vehNo') + '" value="' + esc(f.q) + '" onchange="anSet()"></div>';
   var kpi = function (v, l) { return '<div class="kpi"><b>' + v + '</b><span>' + l + '</span></div>'; };
-  h += '<h2>' + t('summaryH') + '</h2><div class="kpis">' + kpi(total, t('vehicles')) + kpi('₹' + fees, t('kFees')) + kpi('₹' + refunds, t('kRef')) + kpi(parked + ' (' + (total ? Math.round(parked * 100 / total) : 0) + '%)', t('kPk')) +
+  h += '<h2>' + t('summaryH') + '</h2><div class="kpis">' + kpi(total, t('vehicles')) + kpi('₹' + fees, t('kFees')) + kpi(tks, t('kTk')) + kpi(over, t('kOd')) + kpi(parked + ' (' + (total ? Math.round(parked * 100 / total) : 0) + '%)', t('kPk')) +
     kpi(dur(parked ? Math.round(pmin / parked) : 0), t('kAvg')) + kpi('₹' + (parked ? Math.round(fees / parked) : 0), t('kFpp')) +
     kpi(left + ' · ₹' + leftRs, t('kLeft')) + kpi(heavy + ' / ' + (total - heavy), t('kHm')) + kpi(inside, t('kIn')) + kpi(del + ' · ' + d.review.length, t('kDel')) + '</div>';
   var days = Object.keys(byDay).sort(function (x, y) { return byDay[x].t - byDay[y].t; });
@@ -1785,11 +1968,15 @@ function anShow() {
     bars(t('chHour'), byHour.map(function (v, i2) { return [String(i2), v]; }));
   h += '<h2>' + t('staff') + '</h2><table><tr><th>' + t('name') + '</th><th>⬇️</th><th>🅿️</th><th>⬆️</th><th>₹</th></tr>' + Object.keys(staff).map(function (n) {
     var z = staff[n]; return '<tr><td>' + esc(n) + '</td><td>' + z.e + '</td><td>' + z.p + '</td><td>' + z.x + '</td><td>' + z.fee + '</td></tr>'; }).join('') + '</table>';
+  var bk = function (o) { return Object.keys(o).sort(function (x, y) { return S.D.buildings.indexOf(x) - S.D.buildings.indexOf(y); }); };
+  if (Object.keys(bld).length) h += bars(t('chBld'), bk(bld).map(function (k) { return [k, bld[k]]; }));
+  if (Object.keys(near).length) h += '<h2>' + t('nearH') + '</h2><table><tr><th>🅿️</th><th>' + t('times') + '</th><th>₹</th></tr>' + bk(near).map(function (k) {
+    return '<tr><td>' + esc(k) + '</td><td>' + near[k].n + '</td><td>' + near[k].fee + '</td></tr>'; }).join('') + '</table>';
   var top = Object.keys(veh).sort(function (x, y) { return veh[y].fee - veh[x].fee || veh[y].n - veh[x].n; }).slice(0, 10);
   h += '<h2>' + t('topVeh') + '</h2><table><tr><th>' + t('colVeh') + '</th><th>' + t('times') + '</th><th>₹</th></tr>' + top.map(function (p) {
     return '<tr><td><a href="#" onclick="vehicleCard(\'' + p + '\');return false">' + p + '</a></td><td>' + veh[p].n + '</td><td>' + veh[p].fee + '</td></tr>'; }).join('') + '</table>';
   // sortable table
-  var cols = [[0, t('colVeh')], [1, t('colSize')], [3, t('colIn')], [4, t('colOut')], [5, t('colPk')], [6, '₹'], [11, t('colBy')]];
+  var cols = [[0, t('colVeh')], [1, t('colSize')], [3, t('colIn')], [4, t('colOut')], [5, t('colPk')], [7, '🎫'], [6, '₹'], [16, '🏢'], [11, t('colBy')]];
   rows.sort(function (x, y) { var u = x[a.sort], v = y[a.sort]; if (u == null) u = 0; if (v == null) v = 0; return (u < v ? -1 : u > v ? 1 : 0) * (a.desc ? -1 : 1); });
   var per = 50, pages = Math.max(1, Math.ceil(rows.length / per));
   if (a.page >= pages) a.page = 0;
@@ -1798,10 +1985,10 @@ function anShow() {
     rows.slice(a.page * per, a.page * per + per).map(function (r) {
       var s = anStatus(r);
       return '<tr><td><a href="#" onclick="vehicleCard(\'' + r[0] + '\');return false">' + r[0] + '</a>' + (s === 'LEFT' ? ' ✖' : s === 'DEL' ? ' 🗑' : s === 'IN' ? ' ●' : '') + '</td><td>' + catName(r[1]) + '</td><td>' + fmt(r[3]) +
-        '</td><td>' + (r[4] ? fmt(r[4]) : '—') + '</td><td>' + r[5] + '</td><td>' + r[6] + '</td><td>' + esc(r[11]) + '</td></tr>'; }).join('') + '</table></div>' +
+        '</td><td>' + (r[4] ? fmt(r[4]) : '—') + '</td><td>' + r[5] + '</td><td>' + r[7] + (r[8] > 0 ? ' ⚠' : '') + '</td><td>' + r[6] + '</td><td>' + esc(r[16]) + '</td><td>' + esc(r[11]) + '</td></tr>'; }).join('') + '</table></div>' +
     '<div class="row2"><button class="btn plain slim" onclick="anPage(-1)">◀</button><div class="box" style="margin:10px 0;padding:12px">' + (a.page + 1) + ' / ' + pages + '</div><button class="btn plain slim" onclick="anPage(1)">▶</button></div>' +
     '<button class="btn dark slim" data-t="csv" onclick="anCsv()">' + t('csv') + '</button>' +
-    '<h2>' + t('totalsH') + '</h2><div class="box" data-t="totals">' + t('totals', d.totalEver, d.slipsLeft) + '</div>' +
+    '<h2>' + t('totalsH') + '</h2><div class="box" data-t="totals">' + t('totals', d.totalEver) + '</div>' +
     '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>';
   var y = window.scrollY, keep = S.screen === 'analytics';
   show(h, 'analytics');
@@ -1811,7 +1998,7 @@ function anSet() { var f = S.an.f; f.cat = $('fc').value; f.st = $('fs').value; 
 function anSort(c) { var a = S.an; if (a.sort === c) a.desc = !a.desc; else { a.sort = c; a.desc = true; } a.page = 0; anShow(); }
 function anPage(n) { var a = S.an, pages = Math.max(1, Math.ceil(anRows().length / 50)); a.page = Math.min(pages - 1, Math.max(0, a.page + n)); anShow(); }
 function anCsv() {
-  var head = ['Vehicle', 'Size', 'Type', 'Entry', 'Exit', 'Parked min', 'Fee', 'Refund', 'Deposit', 'Status', 'Note', 'Entry by', 'Exit by', 'Serial', 'Earlier days fee', 'Parking by'];
+  var head = ['Vehicle', 'Size', 'Type', 'Entry', 'Exit', 'Parked min', 'Fee', 'Tickets', 'Overdue min', 'Status', 'Note', 'Entry by', 'Exit by', 'Serial', '', 'Parking by', 'Going to building', 'Parked near', 'Company'];
   var iso = function (tm) { return tm ? ymd(ist(tm)) + ' ' + hhmm(tm) : ''; };
   var lines = [head.join(',')].concat(anRows().map(function (r) {
     return r.map(function (v, i) { if (i === 3 || i === 4) v = iso(v); v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',');
