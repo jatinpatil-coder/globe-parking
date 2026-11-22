@@ -910,13 +910,13 @@ function mic(targetId, mode, btn) {
       r.chunks.push(d); r.loud.push(speech);
       if (speech) { if (r.firstSpeech < 0) r.firstSpeech = r.chunks.length - 1; r.lastSpeech = r.chunks.length - 1; }
       micLevel(Math.min(1, rms * 8));
+      liveTick(r);
       var quietMs = r.lastSpeech >= 0 ? (r.chunks.length - 1 - r.lastSpeech) * d.length / ctx.sampleRate * 1000 : 0;
       if ((r.lastSpeech >= 0 && quietMs > 1100) || ms > maxMs || (r.firstSpeech < 0 && ms > 6000)) stopMic(false);
     };
     src.connect(proc); proc.connect(ctx.destination);
-    REC = r;
+    REC = r; S.liveText = '';
     micOverlay('listen');
-    liveStart(r);
     buzz(40);
   }).catch(function (e) {
     micOverlay('');
@@ -933,11 +933,12 @@ function micOverlay(state) {
   if (!o) { o = document.createElement('div'); o.id = 'micov'; document.body.appendChild(o); }
   if (state === 'listen') {
     o.innerHTML = '<div class="micbig pulse">🎤</div><div class="miclbl">' + t('speakNow') + '</div><div class="micbar"><i id="miclv"></i></div>' +
-      '<div id="livetx" class="livetx">' + (LIVE_OK() ? '…' : '') + '</div>' +
+      '<div id="livetx" class="livetx">…</div>' +
       '<button class="btn red" data-t="micstop" onclick="stopMic(false)">' + t('micStop') + '</button>' +
       '<button class="btn grey slim" data-t="miccancel" onclick="stopMic(true)">' + t('cancel') + '</button>';
   } else {
-    o.innerHTML = '<div class="micbig pulse">' + (state === 'wait' ? '🎤' : '⏳') + '</div><div class="miclbl">' + (state === 'wait' ? '' : t('writing')) + '</div>';
+    o.innerHTML = '<div class="micbig pulse">' + (state === 'wait' ? '🎤' : '⏳') + '</div><div class="miclbl">' + (state === 'wait' ? '' : t('writing')) + '</div>' +
+      (state === 'busy' && S.liveText ? '<div id="livetx" class="livetx">' + esc(S.liveText) + '</div>' : '');
   }
 }
 function micLevel(v) { var l = $('miclv'); if (l) l.style.width = Math.round(v * 100) + '%'; }
@@ -959,7 +960,6 @@ function stopMic(discard) {
   var r = REC;
   if (!r) { if (discard) micOverlay(''); return; }
   REC = null;
-  liveStop(r);
   try { r.proc.disconnect(); r.src.disconnect(); r.stream.getTracks().forEach(function (x) { x.stop(); }); } catch (e) {}
   var rate = r.ctx.sampleRate;
   try { r.ctx.close(); } catch (e) {}
@@ -972,7 +972,7 @@ function stopMic(discard) {
   if (r.mode === 'cmd') {
     var sent = Date.now();
     call('apiCommand', S.pin, b64, 'audio/wav').then(function (c) {
-      micOverlay('');
+      r.final = true; micOverlay('');
       if (S.screen !== r.screen) return;
       c = c || {};
       vlEnd('ABANDONED');
@@ -984,7 +984,7 @@ function stopMic(discard) {
     return;
   }
   call('apiDictate', S.pin, b64, 'audio/wav', r.mode).then(function (x) {
-    micOverlay('');
+    r.final = true; micOverlay('');
     if (S.screen !== r.screen) return;
     var el = $(r.target);
     if (!el) return;
@@ -1083,35 +1083,25 @@ function vlEnd(result, detail) {
 }
 
 /* ================= live words while speaking =================
-   The phone's own speech service (free, built into Chrome) writes the words on the screen as they
-   are spoken. It is only a preview: the final reading still comes from the server. If the phone
-   does not support it, or it fails once, it is switched off on that phone and recording works as before. */
-function LIVE_OK() {
-  var ok = true; try { ok = localStorage.getItem('gp_live') !== '0'; } catch (e) {}
-  return ok && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+   While the person is still talking, the speech so far is sent to the same reader that writes the
+   final text (about every 1.5 seconds, one at a time, at most 4 times per recording), and what it
+   heard is shown on the screen. The final reading after the person stops is what is used. */
+function liveTick(r) {
+  if (r.firstSpeech < 0 || r.liveBusy || r.liveN >= 4 || r.mode === 'off') return;
+  var rate = r.ctx.sampleRate, now0 = Date.now();
+  if ((r.chunks.length - r.firstSpeech) * 2048 / rate * 1000 < 1200 || now0 - (r.liveAt || 0) < 1500) return;
+  r.liveBusy = true; r.liveAt = now0; r.liveN = (r.liveN || 0) + 1;
+  var seq = r.liveN, a = Math.max(0, r.firstSpeech - Math.ceil(0.35 * rate / 2048));
+  call('apiDictate', S.pin, wavBase64(r.chunks.slice(a), rate), 'audio/wav', r.mode === 'plate' ? 'plate' : 'text').then(function (x) {
+    r.liveBusy = false;
+    if (r.final || seq < (r.liveSeen || 0)) return;           // the final reading has come, or a newer one is shown
+    r.liveSeen = seq;
+    var txt = (x && x.text) || '';
+    if (r.mode === 'plate') txt = spokenPlate(txt) || txt;
+    if (txt) liveShow(txt);
+  }).catch(function () { r.liveBusy = false; });
 }
-function liveStart(r) {
-  if (!LIVE_OK()) return;
-  try {
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition, sr = new SR();
-    sr.lang = { mr: 'mr-IN', hi: 'hi-IN', en: 'en-IN' }[S.lang] || 'mr-IN';
-    sr.interimResults = true; sr.continuous = true; sr.maxAlternatives = 1;
-    sr.onresult = function (e) {
-      if (REC !== r) return;
-      var txt = '';
-      for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
-      r.live = txt.trim();
-      var b = $('livetx'); if (b) b.textContent = r.live || '…';
-    };
-    sr.onerror = function (e) {
-      var b = $('livetx'); if (b) b.textContent = '';
-      if (e && (e.error === 'audio-capture' || e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'language-not-supported'))
-        try { localStorage.setItem('gp_live', '0'); } catch (x) {}
-    };
-    sr.start(); r.sr = sr;
-  } catch (e) { try { localStorage.setItem('gp_live', '0'); } catch (x) {} }
-}
-function liveStop(r) { if (r && r.sr) { try { r.sr.abort(); } catch (e) {} r.sr = null; } }
+function liveShow(txt) { S.liveText = txt; var b = $('livetx'); if (b) b.textContent = txt; }
 
 /* Box at the top of the screen after a voice command: what was heard, what the app understood,
    and ✏️ to correct it and run it again. */
