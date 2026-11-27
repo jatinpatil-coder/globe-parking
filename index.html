@@ -98,6 +98,13 @@
   th.s { color: #0b3d91; }
   .nav .navmic { background: #0b3d91; font-size: 22px; padding: 7px 16px; }
   .nav .navr span { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mine { background: #e3f6e8 !important; border-left: 8px solid #1c8a4a !important; }
+  tr.mine td { background: #e3f6e8; }
+  .michint { font-size: 22px; color: #ffe27a; margin: 0 0 14px; text-align: center; }
+  .earn { font-size: 22px; padding: 10px; } .earn b { color: #0a6b2d; font-size: 26px; }
+  a.btn.callb, a.btn.wab { text-decoration: none; display: block; text-align: center; }
+  a.btn.wab { background: #128c4a; color: #fff; }
+  [data-t="mic"], [data-t="navmic"], .btn.mic { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   .livetx { font-size: 26px; font-weight: bold; color: #ffe27a; min-height: 34px; max-width: 420px; margin: 0 0 14px; text-align: center; word-break: break-word; }
   .heard { background: #fff7d6; border: 2px solid #e0b400; border-radius: 12px; padding: 10px 12px; margin: 8px 0; font-size: 17px; text-align: left; }
   .heard .iconbtn { color: #333; border-color: #c9a400; }
@@ -113,6 +120,32 @@
    Every text on screen comes from this table: [Marathi, Hindi, English].
    A function is used where a number goes inside the sentence. */
 var W = {
+  /* v13 */
+  myEarn: ['आजची माझी कमाई', 'आज की मेरी कमाई', 'My earnings today'],
+  dir: ['गोदाम संपर्क', 'गोदाम संपर्क', 'Warehouse contacts'],
+  dirPh: ['कंपनी / बिल्डिंग / गाळा (K1 12)', 'कंपनी / बिल्डिंग / गाला (K1 12)', 'Company / building / gala (K1 12)'],
+  dirFix: ['✏️ नंबर चुकीचा / नवीन नंबर', '✏️ नंबर गलत / नया नंबर', '✏️ Wrong or new number'],
+  dirEmpty: ['अजून संपर्क भरलेले नाहीत (Parties टॅब)', 'अभी संपर्क नहीं भरे (Parties टैब)', 'No contacts yet (Parties tab)'],
+  dirWhich: ['कोणती कंपनी', 'कौन सी कंपनी', 'Which company'],
+  dirWhat: ['नवीन नंबर / काय बदलायचे', 'नया नंबर / क्या बदलना है', 'New number / what to change'],
+  send: ['पाठवा', 'भेजें', 'Send'],
+  sentReview: ['व्यवस्थापकाकडे पाठवले', 'मैनेजर को भेजा', 'Sent to management'],
+  gala: ['गाळा', 'गाला', 'Gala'],
+  driver: ['ड्रायव्हर', 'ड्राइवर', 'Driver'],
+  driverPh: ['ड्रायव्हरचा फोन (हवे तर)', 'ड्राइवर का फोन (चाहें तो)', 'Driver phone (optional)'],
+  micHold: ['बोलून झाल्यावर बटण सोडा', 'बोलने के बाद बटन छोड़ें', 'Let go of the button when done'],
+  micTapDone: ['बोलून झाल्यावर ⏹ दाबा', 'बोलने के बाद ⏹ दबाएँ', 'Tap ⏹ when done'],
+  roadCheck: ['रस्ता तपासणी', 'सड़क जाँच', 'Road check'],
+  roadHelp: ['रस्त्यावर फिरा: गाडी दिसली तर ✔, नसेल तर ✖. यादीत नसलेली गाडी दिसली तर लाल बटण.', 'सड़क पर घूमें: गाड़ी दिखे तो ✔, न हो तो ✖. सूची में न हो ऐसी गाड़ी दिखे तो लाल बटन.', 'Walk the road: ✔ if the truck is there, ✖ if not. Red button for a truck that is not in the list.'],
+  notInApp: ['⚠ रस्त्यावर आहे पण यादीत नाही', '⚠ सड़क पर है पर सूची में नहीं', '⚠ On the road but not in the app'],
+  here: ['✔ आहे', '✔ है', '✔ Here'],
+  notHere: ['✖ नाही', '✖ नहीं', '✖ Not here'],
+  comm: [function (p) { return 'कमिशन ' + p + '%'; }, function (p) { return 'कमीशन ' + p + '%'; }, function (p) { return 'Commission ' + p + '%'; }],
+  received: ['रोख मिळाली', 'कैश मिला', 'Cash received'],
+  amountGot: ['किती रुपये मिळाले', 'कितने रुपये मिले', 'Amount received'],
+  a_CONTACT_UPDATE: ['संपर्क बदल', 'संपर्क बदलाव', 'Contact update'],
+  a_NOT_IN_APP: ['रस्त्यावर, पण ॲपमध्ये नाही', 'सड़क पर, पर ऐप में नहीं', 'On road, not in app'],
+
   /* v12: tickets, entry details, parking list, voice box */
   parkList: ['पार्किंग यादी', 'पार्किंग सूची', 'Parking list'],
   rNear: ['कुठे उभी', 'कहाँ खड़ी', 'Parked near'],
@@ -217,7 +250,7 @@ var W = {
   permPhone1: ['सेटिंग्ज → ॲप्स → Chrome → परवानग्या → मायक्रोफोन → परवानगी द्या', 'सेटिंग्स → ऐप्स → Chrome → अनुमतियाँ → माइक्रोफ़ोन → अनुमति दें', 'Settings → Apps → Chrome → Permissions → Microphone → Allow'],
 
   speakNow: ['बोला', 'बोलिए', 'Speak now'],
-  micStop: ['⏹ थांबा', '⏹ रोकें', '⏹ Stop'],
+  micStop: ['⏹ बोलून झाले', '⏹ बोल दिया', '⏹ Done'],
   writing: ['लिहित आहे...', 'लिख रहा है...', 'Writing...'],
   newLinkTitle: ['🎤 आवाजासाठी नवीन लिंक', '🎤 आवाज़ के लिए नया लिंक', '🎤 New link for voice'],
   newLinkHelp: ['या जुन्या लिंकवर माइक चालत नाही. नवीन लिंक उघडा आणि ती होम स्क्रीनवर जोडा.', 'इस पुराने लिंक पर माइक नहीं चलता। नया लिंक खोलें और उसे होम स्क्रीन पर जोड़ें।', 'The microphone does not work on this old link. Open the new link and add it to the home screen.'],
@@ -519,11 +552,12 @@ function show(html, name) {
   var nav = '';
   if (S.user && name !== 'home' && name !== 'login') {
     nav = '<div class="nav"><button data-t="home" onclick="home()">' + t('home') + '</button><span class="navr">' +
-      (S.voiceOn ? '<button class="navmic" data-t="navmic" onclick="mic(\'\',\'cmd\',this)">🎤</button>' : '') + '<span>' + esc(S.user.name) + '</span></span></div>';
+      (S.voiceOn ? '<button class="navmic" data-t="navmic" ' + micAttr('', 'cmd') + '>🎤</button>' : '') + '<span>' + esc(S.user.name) + '</span></span></div>';
   }
   var hb = S.heard && name !== 'login' ? heardBox() : '';
   if (S.heard) S.heard.shown = true;
   $('app').innerHTML = nav + hb + html; window.scrollTo(0, 0);
+  if (hb) heardFocus();
 }
 function inAppsScript() { return !!(window.google && google.script && google.script.run); }
 function call(fn) {
@@ -570,8 +604,15 @@ function p2(n) { return (n < 10 ? '0' : '') + n; }
 /* All dates and times are shown in Indian Standard Time, whatever the phone's own setting.
    ist(ms) gives a Date whose UTC fields hold the Indian clock time. */
 function ist(ms) { return new Date(ms + 19800000); }
-function hhmm(ms) { if (!ms) return '—'; var d = ist(ms); return p2(d.getUTCHours()) + ':' + p2(d.getUTCMinutes()); }
-function fmt(ms) { if (!ms) return '—'; var d = ist(ms); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1) + ' · ' + hhmm(ms); }
+var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/* 7:58 AM */
+function hhmm(ms) { if (!ms) return '—'; var d = ist(ms), h = d.getUTCHours(); return ((h + 11) % 12 + 1) + ':' + p2(d.getUTCMinutes()) + ' ' + (h < 12 ? 'AM' : 'PM'); }
+/* 27 Nov */
+function dmon(d) { return d.getUTCDate() + ' ' + MON[d.getUTCMonth()]; }
+/* "27 Nov 7:58 AM", or only "7:58 AM" when it is today */
+function fmt(ms) { if (!ms) return '—'; var d = ist(ms); return (ymd(d) === ymd(ist(now())) ? '' : dmon(d) + ' ') + hhmm(ms); }
+/* "2026-11-27" -> "27 Nov" */
+function dstr(s) { var m = String(s || '').match(/^(\d{4})-(\d\d)-(\d\d)$/); return m ? Number(m[3]) + ' ' + MON[Number(m[2]) - 1] : esc(s); }
 function norm(p) { return String(p || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function ymd(d) { return d.getUTCFullYear() + '-' + p2(d.getUTCMonth() + 1) + '-' + p2(d.getUTCDate()); }   // d comes from ist()
 function catTag(c) { var k = CATS[c] ? c : 'MEDIUM'; return '<b class="tag ' + CATS[k][1] + '">' + svgIcon(k, 13) + ' ' + catName(k) + '</b>'; }
@@ -591,7 +632,7 @@ function say(txt) {
 /* "MH04GH8899" -> "M H 0 4 G H 8 8 9 9" so the voice reads it one character at a time. */
 function spell(p) { return String(p).split('').join(' '); }
 function micBtn(target, mode, tag) {
-  return S.voiceOn ? '<button class="btn dark mic"' + (tag ? ' data-t="' + tag + '"' : '') + ' onclick="mic(\'' + target + '\',\'' + mode + '\',this)">🎤</button>' : '';
+  return S.voiceOn ? '<button class="btn dark mic"' + (tag ? ' data-t="' + tag + '"' : '') + ' ' + micAttr(target, mode) + '>🎤</button>' : '';
 }
 function camBtn() {
   return '<label class="btn dark mic" data-t="cam">📷<input type="file" accept="image/*" capture="environment" style="display:none" onchange="onPhoto(this)"></label>';
@@ -621,6 +662,12 @@ function setLang(l) {
 }
 
 /* ================= data kept on the phone ================= */
+/* Did the person using this phone work on this vehicle? (entry, parking, ticket or exit) — shown in green */
+function isMine(o) {
+  var me = S.user && S.user.name;
+  return !!(o && me && (o.entryBy === me || o.pstartBy === me || o.pendBy === me || o.exitBy === me ||
+    (o.tickets || []).some(function (k) { return k.by === me; })));
+}
 function findOpen(plate) { for (var i = 0; i < S.open.length; i++) if (S.open[i].plate === plate) return S.open[i]; return null; }
 function dropOpen(plate) { S.open = S.open.filter(function (o) { return o.plate !== plate; }); }
 /* A vehicle that stayed overnight and has not been checked today. */
@@ -640,6 +687,7 @@ function applySync(sync) {
   if (sync.dayStart) S.dayStart = sync.dayStart;
   if (typeof sync.reviewCount === 'number') S.reviewCount = sync.reviewCount;
   if (typeof sync.voice === 'boolean') S.voiceOn = sync.voice;
+  if (sync.mine) S.mine = sync.mine;
   if (sync.exempt) { var ex = {}; sync.exempt.forEach(function (e) { ex[e[0]] = { type: e[1], note: e[2] }; }); S.D.exempt = ex; }
   if (S.screen === 'home') { var q = $('hq'); if (q && !q.value && !REC && document.activeElement !== q) home(); else homeCounts(); }
 }
@@ -723,8 +771,11 @@ function boot(pin) {
   call('apiBoot', pin).then(function (b) {
     S.pin = pin; S.user = b.user;
     var kn = {};
-    b.known.forEach(function (k) { kn[k[0]] = k[1]; });
-    S.D = { prices: b.prices, hours: b.ticketHours || 3, buildings: b.buildings || [], companies: b.companies || [], exempt: {}, known: kn };
+    var ki = {};
+    b.known.forEach(function (k) { kn[k[0]] = k[1]; if (k.length > 2) ki[k[0]] = { phone: k[2] || '', b: k[3] || '', u: k[4] || '', co: k[5] || '' }; });
+    S.D = { prices: b.prices, hours: b.ticketHours || 3, buildings: b.buildings || [], companies: b.companies || [], exempt: {}, known: kn, kinfo: ki,
+      parties: (b.parties || []).map(partyObj), pct: b.commission || 0 };
+    (b.parties || []).forEach(function (p) { if (p[0] && S.D.companies.indexOf(p[0]) < 0) S.D.companies.push(p[0]); });
     S.editMin = b.editMinutes || 10;
     S.appLink = b.appLink || '';
     S.fails = []; S.vinfo = {}; S.q = [];
@@ -757,12 +808,15 @@ function home() {
   h += '<div class="tiles"><div class="tile" data-t="t-today" onclick="todayTile()"><div class="n" id="cTd" style="color:#1c8a4a">0</div><div class="l">' + t('tToday') + '</div></div>' +
     '<div class="tile" data-t="t-in" onclick="insideList(\'\')"><div class="n" id="cIn">0</div><div class="l">' + t('tIn') + '</div></div>' +
     '<div class="tile" data-t="t-pk" onclick="can(\'park\')?parkList():insideList(\'PARKED\')"><div class="n" id="cPk" style="color:#d9780a">0</div><div class="l">' + t('tPk') + '</div></div></div>';
+  if (S.user.role === 'AGENT' && S.D.pct) h += '<div class="box earn" data-t="earn" onclick="summary()">💰 ' + t('myEarn') + ' <b>₹' + Math.round((S.mine ? S.mine.cash : 0) * S.D.pct) / 100 + '</b>' +
+    '<small> · 🎫 ' + (S.mine ? S.mine.tickets : 0) + '</small></div>';
+  h += '<button class="btn plain slim" data-t="dir" onclick="dirScreen()">📞 ' + t('dir') + '</button>';
   if (can('park')) {
     var due = S.open.filter(function (o) { var l = leftMin(o); return o.status === 'PARKED' && !exemptV(o) && (l === null || l < 30); }).length;
     h += '<button class="btn ' + (due ? 'red' : 'orange') + ' slim" data-t="plist" onclick="parkList()">🅿️ ' + t('parkList') + (due ? ' — ⚠ ' + due : '') + '</button>';
   }
   if (stale) h += '<button class="btn orange slim" data-t="stale" onclick="staleList()">' + t('stale', stale) + '</button>';
-  if (S.voiceOn) h += '<button class="btn dark" data-t="mic" style="padding:22px 12px" onclick="mic(\'hq\',\'cmd\',this)"><span class="ico" style="font-size:54px">🎤</span>' + t('micMain') +
+  if (S.voiceOn) h += '<button class="btn dark" data-t="mic" style="padding:22px 12px" ' + micAttr('hq', 'cmd') + '><span class="ico" style="font-size:54px">🎤</span>' + t('micMain') +
     '<small>' + t('micHint') + '</small></button>';
   else h += '<label class="btn dark" data-t="photo" style="padding:24px 12px"><span class="ico">📷</span>' + t('photo') +
     '<input type="file" accept="image/*" capture="environment" style="display:none" onchange="onPhoto(this)"></label>';
@@ -771,6 +825,7 @@ function home() {
     (S.voiceOn ? camBtn().replace('data-t="cam"', 'data-t="photo"') : '') +
     '<button class="btn grey mic" style="font-size:18px" onclick="toggleKb()">' + (S.kb === 'numeric' ? 'ABC' : '123') + '</button></div>' +
     '<div id="hsug"></div><button class="btn slim" data-t="show" onclick="homeGo()">' + t('find') + '</button></div>';
+  if (can('mgmt')) h += '<button class="btn plain slim" data-t="road" onclick="parkList(true)">🚶 ' + t('roadCheck') + '</button>';
   if (can('mgmt')) h += '<button class="btn ' + (S.reviewCount ? 'red' : 'plain') + ' slim" data-t="review" onclick="reviewScreen()">' + t('review') + (S.reviewCount ? ' — ' + S.reviewCount : '') + '</button>';
   if (can('records')) h += '<button class="btn plain slim" data-t="records" onclick="logsHome()">' + t('records') + '</button>';
   if (can('mgmt')) h += '<button class="btn plain slim" data-t="exempt" onclick="exemptScreen()">' + t('exemptHome') + '</button>';
@@ -805,7 +860,7 @@ function candidates(q) {
 function plateBtn(p) {
   var o = findOpen(p), c = o ? o.cat : S.D.known[p];
   var st = o ? (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inTag') + '</b>') : '<b class="tag x">' + t('notInTag') + '</b>';
-  return '<button class="veh" onclick="vehicleCard(\'' + p + '\')">' + esc(p) + '<span>' + (c ? catTag(c) + ' ' : '') + st +
+  return '<button class="veh' + (isMine(o) ? ' mine' : '') + '" onclick="vehicleCard(\'' + p + '\')">' + esc(p) + '<span>' + (c ? catTag(c) + ' ' : '') + st +
     (o ? ' ' + leftTag(o) + '<br>' + dur(Math.round((now() - o.entry) / 60000)) + (o.near ? ' · 🅿️' + esc(o.near) : '') : '') + '</span></button>';
 }
 function homeSuggest() {
@@ -833,30 +888,52 @@ function insideFilter(only) {
   $('ilist').innerHTML = list.map(function (o) { return plateBtn(o.plate); }).join('');
 }
 /* Agent's list: parked vehicles, longest stay first, with what each ticket still covers. */
-function parkList() {
+function parkList(road) {
+  S.road = !!road;
   var list = S.open.filter(function (o) { return o.status === 'PARKED'; });
   list.sort(function (a, b) { return (a.pstart || a.entry) - (b.pstart || b.entry); });
-  var h = '<h1>' + t('parkList') + ' — ' + list.length + '</h1>' + (list.length ? '' : '<div class="msg info">' + t('none') + '</div>');
+  var h = '<h1>' + (road ? t('roadCheck') : t('parkList')) + ' — ' + list.length + '</h1>' + (road ? '<div class="msg info">' + t('roadHelp') + '</div>' +
+    '<button class="btn red slim" data-t="notinapp" onclick="roadReport()">' + t('notInApp') + '</button>' : '') + (list.length ? '' : '<div class="msg info">' + t('none') + '</div>');
   list.forEach(function (o) {
     var l = leftMin(o), bad = !exemptV(o) && (l === null || l < 0), soon = !bad && !exemptV(o) && l < 30;
-    h += '<div class="box" data-t="pl-' + o.plate + '" onclick="vehicleCard(\'' + o.plate + '\')" style="text-align:left;cursor:pointer;border-left:8px solid ' + (bad ? '#a31515' : soon ? '#b35600' : '#0a6b2d') + '">' +
+    h += '<div class="box' + (isMine(o) ? ' mine' : '') + '" data-t="pl-' + o.plate + '" onclick="vehicleCard(\'' + o.plate + '\')" style="text-align:left;cursor:pointer;border-left:8px solid ' + (bad ? '#a31515' : soon ? '#b35600' : '#0a6b2d') + '">' +
       '<span class="plate" style="font-size:24px">' + esc(o.plate) + '</span> ' + catTag(o.cat) + ' ' + leftTag(o) +
       '<table style="margin:4px 0 0"><tr><td>' + t('rPt') + '</td><td><b>' + dur(Math.ceil((now() - (o.pstart || o.entry)) / 60000)) + '</b></td></tr>' +
       '<tr><td>' + t('rPs') + '</td><td>' + fmt(o.pstart) + '</td></tr>' +
       '<tr><td>' + t('rIn') + '</td><td>' + fmt(o.entry) + '</td></tr>' +
       (o.near ? '<tr><td>' + t('rNear') + '</td><td><b>' + esc(o.near) + '</b></td></tr>' : '') +
       (whereTo(o) ? '<tr><td>' + t('rTo') + '</td><td>' + whereTo(o) + '</td></tr>' : '') +
-      ((o.tickets || []).length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '</td></tr>' : '') + '</table></div>';
+      ((o.tickets || []).length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '<br><small>👤 ' +
+        o.tickets.map(function (k) { return esc(k.by); }).filter(function (z, i, a) { return a.indexOf(z) === i; }).join(', ') + '</small></td></tr>' : '') + '</table>' +
+      (o.phone && !road ? '<div class="row2" onclick="event.stopPropagation()">' + callBtn(o.phone, 'dcall') + waBtn(o.phone, driverMsg(o), 'dwa') + '</div>' : '') +
+      (road ? '<div class="row2" onclick="event.stopPropagation()"><button class="btn green slim" data-t="here-' + o.plate + '" onclick="roadSeen(\'' + o.plate + '\',this)">' + t('here') +
+        '</button><button class="btn red slim" data-t="gone-' + o.plate + '" onclick="roadGone(\'' + o.plate + '\')">' + t('notHere') + '</button></div>' : '') + '</div>';
   });
-  show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'plist');
+  show(h + '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', road ? 'road' : 'plist');
   syncNow();
+}
+function roadSeen(plate, btn) { var o = findOpen(plate); if (o) o.seen = now(); S.mut++; bg('✔ ' + plate, 'apiSeen', [plate]); btn.textContent = '✔✔'; btn.disabled = true; }
+function roadGone(plate) {
+  confirmScreen(plate, '✖', t('cGone'), '', function () { S.mut++; dropOpen(plate); delete S.vinfo[plate]; bg('✖ ' + plate, 'apiCloseLeft', [plate, now()]); parkList(true); });
+}
+/* A truck on the road that is not in the app: goes to Review with the names of the agents working today. */
+function roadReport() {
+  show('<h1>' + t('notInApp') + '</h1><div class="box"><label class="f">' + t('vehNo') + '</label><div class="row2"><div style="flex:4"><input id="rq" class="up" type="text" autocomplete="off" autocapitalize="characters" oninput="plateTyped(this)"></div>' +
+    micBtn('rq', 'plate') + '</div><label class="f" style="margin-top:8px">' + t('parkNear') + '</label>' + bldOptions('rn', '') + '</div>' +
+    '<button class="btn red" data-t="rsend" onclick="roadSend()">✔ ' + t('send') + '</button><button class="btn grey slim" onclick="parkList(true)">' + t('back') + '</button>', 'roadrep');
+}
+function roadSend() {
+  var p = norm($('rq').value);
+  if (p.length < 6) return alertMsg(t('fullNoShort'));
+  bg('⚠ ' + p, 'apiRoadReport', [p, $('rn').value]);
+  parkList(true); alertMsg(t('sentReview'));
 }
 /* Morning check: vehicles that stayed overnight. Staff look for each one in the complex. */
 function staleList() {
   var list = S.open.filter(isStale);
   show('<h1>' + t('staleTitle') + ' — ' + list.length + '</h1><div class="msg info">' + t('staleHelp') + '</div>' +
     (list.length ? list.map(function (o) {
-      return '<div class="box" style="text-align:left"><span class="plate" style="font-size:24px">' + esc(o.plate) + '</span> ' + catTag(o.cat) +
+      return '<div class="box' + (isMine(o) ? ' mine' : '') + '" style="text-align:left"><span class="plate" style="font-size:24px">' + esc(o.plate) + '</span> ' + catTag(o.cat) +
         (o.status === 'PARKED' ? ' <b class="tag">🅿️</b>' : '') + '<br><small>⬇️ ' + fmt(o.entry) + '</small>' +
         '<div class="row2"><button class="btn green slim" data-t="seen" onclick="markSeen(\'' + o.plate + '\')">' + t('seen') + '</button>' +
         '<button class="btn red slim" data-t="gone" onclick="markGone(\'' + o.plate + '\')">' + t('gone') + '</button></div></div>';
@@ -882,7 +959,27 @@ function markGone(plate) {
    the speech and sent at 16 kHz, so a plate is about 60-100 KB.
    Google's own frame (the old Apps Script link) never allows the microphone; there the
    button sends staff to the new link instead. */
-var REC = null;
+var REC = null, MICP = null;
+/* Hold the 🎤 button while speaking and let go when finished (like a WhatsApp voice note).
+   A short tap also works: it keeps listening until ⏹ is tapped. */
+function micAttr(target, mode) {
+  return 'onpointerdown="micDown(event,\'' + target + '\',\'' + mode + '\',this)" oncontextmenu="return false"';
+}
+function micDown(e, target, mode, btn) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (REC) { stopMic(false); return; }
+  MICP = { down: Date.now(), up: 0, stop: false };
+  mic(target, mode, btn);
+}
+function micUp() {
+  var m = MICP;
+  if (!m || m.up) return;
+  m.up = Date.now();
+  if (m.up - m.down >= 450) { if (REC) stopMic(false); else m.stop = true; }   // it was held: let go = finished
+  else if (REC) micOverlay('listen');                                          // short tap: keep listening until ⏹
+}
+document.addEventListener('pointerup', micUp);
+document.addEventListener('pointercancel', micUp);
 function micAllowed() {
   try {
     var p = document.permissionsPolicy || document.featurePolicy;
@@ -899,7 +996,7 @@ function mic(targetId, mode, btn) {
     var src = ctx.createMediaStreamSource(stream), proc = ctx.createScriptProcessor(2048, 1, 1);
     var r = { stream: stream, ctx: ctx, proc: proc, src: src, chunks: [], loud: [], target: targetId, mode: mode, btn: btn, screen: S.screen,
       started: Date.now(), floor: 0, n: 0, firstSpeech: -1, lastSpeech: -1 };
-    var maxMs = mode === 'text' ? 20000 : 10000;
+    var maxMs = mode === 'text' ? 30000 : 20000;
     proc.onaudioprocess = function (e) {
       if (REC !== r) return;
       var d = new Float32Array(e.inputBuffer.getChannelData(0)), sum = 0;
@@ -910,12 +1007,11 @@ function mic(targetId, mode, btn) {
       r.chunks.push(d); r.loud.push(speech);
       if (speech) { if (r.firstSpeech < 0) r.firstSpeech = r.chunks.length - 1; r.lastSpeech = r.chunks.length - 1; }
       micLevel(Math.min(1, rms * 8));
-      liveTick(r);
-      var quietMs = r.lastSpeech >= 0 ? (r.chunks.length - 1 - r.lastSpeech) * d.length / ctx.sampleRate * 1000 : 0;
-      if ((r.lastSpeech >= 0 && quietMs > 1100) || ms > maxMs || (r.firstSpeech < 0 && ms > 6000)) stopMic(false);
+      if (ms > maxMs || (r.firstSpeech < 0 && ms > 10000)) stopMic(false);        // stops by itself only when far too long
     };
     src.connect(proc); proc.connect(ctx.destination);
-    REC = r; S.liveText = '';
+    REC = r;
+    if (MICP && MICP.stop) { stopMic(false); return; }
     micOverlay('listen');
     buzz(40);
   }).catch(function (e) {
@@ -933,12 +1029,12 @@ function micOverlay(state) {
   if (!o) { o = document.createElement('div'); o.id = 'micov'; document.body.appendChild(o); }
   if (state === 'listen') {
     o.innerHTML = '<div class="micbig pulse">🎤</div><div class="miclbl">' + t('speakNow') + '</div><div class="micbar"><i id="miclv"></i></div>' +
-      '<div id="livetx" class="livetx">…</div>' +
+      '<div class="michint">' + (MICP && MICP.up && MICP.up - MICP.down < 450 ? t('micTapDone') : t('micHold')) + '</div>' +
       '<button class="btn red" data-t="micstop" onclick="stopMic(false)">' + t('micStop') + '</button>' +
       '<button class="btn grey slim" data-t="miccancel" onclick="stopMic(true)">' + t('cancel') + '</button>';
   } else {
     o.innerHTML = '<div class="micbig pulse">' + (state === 'wait' ? '🎤' : '⏳') + '</div><div class="miclbl">' + (state === 'wait' ? '' : t('writing')) + '</div>' +
-      (state === 'busy' && S.liveText ? '<div id="livetx" class="livetx">' + esc(S.liveText) + '</div>' : '');
+'';
   }
 }
 function micLevel(v) { var l = $('miclv'); if (l) l.style.width = Math.round(v * 100) + '%'; }
@@ -972,7 +1068,7 @@ function stopMic(discard) {
   if (r.mode === 'cmd') {
     var sent = Date.now();
     call('apiCommand', S.pin, b64, 'audio/wav').then(function (c) {
-      r.final = true; micOverlay('');
+      micOverlay('');
       if (S.screen !== r.screen) return;
       c = c || {};
       vlEnd('ABANDONED');
@@ -984,7 +1080,7 @@ function stopMic(discard) {
     return;
   }
   call('apiDictate', S.pin, b64, 'audio/wav', r.mode).then(function (x) {
-    r.final = true; micOverlay('');
+    micOverlay('');
     if (S.screen !== r.screen) return;
     var el = $(r.target);
     if (!el) return;
@@ -1082,27 +1178,6 @@ function vlEnd(result, detail) {
     result: result, detail: detail || '', audioMs: v.audioMs, replyMs: v.replyMs, totalMs: Date.now() - v.t0, flag: flag }).catch(function () {});
 }
 
-/* ================= live words while speaking =================
-   While the person is still talking, the speech so far is sent to the same reader that writes the
-   final text (about every 1.5 seconds, one at a time, at most 4 times per recording), and what it
-   heard is shown on the screen. The final reading after the person stops is what is used. */
-function liveTick(r) {
-  if (r.firstSpeech < 0 || r.liveBusy || r.liveN >= 4 || r.mode === 'off') return;
-  var rate = r.ctx.sampleRate, now0 = Date.now();
-  if ((r.chunks.length - r.firstSpeech) * 2048 / rate * 1000 < 1200 || now0 - (r.liveAt || 0) < 1500) return;
-  r.liveBusy = true; r.liveAt = now0; r.liveN = (r.liveN || 0) + 1;
-  var seq = r.liveN, a = Math.max(0, r.firstSpeech - Math.ceil(0.35 * rate / 2048));
-  call('apiDictate', S.pin, wavBase64(r.chunks.slice(a), rate), 'audio/wav', r.mode === 'plate' ? 'plate' : 'text').then(function (x) {
-    r.liveBusy = false;
-    if (r.final || seq < (r.liveSeen || 0)) return;           // the final reading has come, or a newer one is shown
-    r.liveSeen = seq;
-    var txt = (x && x.text) || '';
-    if (r.mode === 'plate') txt = spokenPlate(txt) || txt;
-    if (txt) liveShow(txt);
-  }).catch(function () { r.liveBusy = false; });
-}
-function liveShow(txt) { S.liveText = txt; var b = $('livetx'); if (b) b.textContent = txt; }
-
 /* Box at the top of the screen after a voice command: what was heard, what the app understood,
    and ✏️ to correct it and run it again. */
 var EDIT_ACTIONS = ['FIND', 'ENTRY', 'PARK_START', 'TICKET', 'PARK_END', 'EXIT', 'STILL_HERE', 'GONE', 'SET_SIZE'];
@@ -1115,24 +1190,34 @@ function heardBox() {
   if (c.company) bits.push(esc(c.company));
   if (c.near) bits.push('🅿️ ' + esc(c.near));
   return '<div class="heard" data-t="heard"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1">🎤 <i>“' + esc(c.heard || '—') + '”</i><br>' + bits.join(' · ') + '</div>' +
-    '<button class="iconbtn" data-t="heardedit" onclick="heardEdit()">✏️</button></div><div id="heardf"></div></div>';
+    (c.editing ? '' : '<button class="iconbtn" data-t="heardedit" onclick="heardEdit()">✏️</button>') + '</div><div id="heardf">' + (c.editing ? heardFields(c) : '') + '</div></div>';
+}
+/* Correction fields. Every change is applied by itself (a short pause after typing); the box stays open. */
+function heardFields(c) {
+  var opt = function (list, cur, lab) { return list.map(function (x) { return '<option value="' + x + '"' + (x === cur ? ' selected' : '') + '>' + lab(x) + '</option>'; }).join(''); };
+  return '<div class="row2" style="margin-top:8px"><div style="flex:3"><input id="hp" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(c.plate || '') + '" oninput="plateTyped(this);autoApply(heardRun)"></div>' +
+    '<select id="ha" class="bsel" style="flex:3" onchange="heardRun()">' + opt(EDIT_ACTIONS, c.action, function (a) { return cmdLabel({ action: a }); }) + '</select></div>' +
+    '<div class="row2" style="margin-top:6px"><select id="hs" class="bsel" onchange="heardRun()"><option value="">—</option>' + opt(['MEDIUM', 'HEAVY'], c.size, catName) + '</select>' +
+    (can('park') ? '<input id="ht" type="tel" inputmode="numeric" placeholder="🎫" value="' + esc(c.ticket || '') + '" oninput="autoApply(heardRun)">' : '') + '</div>';
 }
 function heardEdit() {
   var c = S.heard, f = $('heardf'); if (!c || !f) return;
-  var opt = function (list, cur, lab) { return list.map(function (x) { return '<option value="' + x + '"' + (x === cur ? ' selected' : '') + '>' + lab(x) + '</option>'; }).join(''); };
-  f.innerHTML = '<div class="row2" style="margin-top:8px"><div style="flex:3"><input id="hp" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(c.plate || '') + '" oninput="plateTyped(this)"></div>' +
-    '<select id="ha" class="bsel" style="flex:3">' + opt(EDIT_ACTIONS, c.action, function (a) { return cmdLabel({ action: a }); }) + '</select></div>' +
-    '<div class="row2" style="margin-top:6px"><select id="hs" class="bsel"><option value="">—</option>' + opt(['MEDIUM', 'HEAVY'], c.size, catName) + '</select>' +
-    (can('park') ? '<input id="ht" type="tel" inputmode="numeric" placeholder="🎫" value="' + esc(c.ticket || '') + '">' : '') + '</div>' +
-    '<button class="btn green slim" data-t="heardrun" onclick="heardRun()">✔ ' + t('runAgain') + '</button>';
+  c.editing = true; f.innerHTML = heardFields(c);
+  var b = document.querySelector('[data-t="heardedit"]'); if (b) b.remove();
 }
 function heardRun() {
-  var c = S.heard; if (!c) return;
+  var c = S.heard; if (!c || !$('ha')) return;
+  clearTimeout(AUTO);
   var n = { action: $('ha').value, plate: norm($('hp').value), size: $('hs').value, ticket: $('ht') ? $('ht').value.replace(/[^0-9A-Za-z-]/g, '') : '',
-    building: c.building, unit: c.unit, company: c.company, near: c.near, note: c.note, heard: c.heard };
+    building: c.building, unit: c.unit, company: c.company, near: c.near, note: c.note, heard: c.heard, editing: true,
+    focus: document.activeElement && document.activeElement.id };
   vlEnd('ABANDONED');
   S.vl = { t0: Date.now(), from: String(S.screen).split(':')[0], heard: c.heard, plate: n.plate, action: n.action, size: n.size, audioMs: 0, replyMs: 0, path: ['EDIT_CMD'] };
   runCommand(n);
+}
+function heardFocus() {
+  var c = S.heard, f = c && c.editing && c.focus && $(c.focus);
+  if (f && f.focus) { f.focus(); try { f.setSelectionRange(f.value.length, f.value.length); } catch (e) {} }
 }
 
 /* ================= VOICE COMMANDS =================
@@ -1163,7 +1248,7 @@ function runCommand(c) {
   var a = c.action || 'FIND';
   if (a === 'EXIT_NOSLIP') a = 'EXIT';
   c = { action: a, plate: spokenPlate(c.plate || ''), size: c.size || '', note: c.note || '', heard: c.heard || '',
-    ticket: c.ticket || '', building: c.building || '', unit: c.unit || '', company: c.company || '', near: c.near || '' };
+    ticket: c.ticket || '', building: c.building || '', unit: c.unit || '', company: c.company || '', near: c.near || '', editing: !!c.editing, focus: c.focus || '' };
   S.heard = c; S.park = null; S.exit = null; S.pre = '';
   if (a === 'NONE' && !c.plate) { vlEnd('NOT_UNDERSTOOD'); buzz([200, 100, 200]); say(t('notUnderstood')); return alertMsg(t('notUnderstood') + (c.heard ? ' (' + t('heard') + ': ' + c.heard + ')' : '')); }
   if (a === 'NONE') c.action = a = 'FIND';
@@ -1208,7 +1293,7 @@ function cmdAsk(c, list) {
   S.cmd = c; vlStep('ASK_PLATE');
   buzz(60); say(t('whichVeh'));
   show('<h1>' + cmdLabel(c) + '</h1><div class="box"><b style="font-size:22px">' + t('whichVeh') + '</b><div class="row2" style="margin-top:8px"><div style="flex:4">' +
-    '<input id="nq" class="up" type="text" autocomplete="off" autocapitalize="characters" placeholder="1234" value="' + esc(norm(c.plate)) + '" oninput="plateTyped(this);cmdAskFilter()"></div>' +
+    '<input id="nq" class="up" type="text" autocomplete="off" autocapitalize="characters" placeholder="1234" value="' + esc(norm(c.plate)) + '" oninput="plateTyped(this);cmdAskFilter();autoApply(cmdAskAuto)"></div>' +
     micBtn('nq', 'plate', 'nmic') + '</div><div id="nlist"></div>' +
     '<button class="btn slim" data-t="ncont" onclick="cmdAskGo()">' + t('cont') + '</button></div>' +
     '<button class="btn grey slim" onclick="home()">' + t('cancel') + '</button>', 'ask');
@@ -1219,6 +1304,7 @@ function cmdAskList(list) {
   b.innerHTML = list.map(function (p) { return plateBtn(p).replace("vehicleCard('" + p + "')", "cmdPick('" + p + "')"); }).join('');
 }
 function cmdAskFilter() { var r = cmdResolve(S.cmd, $('nq').value); cmdAskList(r.plate ? [r.plate] : r.list); }
+function cmdAskAuto() { if (S.screen !== 'ask' || !$('nq')) return; var r = cmdResolve(S.cmd, $('nq').value); if (r.plate && (findOpen(r.plate) || plateOK(r.plate))) cmdPick(r.plate); }
 function cmdAskGo() {
   var r = cmdResolve(S.cmd, $('nq').value);
   if (r.plate) return cmdPick(r.plate);
@@ -1363,6 +1449,11 @@ function vehicleCard(plate, notice) {
   renderCard(plate, false, notice);
   fetchVehicle(plate).then(function () { if (S.screen === 'card:' + plate) renderCard(plate, true, notice); }).catch(function () {});
 }
+/* Typed corrections apply by themselves about 1 second after the last key (no ✔ needed).
+   Nothing is saved by this: saving always needs its own confirm tap. */
+var AUTO = null;
+function autoApply(fn) { clearTimeout(AUTO); AUTO = setTimeout(fn, 1100); }
+function cardEditAuto() { var e = $('cq'); if (!e) return; var p = norm(e.value); if (p.length >= 6 && plateOK(p) && S.screen !== 'card:' + p) cardEdit(); }
 /* The number on the card was wrong: open the corrected one instead. */
 function cardEdit() {
   var p = norm($('cq').value);
@@ -1426,14 +1517,19 @@ function renderCard(plate, keepScroll, notice) {
     var other = o.cat === 'HEAVY' ? 'MEDIUM' : 'HEAVY', last = (o.tickets || [])[o.tickets ? o.tickets.length - 1 : 0];
     h += catTag(o.cat) + ' ' + (o.status === 'PARKED' ? '<b class="tag">' + t('parkedTag') + '</b>' : '<b class="tag b">' + t('inside') + '</b>') + ' ' + leftTag(o) + '</div>';
     if (isStale(o)) h += '<button class="btn green slim" data-t="seen" onclick="markSeenCard(\'' + plate + '\')">' + t('seenOvernight') + '</button>';
-    h += '<table><tr><td>' + t('rIn') + '</td><td>' + fmt(o.entry) + '</td></tr>' +
+    var by = function (n) { return n ? '<br><small>👤 ' + esc(n) + '</small>' : ''; };
+    if (isMine(o)) h = h.replace('<div class="box"><div class="plate">', '<div class="box mine"><div class="plate">');
+    h += '<table><tr><td>' + t('rIn') + '</td><td>' + fmt(o.entry) + by(o.entryBy) + '</td></tr>' +
       (whereTo(o) ? '<tr><td>' + t('rTo') + '</td><td>' + whereTo(o) + '</td></tr>' : '') +
       (o.near ? '<tr><td>' + t('rNear') + '</td><td><b>' + esc(o.near) + '</b></td></tr>' : '') +
-      '<tr><td>' + t('rPs') + '</td><td>' + fmt(o.pstart) + '</td></tr>' +
+      '<tr><td>' + t('rPs') + '</td><td>' + fmt(o.pstart) + by(o.pstartBy) + '</td></tr>' +
       '<tr><td>' + t('rPt') + '</td><td><b>' + dur(runMin(o)) + '</b></td></tr>' +
       '<tr><td>' + t('rCt') + '</td><td><b>' + dur(Math.ceil((now() - o.entry) / 60000)) + '</b></td></tr>' +
-      (money() && o.tickets && o.tickets.length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ₹' + ticketTotal(o) + '<br><small>🎫 ' + esc(last.n) + ' · ' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '</small></td></tr>' : '') +
+      (money() && o.tickets && o.tickets.length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ₹' + ticketTotal(o) + '<br><small>' + o.tickets.map(function (k) { return '🎫 ' + esc(k.n) + ' · ' + esc(k.by); }).join('<br>') + '<br>' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '</small></td></tr>' : '') +
       (v && v.open && v.open.serial != null ? '<tr><td>' + t('rSerial') + '</td><td>#' + esc(v.open.serial) + '</td></tr>' : '') + '</table>';
+    var ph = partyFor(o.destB, o.destU, o.company);
+    if (ph.length) h += ph.slice(0, 2).map(partyBox).join('');
+    if (can('park') && o.phone) h += '<div class="box" style="text-align:left">🚚 ' + t('driver') + '<div class="row2">' + callBtn(o.phone, 'dcall') + waBtn(o.phone, o.paidUntil ? driverMsg(o) : '', 'dwa') + '</div></div>';
     if (can('park')) {
       if (o.status === 'PARKED') {
         if (!exemptV(o)) h += '<button class="btn orange" data-t="ticket" onclick="ticketScreen(\'' + plate + '\')"><span class="ico">🎫</span>' + t('newTicket') + '<small>₹' + price(o.cat) + ' · ' + S.D.hours + ' ' + t('hr') + '</small></button>';
@@ -1449,14 +1545,15 @@ function renderCard(plate, keepScroll, notice) {
       ' ' + t('setcat', catName(other)) + '</button>';
     fix += '<button class="btn plain slim" data-t="left" onclick="act(\'left\',\'' + plate + '\')">' + t('left') + '</button>';
   } else {
-    var lastCat = S.D.known[plate] || (v && v.lastCat) || '', pre = S.entryPre && S.entryPre.plate === plate ? S.entryPre : {};
+    var lastCat = S.D.known[plate] || (v && v.lastCat) || '', ki = S.D.kinfo[plate] || {},
+      pre = S.entryPre && S.entryPre.plate === plate ? S.entryPre : { building: ki.b, unit: ki.u, company: ki.co };
     h += '<b class="tag x">' + t('notInTag') + '</b></div>' +
-      '<div class="box" style="padding:10px"><label class="f">' + t('editNo') + '</label><div class="row2"><div style="flex:4"><input id="cq" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(plate) + '" oninput="plateTyped(this)"></div>' +
-      micBtn('cq', 'plate', 'cmic') + camBtn() + '<button class="btn green mic" data-t="cedit" onclick="cardEdit()">✔</button></div></div>' +
-      '<div class="box" style="padding:10px"><label class="f">' + t('goingTo') + '</label><div class="row2">' + bldOptions('eb', pre.building || '') +
-      '<input id="eu" type="tel" inputmode="numeric" placeholder="' + t('unitPh') + '" value="' + esc(pre.unit || '') + '"></div>' +
-      '<div class="row2" style="margin-top:6px"><div style="flex:4"><input id="ec" class="note" type="text" list="colist" placeholder="' + t('companyPh') + '" value="' + esc(pre.company || '') + '"></div>' +
-      micBtn('ec', 'text') + '</div><datalist id="colist">' + S.D.companies.slice(0, 200).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></div>' +
+      '<div class="box" style="padding:10px"><label class="f">' + t('editNo') + '</label><div class="row2"><div style="flex:4"><input id="cq" class="up" type="text" autocomplete="off" autocapitalize="characters" value="' + esc(plate) + '" oninput="plateTyped(this);autoApply(cardEditAuto)"></div>' +
+      micBtn('cq', 'plate', 'cmic') + camBtn() + '</div></div>' +
+      '<div class="box" style="padding:10px"><label class="f">' + t('goingTo') + '</label><div class="row2">' + bldOptions('eb', pre.building || '').replace('<select', '<select onchange="entryParty()"') +
+      '<input id="eu" type="tel" inputmode="numeric" placeholder="' + t('unitPh') + '" value="' + esc(pre.unit || '') + '" oninput="entryParty()"></div>' +
+      '<div class="row2" style="margin-top:6px"><div style="flex:4"><input id="ec" class="note" type="text" list="colist" placeholder="' + t('companyPh') + '" value="' + esc(pre.company || '') + '" onchange="entryParty()"></div>' +
+      micBtn('ec', 'text') + '</div><datalist id="colist">' + S.D.companies.slice(0, 200).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist><div id="eparty"></div></div>' +
       '<h2>' + t('entryHead') + '</h2><div class="row2">' + ['MEDIUM', 'HEAVY'].map(function (c) {
       return '<button class="btn ' + CATS[c][0] + (lastCat === c ? ' last' : '') + '" data-t="entry-' + c + '" onclick="act(\'entry\',\'' + plate + '\',\'' + c + '\')">' +
         '<span class="ico">' + svgIcon(c, 46) + '</span>' + catName(c) + '</button>';
@@ -1472,12 +1569,16 @@ function renderCard(plate, keepScroll, notice) {
     else if (!v.history.length) h += '<div class="msg info">' + (v.visits ? t('noHist') : t('newVeh')) + '</div>';
     else {
       h += '<div class="msg info">' + t('visits', v.visits, v.totalFees) + '</div><table><tr><th>' + t('rIn') + '</th><th>🅿️</th><th>₹</th></tr>';
-      v.history.forEach(function (x) { h += '<tr><td>' + fmt(x.entry) + (x.note ? '<br><small>' + noteName(x.note) + '</small>' : '') + '</td><td>' + dur(x.pmin) + '</td><td>' + (x.fee ? '₹' + x.fee : '—') + '</td></tr>'; });
+      v.history.forEach(function (x) {
+        var who = [x.entryBy ? '⬇️ ' + esc(x.entryBy) : '', x.pstartBy ? '🅿️ ' + esc(x.pstartBy) : ''].concat((x.tickets || []).map(function (k) { return '🎫 ' + esc(k.by); }))
+          .concat([x.exitBy ? '⬆️ ' + esc(x.exitBy) : '']).filter(String).filter(function (z, i, a) { return a.indexOf(z) === i; }).join(' · ');
+        h += '<tr' + (isMine(x) ? ' class="mine"' : '') + '><td>' + fmt(x.entry) + (x.note ? '<br><small>' + noteName(x.note) + '</small>' : '') + (who ? '<br><small>' + who + '</small>' : '') + '</td><td>' + dur(x.pmin) + '</td><td>' + (x.fee ? '₹' + x.fee : '—') + '</td></tr>'; });
       h += '</table><button class="btn plain slim" onclick="logsRun({mode:\'all\',q:\'' + plate + '\'})">' + t('allVisits') + '</button>';
     }
   }
   h += '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>';
   show(h, 'card:' + plate);
+  if ($('eparty')) entryParty();
   if ($('fixbtn')) $('fixbtn').onclick = function () { $('fixbox').style.display = 'block'; this.style.display = 'none'; };
   if (S.openFix && $('fixbtn')) { S.openFix = false; $('fixbtn').onclick(); }
   Object.keys(keep).forEach(function (k) { if ($(k)) $(k).value = keep[k]; });
@@ -1494,6 +1595,84 @@ function noteName(n) {
   return esc(n);
 }
 function markSeenCard(plate) { var o = findOpen(plate); if (o) o.seen = now(); S.mut++; bg('✔ ' + plate, 'apiSeen', [plate]); renderCard(plate); }
+
+/* ================= warehouse directory (Parties tab) ================= */
+/* "2-8, 12" -> [2..8, 12] */
+function galas(spec) {
+  var out = [];
+  String(spec || '').split(/[,;/ ]+/).forEach(function (part) {
+    var m = part.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (m) { for (var n = Number(m[1]); n <= Number(m[2]) && out.length < 500; n++) out.push(n); }
+    else if (/^\d+$/.test(part)) out.push(Number(part));
+  });
+  return out;
+}
+function partyObj(r) { return { name: r[0], mgr: r[1], phone: r[2], b: r[3], spec: r[4], g: galas(r[4]) }; }
+/* Parties for a building + unit, or for a company name */
+function partyFor(b, u, co) {
+  var P = S.D.parties || [], n = Number(u), c = String(co || '').trim().toUpperCase();
+  var hit = P.filter(function (p) { return b && p.b === b && (!u || p.g.indexOf(n) >= 0); });
+  if (u && hit.length) return hit;
+  if (c) { var byName = P.filter(function (p) { return p.name.toUpperCase() === c; }); if (byName.length) return byName; }
+  return b && !u ? [] : hit;
+}
+function digits(ph) { var d = String(ph || '').replace(/[^0-9]/g, ''); return d.length > 10 && d.indexOf('91') === 0 ? d.slice(-10) : d; }
+function callBtn(ph, tag) { var d = digits(ph); return d ? '<a class="btn green slim callb" data-t="' + (tag || 'call') + '" href="tel:+91' + d + '">📞 ' + d + '</a>' : ''; }
+function waBtn(ph, msg, tag) { var d = digits(ph); return d ? '<a class="btn slim wab" data-t="' + (tag || 'wa') + '" target="_blank" rel="noopener" href="https://wa.me/91' + d + (msg ? '?text=' + encodeURIComponent(msg) : '') + '">💬 WhatsApp</a>' : ''; }
+function partyBox(p) {
+  return '<div class="box party" style="text-align:left"><b>' + esc(p.name) + '</b><br><small>🏢 ' + esc(p.b) + (p.spec ? ' · ' + t('gala') + ' ' + esc(p.spec) : '') +
+    (p.mgr ? ' · 👤 ' + esc(p.mgr) : '') + '</small><div class="row2">' + callBtn(p.phone) + waBtn(p.phone) + '</div></div>';
+}
+function dirScreen(q) {
+  var P = S.D.parties || [];
+  show('<h1>' + t('dir') + '</h1><div class="box"><div class="row2"><div style="flex:4"><input id="dq" type="text" autocomplete="off" placeholder="' + t('dirPh') + '" value="' + esc(q || '') + '" oninput="dirFilter()"></div>' +
+    micBtn('dq', 'text', 'dmic') + '</div></div><div id="dlist"></div>' +
+    '<button class="btn plain slim" data-t="dirfix" onclick="dirFix()">' + t('dirFix') + '</button>' +
+    '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>', 'dir');
+  if (!P.length) $('dlist').innerHTML = '<div class="msg info">' + t('dirEmpty') + '</div>';
+  else dirFilter();
+}
+function dirFilter() {
+  var q = String($('dq').value || '').trim().toUpperCase(), qb = q.replace(/[^A-Z0-9]/g, ''), m = qb.match(/^([A-Z]\d?)(\d+)$/);
+  var list = (S.D.parties || []).filter(function (p) {
+    if (!q) return true;
+    if (p.name.toUpperCase().indexOf(q) >= 0 || p.mgr.toUpperCase().indexOf(q) >= 0 || digits(p.phone).indexOf(qb) >= 0 && qb.length >= 4) return true;
+    if (p.b === qb) return true;
+    if (m && p.b === m[1] && p.g.indexOf(Number(m[2])) >= 0) return true;    // "K112" = K1 gala 12
+    return false;
+  });
+  $('dlist').innerHTML = list.slice(0, 40).map(partyBox).join('') || '<div class="msg info">' + t('none') + '</div>';
+}
+/* Number wrong or missing: write or speak it, it goes to Review (the sheet is changed by management). */
+function dirFix() {
+  show('<h1>' + t('dirFix') + '</h1><div class="box" style="text-align:left"><label class="f">' + t('dirWhich') + '</label><input id="fp1" type="text" list="colist2">' +
+    '<datalist id="colist2">' + (S.D.parties || []).map(function (p) { return '<option value="' + esc(p.name) + '">'; }).join('') + '</datalist>' +
+    '<label class="f" style="margin-top:8px">' + t('dirWhat') + '</label><div class="row2"><div style="flex:4"><input id="fp2" type="text"></div>' + micBtn('fp2', 'text') + '</div></div>' +
+    '<button class="btn green" data-t="dirsend" onclick="dirSend()">✔ ' + t('send') + '</button><button class="btn grey slim" onclick="dirScreen()">' + t('back') + '</button>', 'dirfix');
+}
+function dirSend() {
+  var a = $('fp1').value.trim(), b = $('fp2').value.trim();
+  if (!b) return alertMsg(t('dirWhat'));
+  bg('📞 ' + (a || '?'), 'apiPartySuggest', [a, b]);
+  dirScreen(); alertMsg(t('sentReview'));
+}
+/* Entry card: shows the warehouse contact for what was chosen, with a call button. */
+function entryParty() {
+  var box = $('eparty'); if (!box) return;
+  var b = $('eb').value, u = $('eu').value.replace(/[^0-9]/g, ''), co = $('ec').value;
+  if (co && !b) {                                  // company typed: fill its building (and gala when it has only one)
+    var byName = partyFor('', '', co);
+    if (byName.length === 1) { $('eb').value = byName[0].b; b = byName[0].b; if (byName[0].g.length === 1) { $('eu').value = byName[0].g[0]; u = String(byName[0].g[0]); } }
+  }
+  var list = partyFor(b, u, co);
+  if (!co && list.length === 1 && u) $('ec').value = list[0].name;
+  box.innerHTML = list.slice(0, 3).map(partyBox).join('');
+}
+/* Hindi message for the driver (drivers come from all over India) */
+function driverMsg(o) {
+  var l = leftMin(o);
+  return 'नमस्ते, गाड़ी ' + o.plate + ' का पार्किंग टिकट ' + hhmm(o.paidUntil) + (l !== null && l < 0 ? ' पर खत्म हो गया है।' : ' पर खत्म होगा।') + ' आगे पार्किंग के लिए नया टिकट लें। — Globe Parking';
+}
 
 /* ================= ACTIONS (screen changes at once, saving happens behind) ================= */
 function doneScreen(plate, body, speak, extra) {
@@ -1609,19 +1788,20 @@ function parkScreen(plate, pre) {
   if (need) h += '<div class="box"><label class="f">🎫 ' + t('ticketNo') + '</label><div class="row2"><div style="flex:4"><input id="tno" type="tel" inputmode="numeric" autocomplete="off" value="' + esc(pre.ticket || '') + '"></div>' +
     micBtn('tno', 'plate', 'tmic') + '</div></div>';
   h += '<div class="box"><label class="f">' + t('parkNear') + '</label>' + bldOptions('pn', pre.near || (o && o.near) || '') + '</div>' +
+    '<div class="box"><label class="f">🚚 ' + t('driverPh') + '</label><input id="dph" type="tel" inputmode="numeric" autocomplete="off" value="' + esc(pre.phone || (o && o.phone) || (S.D.kinfo[plate] || {}).phone || '') + '"></div>' +
     '<button class="btn green" data-t="pok" onclick="parkGo()"><span class="ico">✔' + (need ? ' ₹' : '') + '</span>' + (need ? t('paidPark') : t('bPstart')) + '</button>' +
     '<button class="btn grey slim" data-t="pno" onclick="S.park=null;vlEnd(\'CANCELLED\');vehicleCard(\'' + plate + '\')">' + t('cancel') + '</button>';
   show(h, 'park');
 }
 function parkSize(c) {
   var p = S.park, keepNo = $('tno') ? $('tno').value : '', keepNear = $('pn').value;
-  parkScreen(p.plate, { size: c, ticket: keepNo, near: keepNear });
+  parkScreen(p.plate, { size: c, ticket: keepNo, near: keepNear, phone: $('dph').value });
 }
 function parkGo() {
   var p = S.park; if (!p) return home();
-  var no = $('tno') ? $('tno').value.replace(/[^0-9A-Za-z-]/g, '') : '', near = $('pn').value, tm = now();
+  var no = $('tno') ? $('tno').value.replace(/[^0-9A-Za-z-]/g, '') : '', near = $('pn').value, phone = digits($('dph').value), tm = now();
   if (p.need && !no) { buzz([200, 100, 200]); say(t('ticketNo')); return alertMsg(t('needTicket')); }
-  if (!plateOK(p.plate) && !S.okUnusual[p.plate] && !findOpen(p.plate)) return unusualScreen(p.plate, p.cat, function () { parkScreen(p.plate, { size: p.cat, ticket: no, near: near }); });
+  if (!plateOK(p.plate) && !S.okUnusual[p.plate] && !findOpen(p.plate)) return unusualScreen(p.plate, p.cat, function () { parkScreen(p.plate, { size: p.cat, ticket: no, near: near, phone: phone }); });
   S.park = null;
   if (S.vl) { S.vl.resolved = p.plate; vlEnd('DONE'); }
   var o = findOpen(p.plate), ex = S.D.exempt[p.plate];
@@ -1634,11 +1814,12 @@ function parkGo() {
   o.cat = p.cat; S.D.known[p.plate] = p.cat;
   if (no && !exemptV(o)) localTicket(o, no, tm);
   if (near) o.near = near;
+  if (phone) { o.phone = phone; (S.D.kinfo[p.plate] = S.D.kinfo[p.plate] || {}).phone = phone; }
   o.status = 'PARKED'; o.pstart = tm; o.pend = null; o.seen = tm; delete S.vinfo[p.plate];
   savePhoto(p.plate, 'PARKSTART');
   doneScreen(p.plate, catTag(p.cat) + '<div class="huge" style="color:#b35600">🅿️ ✔</div>' + t('sPstart') + ' · ' + hhmm(tm) +
     (no ? '<br>🎫 <b>' + esc(no) + '</b> · ₹' + price(p.cat) + ' · ' + t('paidTill') + ' <b>' + hhmm(o.paidUntil) + '</b>' : '') + (near ? '<br>' + t('rNear') + ' <b>' + esc(near) + '</b>' : ''), t('sPstart'));
-  bg('🅿️ ' + p.plate, 'apiPark', [p.plate, 'start', tm, { ticket: no, near: near, cat: p.cat }]);
+  bg('🅿️ ' + p.plate, 'apiPark', [p.plate, 'start', tm, { ticket: no, near: near, cat: p.cat, phone: phone }]);
 }
 /* Another ticket for a vehicle that is already parked. */
 function ticketScreen(plate, pre) {
@@ -1653,17 +1834,19 @@ function ticketScreen(plate, pre) {
     '<div class="huge" style="color:#b35600">' + t('take', price(o.cat)) + '</div><small>+' + S.D.hours + ' ' + t('hr') + (l !== null && l < 0 ? ' · ' + t('fromOld') : '') + '</small></div>' +
     '<div class="box"><label class="f">🎫 ' + t('ticketNo') + '</label><div class="row2"><div style="flex:4"><input id="tno" type="tel" inputmode="numeric" autocomplete="off" value="' + esc(pre.ticket || '') + '"></div>' +
     micBtn('tno', 'plate', 'tmic') + '</div></div>' +
+    (o.phone ? '' : '<div class="box"><label class="f">🚚 ' + t('driverPh') + '</label><input id="dph" type="tel" inputmode="numeric" autocomplete="off"></div>') +
     '<button class="btn green" data-t="tok" onclick="ticketGo(\'' + plate + '\')"><span class="ico">✔ ₹</span>' + t('paid') + '</button>' +
     '<button class="btn grey slim" data-t="tcancel" onclick="vlEnd(\'CANCELLED\');vehicleCard(\'' + plate + '\')">' + t('cancel') + '</button>', 'ticket');
 }
 function ticketGo(plate) {
-  var o = findOpen(plate), no = $('tno').value.replace(/[^0-9A-Za-z-]/g, ''), tm = now();
+  var o = findOpen(plate), no = $('tno').value.replace(/[^0-9A-Za-z-]/g, ''), phone = $('dph') ? digits($('dph').value) : '', tm = now();
   if (!no) { buzz([200, 100, 200]); return alertMsg(t('needTicket')); }
   if (S.vl) { S.vl.resolved = plate; vlEnd('DONE'); }
   S.mut++; delete S.vinfo[plate];
   var k = localTicket(o, no, tm);
   doneScreen(plate, catTag(o.cat) + '<div class="huge" style="color:#0a6b2d">🎫 ✔</div>🎫 <b>' + esc(no) + '</b> · ₹' + k.a + '<br>' + t('paidTill') + ' <b>' + hhmm(k.u) + '</b>', t('sTicket'));
-  bg('🎫 ' + plate, 'apiTicket', [plate, no, tm]);
+  if (phone) o.phone = phone;
+  bg('🎫 ' + plate, 'apiTicket', [plate, no, tm, phone]);
 }
 
 /* ================= EXIT (no money at the gate) ================= */
@@ -1830,12 +2013,12 @@ function statusTag(x) {
   return x.note ? '<b class="tag x">' + noteName(x.note) + '</b>' : '';
 }
 function logsList(r) {
-  var o = S.logOpt, title = o.mode === 'past' ? r.from + (r.to !== r.from ? ' → ' + r.to : '') + (norm(o.q) ? ' · ' + norm(o.q) : '') : norm(o.q);
-  var h = '<h1>' + esc(title) + '</h1><div class="box">' + t('vehicles') + '<div class="huge">' + r.count + '</div>' + t('feesTk', r.fees, r.tickets) +
+  var o = S.logOpt, title = o.mode === 'past' ? dstr(r.from) + (r.to !== r.from ? ' → ' + dstr(r.to) : '') + (norm(o.q) ? ' · ' + norm(o.q) : '') : norm(o.q);
+  var h = '<h1>' + title + '</h1><div class="box">' + t('vehicles') + '<div class="huge">' + r.count + '</div>' + t('feesTk', r.fees, r.tickets) +
     (r.count > r.list.length ? '<br><small>' + t('latestN', r.list.length) + '</small>' : '') + '</div>';
   if (!r.list.length) h += '<div class="msg info">' + t('noRec') + '</div>';
   r.list.forEach(function (x, i) {
-    h += '<button class="veh" onclick="logDetail(' + i + ')">' + esc(x.plate) + '<span>' + (x.serial != null ? '#' + esc(x.serial) + ' · ' : '') + catTag(x.cat) + ' ' + fmt(x.entry) +
+    h += '<button class="veh' + (isMine(x) ? ' mine' : '') + '" onclick="logDetail(' + i + ')">' + esc(x.plate) + '<span>' + (x.serial != null ? '#' + esc(x.serial) + ' · ' : '') + catTag(x.cat) + ' ' + fmt(x.entry) +
       '<br>🅿️ ' + dur(x.pmin) + ' · 🎫' + (x.tickets || []).length + ' · ₹' + (x.fee || 0) + (x.destB ? ' · 🏢' + esc(x.destB) : '') + ' ' + statusTag(x) + '</span></button>';
   });
   S.lastLogs = r;
@@ -1859,16 +2042,37 @@ function logDetail(i) {
 }
 function summary() {
   busy();
-  call('apiSummary', S.pin).then(function (r) {
-    var h = '<h1>' + t('cash') + '</h1><div class="box">' + t('sumLine', r.entries, r.inside, r.parked) +
-      (r.full ? '<br>' + t('feesToday', r.fees) + ' · 🎫 ' + r.sold : '') +
-      '</div>';
-    r.staff.forEach(function (x) {
-      h += '<div class="box"><b>' + esc(x.name) + '</b><div class="huge">₹' + x.cash + '</div>' + t('cashInHand') + '<br><small>🎫 ' + x.tickets + ' ' + t('ticketsSold') + '</small></div>';
-    });
-    if (!r.staff.length) h += '<div class="msg info">' + t('noTx') + '</div>';
-    show(h + '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>', 'summary');
-  }).catch(function (e) { fail(e, 'logsHome()'); });
+  call('apiSummary', S.pin).then(summaryShow).catch(function (e) { fail(e, 'logsHome()'); });
+}
+function summaryShow(r) {
+  S.sum = r;
+  var h = '<h1>' + t('cash') + '</h1><div class="box">' + t('sumLine', r.entries, r.inside, r.parked) +
+    (r.full ? '<br>' + t('feesToday', r.fees) + ' · 🎫 ' + r.sold : '') + '</div>';
+  r.staff.forEach(function (x, i) {
+    var mine = x.name === S.user.name;
+    h += '<div class="box' + (mine ? ' mine' : '') + '" style="text-align:left"><b>' + esc(x.name) + '</b>' +
+      '<table><tr><th></th><th>🎫</th><th>₹</th>' + (r.pct ? '<th>' + t('comm', r.pct) + '</th>' : '') + '</tr>' +
+      '<tr><td>' + t('pToday') + '</td><td>' + x.tickets + '</td><td>' + x.cash + '</td>' + (r.pct ? '<td><b>₹' + x.pay + '</b></td>' : '') + '</tr>' +
+      '<tr><td>' + t('pMonth') + '</td><td>' + x.monthTk + '</td><td>' + x.month + '</td>' + (r.pct ? '<td>₹' + x.payMonth + '</td>' : '') + '</tr>' +
+      '<tr><td>' + t('pLast') + '</td><td>' + x.lastTk + '</td><td>' + x.last + '</td>' + (r.pct ? '<td>₹' + x.payLast + '</td>' : '') + '</tr></table>' +
+      '<div class="huge" style="font-size:30px">₹' + x.inHand + '</div>' + t('cashInHand') +
+      (r.full && x.inHand > 0 ? '<button class="btn green slim" data-t="hand-' + i + '" onclick="handScreen(' + i + ')">🤝 ' + t('received') + '</button>' : '') + '</div>';
+  });
+  if (!r.staff.length) h += '<div class="msg info">' + t('noTx') + '</div>';
+  show(h + '<button class="btn grey slim" onclick="logsHome()">' + t('back') + '</button>', 'summary');
+}
+/* Management takes the cash from an agent. */
+function handScreen(i) {
+  var x = S.sum.staff[i];
+  show('<h1>🤝 ' + esc(x.name) + '</h1><div class="box">' + t('cashInHand') + '<div class="huge">₹' + x.inHand + '</div><label class="f">' + t('amountGot') + '</label>' +
+    '<input id="ha2" type="tel" inputmode="numeric" value="' + x.inHand + '"></div>' +
+    '<button class="btn green" data-t="handok" onclick="handGo(' + i + ')">✔ ' + t('received') + '</button><button class="btn grey slim" onclick="summaryShow(S.sum)">' + t('back') + '</button>', 'hand');
+}
+function handGo(i) {
+  var x = S.sum.staff[i], a = Number(String($('ha2').value).replace(/[^0-9]/g, ''));
+  if (!(a > 0)) return alertMsg(t('amountGot'));
+  busy();
+  waitIdle().then(function () { return call('apiHandover', S.pin, x.name, a); }).then(summaryShow).catch(function (e) { fail(e, 'summary()'); });
 }
 
 /* ================= ADVANCED ANALYTICS (superuser) ================= */
@@ -1924,7 +2128,7 @@ function anShow() {
   var st = function (n) { if (!n) n = '—'; if (!staff[n]) staff[n] = { e: 0, x: 0, fee: 0, p: 0 }; return staff[n]; };
   var longRange = (new Date(d.to) - new Date(d.from)) / 86400000 > 45;
   rows.forEach(function (r) {
-    var s = anStatus(r), dt = ist(r[3]), key = longRange ? dt.getUTCFullYear() + '-' + p2(dt.getUTCMonth() + 1) : dt.getUTCDate() + '/' + (dt.getUTCMonth() + 1);
+    var s = anStatus(r), dt = ist(r[3]), key = longRange ? MON[dt.getUTCMonth()] + ' ' + dt.getUTCFullYear() : dmon(dt);
     if (!byDay[key]) byDay[key] = { n: 0, fee: 0, t: r[3] };
     if (s === 'DEL') { del++; return; }
     byDay[key].n++; byDay[key].fee += r[6]; byHour[dt.getUTCHours()]++;
@@ -1941,7 +2145,7 @@ function anShow() {
   var names = {}; d.rows.forEach(function (r) { [r[11], r[12], r[15]].forEach(function (n) { if (n) names[n] = 1; }); });
   var opt = function (v, label, cur) { return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(label) + '</option>'; };
   var pb = function (k, key) { return '<button class="btn plain slim" style="margin:4px 0" onclick="anLoad(range(\'' + k + '\'))">' + t(key) + '</button>'; };
-  var h = '<h1>' + t('analytics') + '</h1><div class="msg info">' + d.from + ' → ' + d.to + (d.capped ? ' · ' + t('capped') : '') + '</div>' +
+  var h = '<h1>' + t('analytics') + '</h1><div class="msg info">' + dstr(d.from) + ' → ' + dstr(d.to) + (d.capped ? ' · ' + t('capped') : '') + '</div>' +
     '<div class="row2">' + pb('today', 'pToday') + pb('week', 'pWeek') + pb('month', 'pMonth') + '</div><div class="row2">' + pb('30', 'p30') + pb('lastmonth', 'pLast') + pb('year', 'pYear') + '</div>' +
     '<div class="row2"><input id="af" type="date" value="' + d.from + '"><input id="at" type="date" value="' + d.to + '"><button class="btn slim" style="flex:0 0 60px;margin:0" onclick="anLoad([$(\'af\').value,$(\'at\').value])">▶</button></div>' +
     '<h2>' + t('filters') + '</h2><div class="row2"><select id="fc" onchange="anSet()">' + opt('', t('allSizes'), f.cat) + opt('MEDIUM', t('c_MEDIUM'), f.cat) + opt('HEAVY', t('c_HEAVY'), f.cat) + '</select>' +
