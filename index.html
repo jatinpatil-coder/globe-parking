@@ -120,6 +120,13 @@
    Every text on screen comes from this table: [Marathi, Hindi, English].
    A function is used where a number goes inside the sentence. */
 var W = {
+  /* v14 */
+  callWh: ['गोदामाला फोन', 'गोदाम को फोन', 'Call the warehouse'],
+  callNow: ['फोन करा', 'फोन करें', 'Call'],
+  needDest: ['आधी बिल्डिंग + गाळा किंवा कंपनी लिहा', 'पहले बिल्डिंग + गाला या कंपनी लिखें', 'First write building + gala or company'],
+  noContact: ['या गाळ्याचा संपर्क नाही', 'इस गाले का संपर्क नहीं', 'No contact for this gala'],
+  a_MANY_CONTACT_LOOKUPS: ['एका दिवसात खूप संपर्क पाहिले', 'एक दिन में बहुत संपर्क देखे', 'Many contact lookups in a day'],
+
   /* v13 */
   myEarn: ['आजची माझी कमाई', 'आज की मेरी कमाई', 'My earnings today'],
   dir: ['गोदाम संपर्क', 'गोदाम संपर्क', 'Warehouse contacts'],
@@ -774,7 +781,7 @@ function boot(pin) {
     var ki = {};
     b.known.forEach(function (k) { kn[k[0]] = k[1]; if (k.length > 2) ki[k[0]] = { phone: k[2] || '', b: k[3] || '', u: k[4] || '', co: k[5] || '' }; });
     S.D = { prices: b.prices, hours: b.ticketHours || 3, buildings: b.buildings || [], companies: b.companies || [], exempt: {}, known: kn, kinfo: ki,
-      parties: (b.parties || []).map(partyObj), pct: b.commission || 0 };
+      parties: (b.parties || []).map(partyObj), contacts: !!b.contacts, pct: b.commission || 0 };
     (b.parties || []).forEach(function (p) { if (p[0] && S.D.companies.indexOf(p[0]) < 0) S.D.companies.push(p[0]); });
     S.editMin = b.editMinutes || 10;
     S.appLink = b.appLink || '';
@@ -810,7 +817,7 @@ function home() {
     '<div class="tile" data-t="t-pk" onclick="can(\'park\')?parkList():insideList(\'PARKED\')"><div class="n" id="cPk" style="color:#d9780a">0</div><div class="l">' + t('tPk') + '</div></div></div>';
   if (S.user.role === 'AGENT' && S.D.pct) h += '<div class="box earn" data-t="earn" onclick="summary()">💰 ' + t('myEarn') + ' <b>₹' + Math.round((S.mine ? S.mine.cash : 0) * S.D.pct) / 100 + '</b>' +
     '<small> · 🎫 ' + (S.mine ? S.mine.tickets : 0) + '</small></div>';
-  h += '<button class="btn plain slim" data-t="dir" onclick="dirScreen()">📞 ' + t('dir') + '</button>';
+  if (S.user.role === 'SUPERUSER') h += '<button class="btn plain slim" data-t="dir" onclick="dirScreen()">📞 ' + t('dir') + '</button>';
   if (can('park')) {
     var due = S.open.filter(function (o) { var l = leftMin(o); return o.status === 'PARKED' && !exemptV(o) && (l === null || l < 30); }).length;
     h += '<button class="btn ' + (due ? 'red' : 'orange') + ' slim" data-t="plist" onclick="parkList()">🅿️ ' + t('parkList') + (due ? ' — ⚠ ' + due : '') + '</button>';
@@ -1527,8 +1534,7 @@ function renderCard(plate, keepScroll, notice) {
       '<tr><td>' + t('rCt') + '</td><td><b>' + dur(Math.ceil((now() - o.entry) / 60000)) + '</b></td></tr>' +
       (money() && o.tickets && o.tickets.length ? '<tr><td>' + t('rTickets') + '</td><td>' + o.tickets.length + ' · ₹' + ticketTotal(o) + '<br><small>' + o.tickets.map(function (k) { return '🎫 ' + esc(k.n) + ' · ' + esc(k.by); }).join('<br>') + '<br>' + t('paidTill') + ' ' + hhmm(o.paidUntil) + '</small></td></tr>' : '') +
       (v && v.open && v.open.serial != null ? '<tr><td>' + t('rSerial') + '</td><td>#' + esc(v.open.serial) + '</td></tr>' : '') + '</table>';
-    var ph = partyFor(o.destB, o.destU, o.company);
-    if (ph.length) h += ph.slice(0, 2).map(partyBox).join('');
+    if (o.destB || o.company) h += contactBtn('openContact', plate);
     if (can('park') && o.phone) h += '<div class="box" style="text-align:left">🚚 ' + t('driver') + '<div class="row2">' + callBtn(o.phone, 'dcall') + waBtn(o.phone, o.paidUntil ? driverMsg(o) : '', 'dwa') + '</div></div>';
     if (can('park')) {
       if (o.status === 'PARKED') {
@@ -1553,7 +1559,7 @@ function renderCard(plate, keepScroll, notice) {
       '<div class="box" style="padding:10px"><label class="f">' + t('goingTo') + '</label><div class="row2">' + bldOptions('eb', pre.building || '').replace('<select', '<select onchange="entryParty()"') +
       '<input id="eu" type="tel" inputmode="numeric" placeholder="' + t('unitPh') + '" value="' + esc(pre.unit || '') + '" oninput="entryParty()"></div>' +
       '<div class="row2" style="margin-top:6px"><div style="flex:4"><input id="ec" class="note" type="text" list="colist" placeholder="' + t('companyPh') + '" value="' + esc(pre.company || '') + '" onchange="entryParty()"></div>' +
-      micBtn('ec', 'text') + '</div><datalist id="colist">' + S.D.companies.slice(0, 200).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist><div id="eparty"></div></div>' +
+      micBtn('ec', 'text') + '</div><datalist id="colist">' + S.D.companies.slice(0, 200).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>' + contactBtn('entryContact', plate) + '</div>' +
       '<h2>' + t('entryHead') + '</h2><div class="row2">' + ['MEDIUM', 'HEAVY'].map(function (c) {
       return '<button class="btn ' + CATS[c][0] + (lastCat === c ? ' last' : '') + '" data-t="entry-' + c + '" onclick="act(\'entry\',\'' + plate + '\',\'' + c + '\')">' +
         '<span class="ico">' + svgIcon(c, 46) + '</span>' + catName(c) + '</button>';
@@ -1578,7 +1584,6 @@ function renderCard(plate, keepScroll, notice) {
   }
   h += '<button class="btn grey slim" onclick="home()">' + t('back') + '</button>';
   show(h, 'card:' + plate);
-  if ($('eparty')) entryParty();
   if ($('fixbtn')) $('fixbtn').onclick = function () { $('fixbox').style.display = 'block'; this.style.display = 'none'; };
   if (S.openFix && $('fixbtn')) { S.openFix = false; $('fixbtn').onclick(); }
   Object.keys(keep).forEach(function (k) { if ($(k)) $(k).value = keep[k]; });
@@ -1619,9 +1624,34 @@ function partyFor(b, u, co) {
 function digits(ph) { var d = String(ph || '').replace(/[^0-9]/g, ''); return d.length > 10 && d.indexOf('91') === 0 ? d.slice(-10) : d; }
 function callBtn(ph, tag) { var d = digits(ph); return d ? '<a class="btn green slim callb" data-t="' + (tag || 'call') + '" href="tel:+91' + d + '">📞 ' + d + '</a>' : ''; }
 function waBtn(ph, msg, tag) { var d = digits(ph); return d ? '<a class="btn slim wab" data-t="' + (tag || 'wa') + '" target="_blank" rel="noopener" href="https://wa.me/91' + d + (msg ? '?text=' + encodeURIComponent(msg) : '') + '">💬 WhatsApp</a>' : ''; }
+/* p.show = false (guards): the number is not written on the screen and there is no WhatsApp, only a call button. */
 function partyBox(p) {
+  var show = p.show !== false;
   return '<div class="box party" style="text-align:left"><b>' + esc(p.name) + '</b><br><small>🏢 ' + esc(p.b) + (p.spec ? ' · ' + t('gala') + ' ' + esc(p.spec) : '') +
-    (p.mgr ? ' · 👤 ' + esc(p.mgr) : '') + '</small><div class="row2">' + callBtn(p.phone) + waBtn(p.phone) + '</div></div>';
+    (p.mgr ? ' · 👤 ' + esc(p.mgr) : '') + '</small><div class="row2">' +
+    (show ? callBtn(p.phone) + waBtn(p.phone) : (digits(p.phone) ? '<a class="btn green slim callb" data-t="call" href="tel:+91' + digits(p.phone) + '">📞 ' + t('callNow') + '</a>' : '')) + '</div>' +
+    '<button class="btn plain slim" data-t="pfix" onclick="dirFix(\'' + esc(p.name).replace(/'/g, '&#39;') + '\')">' + t('dirFix') + '</button></div>';
+}
+/* Gate: one contact for the vehicle on screen, fetched only when asked (every lookup is logged). */
+function contactFetch(plate, b, u, co, fill) {
+  var box = $('eparty'); if (!box) return;
+  if (!b && !co) { box.innerHTML = '<div class="msg info">' + t('needDest') + '</div>'; return; }
+  box.innerHTML = '<div class="msg info pulse">...</div>';
+  call('apiContact', S.pin, plate, b, u, co).then(function (list) {
+    if (!$('eparty')) return;
+    if (fill && list.length === 1) {                 // fill what the guard did not write
+      if ($('eb') && !$('eb').value) $('eb').value = list[0].b;
+      var g = galas(list[0].spec);
+      if ($('eu') && !$('eu').value && g.length === 1) $('eu').value = g[0];
+      if ($('ec') && !$('ec').value) $('ec').value = list[0].name;
+    }
+    $('eparty').innerHTML = list.length ? list.map(partyBox).join('') : '<div class="msg info">' + t('noContact') + '</div>';
+  }).catch(function (e) { if ($('eparty')) $('eparty').innerHTML = '<div class="msg err">' + errText(e) + '</div>'; });
+}
+function entryContact(plate) { contactFetch(plate, $('eb').value, $('eu').value.replace(/[^0-9]/g, ''), $('ec').value.trim(), true); }
+function openContact(plate) { var o = findOpen(plate); if (o) contactFetch(plate, o.destB, o.destU, o.company, false); }
+function contactBtn(fn, plate) {
+  return S.D.contacts ? '<button class="btn green slim" data-t="getparty" onclick="' + fn + '(\'' + plate + '\')">📞 ' + t('callWh') + '</button><div id="eparty"></div>' : '';
 }
 function dirScreen(q) {
   var P = S.D.parties || [];
@@ -1644,30 +1674,22 @@ function dirFilter() {
   $('dlist').innerHTML = list.slice(0, 40).map(partyBox).join('') || '<div class="msg info">' + t('none') + '</div>';
 }
 /* Number wrong or missing: write or speak it, it goes to Review (the sheet is changed by management). */
-function dirFix() {
-  show('<h1>' + t('dirFix') + '</h1><div class="box" style="text-align:left"><label class="f">' + t('dirWhich') + '</label><input id="fp1" type="text" list="colist2">' +
+function dirFix(name) {
+  S.fixBack = S.screen;
+  show('<h1>' + t('dirFix') + '</h1><div class="box" style="text-align:left"><label class="f">' + t('dirWhich') + '</label><input id="fp1" type="text" list="colist2" value="' + esc(name || '') + '">' +
     '<datalist id="colist2">' + (S.D.parties || []).map(function (p) { return '<option value="' + esc(p.name) + '">'; }).join('') + '</datalist>' +
     '<label class="f" style="margin-top:8px">' + t('dirWhat') + '</label><div class="row2"><div style="flex:4"><input id="fp2" type="text"></div>' + micBtn('fp2', 'text') + '</div></div>' +
-    '<button class="btn green" data-t="dirsend" onclick="dirSend()">✔ ' + t('send') + '</button><button class="btn grey slim" onclick="dirScreen()">' + t('back') + '</button>', 'dirfix');
+    '<button class="btn green" data-t="dirsend" onclick="dirSend()">✔ ' + t('send') + '</button><button class="btn grey slim" onclick="dirBack()">' + t('back') + '</button>', 'dirfix');
 }
 function dirSend() {
   var a = $('fp1').value.trim(), b = $('fp2').value.trim();
   if (!b) return alertMsg(t('dirWhat'));
   bg('📞 ' + (a || '?'), 'apiPartySuggest', [a, b]);
-  dirScreen(); alertMsg(t('sentReview'));
+  dirBack(); alertMsg(t('sentReview'));
 }
+function dirBack() { var b = String(S.fixBack || ''); if (b === 'dir') dirScreen(); else if (b.indexOf('card:') === 0) vehicleCard(b.slice(5)); else home(); }
 /* Entry card: shows the warehouse contact for what was chosen, with a call button. */
-function entryParty() {
-  var box = $('eparty'); if (!box) return;
-  var b = $('eb').value, u = $('eu').value.replace(/[^0-9]/g, ''), co = $('ec').value;
-  if (co && !b) {                                  // company typed: fill its building (and gala when it has only one)
-    var byName = partyFor('', '', co);
-    if (byName.length === 1) { $('eb').value = byName[0].b; b = byName[0].b; if (byName[0].g.length === 1) { $('eu').value = byName[0].g[0]; u = String(byName[0].g[0]); } }
-  }
-  var list = partyFor(b, u, co);
-  if (!co && list.length === 1 && u) $('ec').value = list[0].name;
-  box.innerHTML = list.slice(0, 3).map(partyBox).join('');
-}
+function entryParty() { var box = $('eparty'); if (box) box.innerHTML = ''; }
 /* Hindi message for the driver (drivers come from all over India) */
 function driverMsg(o) {
   var l = leftMin(o);
